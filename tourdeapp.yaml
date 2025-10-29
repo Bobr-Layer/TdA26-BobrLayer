@@ -1,0 +1,42 @@
+# $schema: https://portalbush.tourde.cloud/static/schema.json
+
+exposedPort: 80
+
+containers:
+  - name: caddy
+    image: caddy:2-alpine
+    port: 80
+
+  - name: backend
+    image: registry.tourde.cloud/bobr-layer-4035/server
+    port: 8080
+    env:
+      SPRING_PROFILES_ACTIVE: "prod"
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://localhost:5432/tda26"
+      SPRING_DATASOURCE_USERNAME: "root"
+      SPRING_DATASOURCE_PASSWORD: "{{DB_PASSWORD}}"
+
+  - name: frontend
+    image: registry.tourde.cloud/bobr-layer-4035/web
+    port: 3000
+
+  - name: db
+    image: postgres:16-alpine
+    port: 5432
+    env:
+      POSTGRES_DB: "tda26"
+      POSTGRES_USER: "rootF"
+      POSTGRES_PASSWORD: "{{DB_PASSWORD}}"
+
+build:
+  - name: server
+    context: ./backend
+    dockerfile: ./backend/Dockerfile
+
+  - name: web
+    context: ./frontend
+    dockerfile: ./frontend/Dockerfile
+
+  - name: caddy
+    context: ./caddy
+    dockerfile: ./caddy/Dockerfile
