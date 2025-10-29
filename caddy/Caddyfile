@@ -1,0 +1,16 @@
+:80 {
+    # React frontend
+    route / {
+        reverse_proxy localhost:3000
+    }
+
+    # Spring Boot API
+    route /api/* {
+        reverse_proxy localhost:8080
+    }
+
+    # Swagger UI
+    route /swagger-ui/* {
+        reverse_proxy localhost:8080
+    }
+}

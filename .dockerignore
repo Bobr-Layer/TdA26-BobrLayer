@@ -1,0 +1,62 @@
+# Maven build výstupy
+target/
+!target/*.jar
+
+# Maven wrapper
+.mvn/
+mvnw
+mvnw.cmd
+
+# IDE soubory
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.project
+.classpath
+.settings/
+.factorypath
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Logy
+*.log
+logs/
+
+# Testovací soubory
+src/test/
+
+# Environment soubory
+.env
+.env.local
+.env.*.local
+
+# Dokumentace
+*.md
+docs/
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+Jenkinsfile
+
+# Dočasné soubory
+*.tmp
+*.temp
+*.swp
+*.bak
+.DS_Store
+Thumbs.db
+
+# Uploads (pokud máte lokální)
+uploads/
+
+# Docker soubory samotné
+Dockerfile
+.dockerignore
+docker-compose.yml
+compose.yml

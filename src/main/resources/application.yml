@@ -1,0 +1,51 @@
+spring:
+  application:
+    name: tda26
+
+  # PostgreSQL databáze
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/tda26}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+
+  # JPA/Hibernate
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  # File Upload (max 30MB)
+  servlet:
+    multipart:
+      max-file-size: 30MB
+      max-request-size: 30MB
+      enabled: true
+
+  # Security - základní credentials
+  security:
+    user:
+      name: lecturer
+      password: TdA26!
+
+# Server
+server:
+  port: 8080
+  error:
+    include-message: always
+
+# OpenAPI dokumentace
+springdoc:
+  api-docs:
+    path: /api
+  swagger-ui:
+    path: /swagger-ui.html
+
+# Vlastní nastavení
+app:
+  file:
+    upload-dir: ./uploads

@@ -1,0 +1,54 @@
+services:
+  # PostgreSQL databáze
+  db:
+    image: postgres:16-alpine
+    container_name: tda26-db
+    environment:
+      POSTGRES_DB: tda_app
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: TenBobr69!
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  # Spring Boot backend
+  spring:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tda26-spring
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/tda_app
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: TenBobr69!
+    depends_on:
+      - db
+
+  # React frontend
+  react:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: tda26-react
+    ports:
+      - "3000:3000"
+    depends_on:
+      - spring
+
+  # Caddy reverse proxy
+  caddy:
+    build:
+      context: ./caddy
+      dockerfile: Dockerfile
+    container_name: tda26-caddy
+    ports:
+      - "80:80"
+    depends_on:
+      - spring
+      - react
+
+volumes:
+  postgres-data:

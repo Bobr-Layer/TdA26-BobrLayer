@@ -1,0 +1,45 @@
+# $schema: https://portalbush.tourde.cloud/static/schema.json
+
+exposedPort: 80
+
+containers:
+  # Caddy reverse proxy - jediný port ven
+  - name: caddy
+    image: registry.tourde.cloud/bobr-layer-4035/caddy
+    port: 80
+
+  # Spring Boot backend
+  - name: spring
+    image: registry.tourde.cloud/bobr-layer-4035/spring
+    port: 8080
+    env:
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://localhost:5432/tda_app"
+      SPRING_DATASOURCE_USERNAME: "postgres"
+      SPRING_DATASOURCE_PASSWORD: "TenBobr69!"
+
+  # React frontend
+  - name: react
+    image: registry.tourde.cloud/bobr-layer-4035/react
+    port: 3000
+
+  # PostgreSQL databáze
+  - name: db
+    image: postgres:16-alpine
+    port: 5432
+    env:
+      POSTGRES_DB: "tda_app"
+      POSTGRES_USER: "root"
+      POSTGRES_PASSWORD: "TenBobr69!"
+
+build:
+  - name: spring
+    context: .
+    dockerfile: Dockerfile
+
+  - name: react
+    context: ./frontend
+    dockerfile: ./frontend/Dockerfile
+
+  - name: caddy
+    context: ./caddy
+    dockerfile: ./caddy/Dockerfile
