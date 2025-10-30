@@ -1,0 +1,14 @@
+### Caddy data ###
+data/
+config/
+
+### Certifikáty (pokud generujete lokálně) ###
+*.pem
+*.key
+*.crt
+
+### Logs ###
+*.log
+
+### Temporary ###
+*.tmp
