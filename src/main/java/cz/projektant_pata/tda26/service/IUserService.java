@@ -10,6 +10,8 @@ public interface IUserService {
     User find(UUID uuid);
     User find(String username);
     User update(UUID uuid, User user);
+    User update(UUID uuid, String pass);
+
     User create(User user);
     User kill(UUID uuid);
 

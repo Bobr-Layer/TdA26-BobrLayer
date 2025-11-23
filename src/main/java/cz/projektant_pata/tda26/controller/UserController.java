@@ -1,36 +1,41 @@
 package cz.projektant_pata.tda26.controller;
 
+import cz.projektant_pata.tda26.dto.user.UserResponse;
+import cz.projektant_pata.tda26.mapper.UserMapper;
 import cz.projektant_pata.tda26.model.User;
 import cz.projektant_pata.tda26.service.IUserService;
-import org.springframework.security.authentication.AuthenticationManager;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.UUID;
-@RestController
-@RequestMapping("/api/user")
-public class UserController {
-    private final IUserService service;
-    private final AuthenticationManager authManager;
 
-    public UserController(IUserService service,
-                          AuthenticationManager authManager) {
-        this.service = service;
-        this.authManager = authManager;
-    }
+@RestController
+@RequestMapping("/api/users")
+@RequiredArgsConstructor
+public class UserController {
+
+    private final IUserService service;
+    private final UserMapper mapper;
 
     @GetMapping
-    public List<User> find() {
-        return service.find();
+    public ResponseEntity<List<UserResponse>> find() {
+        List<UserResponse> users = service.find()
+                .stream()
+                .map(mapper::toResponse)
+                .toList();
+        return ResponseEntity.ok(users);
     }
 
     @GetMapping("/{uuid}")
-    public User find(@PathVariable UUID uuid) {
-        return service.find(uuid);
+    public ResponseEntity<UserResponse> find(@PathVariable UUID uuid) {
+        User user = service.find(uuid);
+        return ResponseEntity.ok(mapper.toResponse(user));
     }
 
     @DeleteMapping("/{uuid}")
-    public User kill(@PathVariable UUID uuid) {
-        return service.kill(uuid);
+    public ResponseEntity<Void> kill(@PathVariable UUID uuid) {
+        service.kill(uuid);
+        return ResponseEntity.noContent().build();
     }
 }
