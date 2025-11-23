@@ -46,35 +46,25 @@ public class MaterialServiceImpl implements IMaterialService {
     public Material update(UUID courseUuid, UUID materialUuid, Material updatedMaterial) {
         Material existingMaterial = find(courseUuid, materialUuid);
 
+        if (!existingMaterial.getClass().equals(updatedMaterial.getClass())) {
+            throw new IllegalArgumentException("Změna typu materiálu není povolena.");
+        }
+
         existingMaterial.setName(updatedMaterial.getName());
         existingMaterial.setDescription(updatedMaterial.getDescription());
 
-        if (existingMaterial instanceof FileMaterial && updatedMaterial instanceof FileMaterial) {
-            FileMaterial existingFile = (FileMaterial) existingMaterial;
+        if (existingMaterial instanceof FileMaterial existingFile) {
             FileMaterial updatedFile = (FileMaterial) updatedMaterial;
 
-            if (updatedFile.getFileUrl() != null) {
-                existingFile.setFileUrl(updatedFile.getFileUrl());
-            }
-            if (updatedFile.getMimeType() != null) {
-                existingFile.setMimeType(updatedFile.getMimeType());
-            }
-            if (updatedFile.getSizeBytes() != null) {
-                existingFile.setSizeBytes(updatedFile.getSizeBytes());
-            }
-        } else if (existingMaterial instanceof UrlMaterial && updatedMaterial instanceof UrlMaterial) {
-            UrlMaterial existingUrl = (UrlMaterial) existingMaterial;
+            if (updatedFile.getFileUrl() != null) existingFile.setFileUrl(updatedFile.getFileUrl());
+            if (updatedFile.getMimeType() != null) existingFile.setMimeType(updatedFile.getMimeType());
+            if (updatedFile.getSizeBytes() != null) existingFile.setSizeBytes(updatedFile.getSizeBytes());
+
+        } else if (existingMaterial instanceof UrlMaterial existingUrl) {
             UrlMaterial updatedUrl = (UrlMaterial) updatedMaterial;
 
-            if (updatedUrl.getUrl() != null) {
-                existingUrl.setUrl(updatedUrl.getUrl());
-            }
-            if (updatedUrl.getFaviconUrl() != null) {
-                existingUrl.setFaviconUrl(updatedUrl.getFaviconUrl());
-            }
-        }else{
-//            throw new Exception("Bad boi");
-//            return "kys";
+            if (updatedUrl.getUrl() != null) existingUrl.setUrl(updatedUrl.getUrl());
+            if (updatedUrl.getFaviconUrl() != null) existingUrl.setFaviconUrl(updatedUrl.getFaviconUrl());
         }
 
         return materialRepository.save(existingMaterial);

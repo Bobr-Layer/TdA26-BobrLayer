@@ -26,7 +26,7 @@ import java.util.UUID;
 @Setter
 public abstract class Material {
     @Id
-    @GeneratedValue(generator = "UUID")
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "uuid")
     private UUID uuid;
 
