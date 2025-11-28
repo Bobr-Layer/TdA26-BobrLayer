@@ -1,6 +1,6 @@
 package cz.projektant_pata.tda26.repository;
 
-import cz.projektant_pata.tda26.model.Material;
+import cz.projektant_pata.tda26.model.course.material.Material;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

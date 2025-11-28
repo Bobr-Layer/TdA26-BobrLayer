@@ -1,11 +1,74 @@
 <!DOCTYPE html>
-<html lang="cs" xmlns:th="http://www.thymeleaf.org">
+<html lang="cs">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spring Boot Thymeleaf</title>
+    <title>Login Test</title>
 </head>
 <body>
 <h1 th:text="${message}">Výchozí text</h1>
+
+<h2>Přihlášení</h2>
+<form id="loginForm">
+    <input type="text" id="username" placeholder="Uživatelské jméno" required><br><br>
+    <input type="password" id="password" placeholder="Heslo" required><br><br>
+    <button type="submit">Přihlásit se</button>
+</form>
+
+<div id="message" style="margin-top: 20px;"></div>
+<button onclick="getMyProfile()" style="margin-top: 20px;">Můj Profil (/me)</button>
+<button onclick="logout()" style="margin-top: 20px;">Odhlásit</button>
+<pre id="profileData"></pre>
+
+<script>
+    // Funkce pro login
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+
+        try {
+            const response = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username, password })
+            });
+
+            if (response.ok) {
+                document.getElementById('message').innerText = "Přihlášení úspěšné!";
+                document.getElementById('message').style.color = "green";
+            } else {
+                document.getElementById('message').innerText = "Chyba přihlášení";
+                document.getElementById('message').style.color = "red";
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    });
+
+    // Funkce pro test /me (ověření session)
+    async function getMyProfile() {
+        try {
+            const response = await fetch('/api/auth/me'); // Automaticky pošle cookie
+            if (response.ok) {
+                const data = await response.json();
+                document.getElementById('profileData').innerText = JSON.stringify(data, null, 2);
+            } else {
+                document.getElementById('profileData').innerText = "Nepřihlášen (403/401)";
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    // Funkce pro logout
+    async function logout() {
+        await fetch('/api/auth/logout', { method: 'POST' });
+        document.getElementById('message').innerText = "Odhlášeno";
+        document.getElementById('profileData').innerText = "";
+    }
+</script>
 </body>
 </html>

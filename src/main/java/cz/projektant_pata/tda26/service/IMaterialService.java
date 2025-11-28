@@ -1,6 +1,6 @@
 package cz.projektant_pata.tda26.service;
 
-import cz.projektant_pata.tda26.model.Material;
+import cz.projektant_pata.tda26.model.course.material.Material;
 
 import java.util.List;
 import java.util.UUID;

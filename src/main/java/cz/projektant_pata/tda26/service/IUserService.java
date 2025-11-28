@@ -1,6 +1,6 @@
 package cz.projektant_pata.tda26.service;
 
-import cz.projektant_pata.tda26.model.User;
+import cz.projektant_pata.tda26.model.user.User;
 
 import java.util.List;
 import java.util.UUID;

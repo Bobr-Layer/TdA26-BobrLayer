@@ -5,9 +5,11 @@ import cz.projektant_pata.tda26.dto.auth.RegisterRequest;
 import cz.projektant_pata.tda26.dto.auth.ResetPassword;
 import cz.projektant_pata.tda26.dto.user.UserResponse;
 import cz.projektant_pata.tda26.mapper.UserMapper;
-import cz.projektant_pata.tda26.model.RoleEnum;
-import cz.projektant_pata.tda26.model.User;
+import cz.projektant_pata.tda26.model.user.RoleEnum;
+import cz.projektant_pata.tda26.model.user.User;
 import cz.projektant_pata.tda26.service.IUserService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -76,6 +78,20 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
         }
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+
+        if (session != null) {
+            session.invalidate();
+        }
+
+        SecurityContextHolder.clearContext();
+
+        return ResponseEntity.ok("Odhlášení proběhlo úspěšně");
+    }
+
 
     @GetMapping("/me")
     public ResponseEntity<UserResponse> getCurrentUser() {

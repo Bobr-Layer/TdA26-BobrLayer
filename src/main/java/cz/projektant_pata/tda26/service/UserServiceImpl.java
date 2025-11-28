@@ -1,8 +1,13 @@
 package cz.projektant_pata.tda26.service;
 
-import cz.projektant_pata.tda26.model.User;
+import cz.projektant_pata.tda26.exception.ResourceAlreadyExistsException;
+import cz.projektant_pata.tda26.exception.ResourceNotFoundException;
+import cz.projektant_pata.tda26.model.user.User;
 import cz.projektant_pata.tda26.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,8 +17,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class UserServiceImpl implements IUserService {
-    private final UserRepository repository;
+public class UserServiceImpl implements IUserService, UserDetailsService {     private final UserRepository repository;
     private final PasswordEncoder encoder;
 
     @Override
@@ -24,13 +28,14 @@ public class UserServiceImpl implements IUserService {
     @Override
     public User find(UUID uuid) {
         return repository.findById(uuid)
-                .orElseThrow(() -> new RuntimeException("Uživatel s ID " + uuid + " nebyl nalezen"));
+                .orElseThrow(() -> new ResourceNotFoundException("Uživatel s ID " + uuid + " nebyl nalezen"));
     }
+
 
     @Override
     public User find(String username) {
         return repository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("Uživatel " + username + " nebyl nalezen"));
+                .orElseThrow(() -> new ResourceNotFoundException("Uživatel s uživatelským jménem " + username + " nebyl nalezen"));
     }
 
     @Override
@@ -38,15 +43,21 @@ public class UserServiceImpl implements IUserService {
     public User update(UUID uuid, User userUpdates) {
         User existingUser = find(uuid);
 
-        if (!existingUser.getUsername().equals(userUpdates.getUsername()) &&
-                repository.findByUsername(userUpdates.getUsername()).isPresent()) {
-            throw new IllegalArgumentException("Uživatelské jméno již existuje");
+        if (userUpdates.getUsername() != null
+                && !userUpdates.getUsername().equals(existingUser.getUsername())) {
+
+            if (exists(userUpdates.getUsername()))
+                throw new ResourceAlreadyExistsException("Uživatel se jménem '" + userUpdates.getUsername() + "' již existuje.");
+
+            existingUser.setUsername(userUpdates.getUsername());
         }
 
-        existingUser.setUsername(userUpdates.getUsername());
-        existingUser.setPassword(encoder.encode(userUpdates.getPassword()));
-        existingUser.setRole(userUpdates.getRole());
-        existingUser.setEnabled(userUpdates.getEnabled());
+        if (userUpdates.getPassword() != null && !userUpdates.getPassword().isEmpty())
+            existingUser.setPassword(encoder.encode(userUpdates.getPassword()));
+        if (userUpdates.getRole() != null)
+            existingUser.setRole(userUpdates.getRole());
+        if (userUpdates.getEnabled() != null)
+            existingUser.setEnabled(userUpdates.getEnabled());
 
         return repository.save(existingUser);
     }
@@ -64,8 +75,8 @@ public class UserServiceImpl implements IUserService {
     @Override
     @Transactional
     public User create(User user) {
-        if (repository.findByUsername(user.getUsername()).isPresent()) {
-            throw new IllegalArgumentException("Uživatelské jméno již existuje");
+        if (exists(user.getUsername())) {
+            throw new ResourceAlreadyExistsException("Uživatel se jménem '" + user.getUsername() + "' již existuje.");
         }
 
         user.setPassword(encoder.encode(user.getPassword()));
@@ -83,5 +94,11 @@ public class UserServiceImpl implements IUserService {
     @Override
     public boolean exists(String username) {
         return repository.findByUsername(username).isPresent();
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return repository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
     }
 }

@@ -1,9 +1,9 @@
 package cz.projektant_pata.tda26.service;
 
-import cz.projektant_pata.tda26.model.Course;
-import cz.projektant_pata.tda26.model.Material;
-import cz.projektant_pata.tda26.model.FileMaterial;
-import cz.projektant_pata.tda26.model.UrlMaterial;
+import cz.projektant_pata.tda26.model.course.Course;
+import cz.projektant_pata.tda26.model.course.material.Material;
+import cz.projektant_pata.tda26.model.course.material.FileMaterial;
+import cz.projektant_pata.tda26.model.course.material.UrlMaterial;
 import cz.projektant_pata.tda26.repository.MaterialRepository;
 import cz.projektant_pata.tda26.repository.CourseRepository;
 import org.springframework.stereotype.Service;

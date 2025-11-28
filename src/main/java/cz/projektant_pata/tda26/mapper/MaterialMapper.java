@@ -1,10 +1,10 @@
 package cz.projektant_pata.tda26.mapper;
 
 import cz.projektant_pata.tda26.dto.course.material.*;
-import cz.projektant_pata.tda26.model.Course;
-import cz.projektant_pata.tda26.model.FileMaterial;
-import cz.projektant_pata.tda26.model.Material;
-import cz.projektant_pata.tda26.model.UrlMaterial;
+import cz.projektant_pata.tda26.model.course.Course;
+import cz.projektant_pata.tda26.model.course.material.FileMaterial;
+import cz.projektant_pata.tda26.model.course.material.Material;
+import cz.projektant_pata.tda26.model.course.material.UrlMaterial;
 import org.springframework.stereotype.Component;
 
 @Component

@@ -2,7 +2,7 @@ package cz.projektant_pata.tda26.controller;
 
 import cz.projektant_pata.tda26.dto.user.UserResponse;
 import cz.projektant_pata.tda26.mapper.UserMapper;
-import cz.projektant_pata.tda26.model.User;
+import cz.projektant_pata.tda26.model.user.User;
 import cz.projektant_pata.tda26.service.IUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

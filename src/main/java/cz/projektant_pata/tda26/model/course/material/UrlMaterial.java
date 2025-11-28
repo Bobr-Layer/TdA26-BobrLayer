@@ -1,4 +1,4 @@
-package cz.projektant_pata.tda26.model;
+package cz.projektant_pata.tda26.model.course.material;
 
 import jakarta.persistence.Entity;
 import lombok.Getter;

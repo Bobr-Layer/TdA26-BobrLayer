@@ -1,14 +1,14 @@
-package cz.projektant_pata.tda26.model;
+package cz.projektant_pata.tda26.model.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import cz.projektant_pata.tda26.model.course.Course;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -28,12 +28,6 @@ public class User implements UserDetails {
     @Column(nullable = false, unique = true)
     private String username;
 
-//    @Column(nullable = false)
-//    private String firstname;
-//
-//    @Column(nullable = false)
-//    private String lastname;
-
     @JsonIgnore
     @Column(nullable = false)
     private String password;
@@ -45,16 +39,21 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private Boolean enabled = true;
 
+    @OneToMany(mappedBy = "lector", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<Course> courses = new ArrayList<>();
+
+    @ManyToMany(mappedBy = "students")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @JsonIgnore
+    private List<Course> enrolledCourses = new ArrayList<>();
+
     @Override
     @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
-
-//    @Override
-//    public String getUsername() {
-//        return username;
-//    }
 
     @Override
     @JsonIgnore

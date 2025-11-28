@@ -3,11 +3,13 @@ package cz.projektant_pata.tda26.controller;
 import cz.projektant_pata.tda26.dto.course.CourseRequest;
 import cz.projektant_pata.tda26.dto.course.CourseResponse;
 import cz.projektant_pata.tda26.mapper.CourseMapper;
-import cz.projektant_pata.tda26.model.Course;
+import cz.projektant_pata.tda26.model.course.Course;
+import cz.projektant_pata.tda26.model.user.User;
 import cz.projektant_pata.tda26.service.ICourseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -61,4 +63,33 @@ public class CourseController {
         service.kill(uuid);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/{uuid}/users")
+    public ResponseEntity<List<User>> findUsers(@PathVariable UUID uuid) {
+        Course course = service.find(uuid);
+        return ResponseEntity.ok(course.getStudents());
+    }
+
+    @PostMapping("/{uuid}/users")
+    @PreAuthorize("hasRole('ADMIN') " +
+            "or #userUuid.toString() == authentication.principal.uuid.toString()")
+    public ResponseEntity<Course> addUser(
+            @PathVariable UUID uuid,
+            @RequestBody UUID userUuid
+    ) {
+        Course updatedCourse = service.addStudent(uuid, userUuid);
+        return ResponseEntity.ok(updatedCourse);
+    }
+
+    @DeleteMapping("/{uuid}/users/{userUuid}")
+    @PreAuthorize("hasRole('ADMIN') " +
+            "or @courseSecurity.isLector(#uuid, authentication.name) " +
+            "or #userUuid.toString() == authentication.principal.uuid.toString()")    public ResponseEntity<Course> removeUser(
+            @PathVariable UUID uuid,
+            @PathVariable UUID userUuid
+    ) {
+        Course updatedCourse = service.removeStudent(uuid, userUuid);
+        return ResponseEntity.ok(updatedCourse);
+    }
 }
+

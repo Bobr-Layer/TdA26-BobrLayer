@@ -16,5 +16,8 @@ public class CourseResponse {
     private String name;
     private String description;
 
+    private UUID lectorId;
+    private String lectorName;
+
     private List<MaterialResponse> materials;
 }

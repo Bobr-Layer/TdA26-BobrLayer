@@ -2,7 +2,7 @@ package cz.projektant_pata.tda26.controller;
 
 import cz.projektant_pata.tda26.dto.course.material.*;
 import cz.projektant_pata.tda26.mapper.MaterialMapper;
-import cz.projektant_pata.tda26.model.Material;
+import cz.projektant_pata.tda26.model.course.material.Material;
 import cz.projektant_pata.tda26.service.IMaterialService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
