@@ -3,7 +3,7 @@
 exposedPort: 80
 
 containers:
-  # Caddy reverse proxy - jediný port ven
+  # Caddy reverse proxy
   - name: caddy
     image: registry.tourde.cloud/bobr-layer-4035/caddy
     port: 80
@@ -22,13 +22,13 @@ containers:
     image: registry.tourde.cloud/bobr-layer-4035/react
     port: 3000
 
-  # PostgreSQL databáze
+  # PostgreSQL db
   - name: db
-    image: postgres:16-alpine
+    image: postgres
     port: 5432
     env:
       POSTGRES_DB: "tda_app"
-      POSTGRES_USER: "root"
+      POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "TenBobr69!"
 
 build:

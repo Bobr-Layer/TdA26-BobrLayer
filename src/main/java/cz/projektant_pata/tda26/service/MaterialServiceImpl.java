@@ -6,6 +6,7 @@ import cz.projektant_pata.tda26.model.course.material.FileMaterial;
 import cz.projektant_pata.tda26.model.course.material.UrlMaterial;
 import cz.projektant_pata.tda26.repository.MaterialRepository;
 import cz.projektant_pata.tda26.repository.CourseRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,16 +14,11 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class MaterialServiceImpl implements IMaterialService {
 
     private final MaterialRepository materialRepository;
     private final CourseRepository courseRepository;
-
-    public MaterialServiceImpl(MaterialRepository materialRepository,
-                               CourseRepository courseRepository) {
-        this.materialRepository = materialRepository;
-        this.courseRepository = courseRepository;
-    }
 
     @Override
     public List<Material> find(UUID courseUuid) {
@@ -44,9 +40,9 @@ public class MaterialServiceImpl implements IMaterialService {
     @Override
     @Transactional
     public Material update(UUID courseUuid, UUID materialUuid, Material updatedMaterial) {
-        Material existingMaterial = find(courseUuid, materialUuid);
+        Material existingMaterial = this.find(courseUuid, materialUuid);
 
-        if (!existingMaterial.getClass().equals(updatedMaterial.getClass())) {
+        if (!existingMaterial.getCourse().getUuid().equals(courseUuid)) {
             throw new IllegalArgumentException("Změna typu materiálu není povolena.");
         }
 

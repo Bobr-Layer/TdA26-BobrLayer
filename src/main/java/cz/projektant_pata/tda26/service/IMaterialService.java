@@ -8,7 +8,7 @@ import java.util.UUID;
 public interface IMaterialService {
     List<Material> find(UUID courseUuid);
     Material find(UUID courseUuid, UUID materialUuid);
-    Material create(UUID courseUuid, Material material);
     Material update(UUID courseUuid, UUID materialUuid, Material material);
+    Material create(UUID courseUuid, Material material);
     Material kill(UUID courseUuid, UUID materialUuid);
 }
