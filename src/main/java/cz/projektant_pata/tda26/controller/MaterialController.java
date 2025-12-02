@@ -44,8 +44,6 @@ public class MaterialController {
             @PathVariable UUID courseUuid,
             @Valid @RequestBody MaterialRequest request
     ) {
-        request.setCourseId(courseUuid);
-
         Material materialDraft = mapper.toEntity(request);
         Material savedMaterial = service.create(courseUuid, materialDraft);
 
