@@ -1,16 +1,25 @@
-:80 {
-    # React frontend
-    route / {
-        reverse_proxy localhost:3000
-    }
+#:80 {
+##    # React frontend
+##    route / {
+##        reverse_proxy react:3000
+##    }
+##
+##    # Spring Boot API
+##    route /api* {
+##        reverse_proxy spring:8080
+##    }
+# # Spring Boot API
+#    route /* {
+#        reverse_proxy localhost:8080
+#    }
+#}
+http://:80 {
+# Pokud URL konci na /, orizni ho (ale necha samotny root /)
+    @trailingSlash {
+                       path_regexp pattern .*/$
+                       not path /
+                   }
+    uri @trailingSlash strip_suffix /
 
-    # Spring Boot API
-    route /api/* {
-        reverse_proxy localhost:8080
-    }
-
-    # Swagger UI
-    route /swagger-ui/* {
-        reverse_proxy localhost:8080
-    }
+    reverse_proxy * 127.0.0.1:8080
 }

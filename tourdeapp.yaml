@@ -3,10 +3,14 @@
 exposedPort: 80
 
 containers:
-  # Caddy reverse proxy
-  - name: caddy
-    image: registry.tourde.cloud/bobr-layer-4035/caddy
-    port: 80
+  # PostgreSQL db
+  - name: db
+    image: registry.tourde.cloud/bobr-layer-4035/db
+    port: 5432
+    env:
+      POSTGRES_DB: "tda_app"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "TenBobr69!"
 
   # Spring Boot backend
   - name: spring
@@ -17,21 +21,21 @@ containers:
       SPRING_DATASOURCE_USERNAME: "postgres"
       SPRING_DATASOURCE_PASSWORD: "TenBobr69!"
 
-  # React frontend
-  - name: react
-    image: registry.tourde.cloud/bobr-layer-4035/react
-    port: 3000
+#  # React frontend
+#  - name: react
+#    image: registry.tourde.cloud/bobr-layer-4035/react
+#    port: 3000
 
-  # PostgreSQL db
-  - name: db
-    image: postgres
-    port: 5432
-    env:
-      POSTGRES_DB: "tda_app"
-      POSTGRES_USER: "postgres"
-      POSTGRES_PASSWORD: "TenBobr69!"
+  # Caddy reverse proxy
+  - name: caddy
+    image: registry.tourde.cloud/bobr-layer-4035/caddy
+    port: 80
 
 build:
+  - name: db
+    context: ./db
+    dockerfile: ./db/Dockerfile
+
   - name: spring
     context: .
     dockerfile: Dockerfile
