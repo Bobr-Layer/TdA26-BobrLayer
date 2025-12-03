@@ -1,15 +1,19 @@
-:80 {
-#    # React frontend
-#    route / {
-#        reverse_proxy react:3000
+#:80 {
+##    # React frontend
+##    route / {
+##        reverse_proxy react:3000
+##    }
+##
+##    # Spring Boot API
+##    route /api* {
+##        reverse_proxy spring:8080
+##    }
+# # Spring Boot API
+#    route /* {
+#        reverse_proxy localhost:8080
 #    }
-#
-#    # Spring Boot API
-#    route /api* {
-#        reverse_proxy spring:8080
-#    }
- # Spring Boot API
-    route /* {
-        reverse_proxy localhost:8080
-    }
+#}
+http://:80 {
+#    reverse_proxy /api/* 127.0:3000
+    reverse_proxy * 127.0.0.1:8080
 }
