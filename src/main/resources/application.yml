@@ -4,9 +4,10 @@ spring:
 
   # PostgreSQL databáze
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/tda26}
+    # ZMĚNA: Defaultní host je 'db' a databáze 'tda_app' (aby to sedělo s Docker Compose)
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://db:5432/tda_app}
     username: ${SPRING_DATASOURCE_USERNAME:postgres}
-    password: ${SPRING_DATASOURCE_PASSWORD:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:TenBobr69!}
     driver-class-name: org.postgresql.Driver
 
   # JPA/Hibernate
@@ -31,6 +32,11 @@ spring:
     user:
       name: lecturer
       password: TdA26!
+
+  # MVC nastavení (přeneseno z properties)
+  mvc:
+    throw-exception-if-no-handler-found: true
+    static-path-pattern: /static/**
 
 # Server
 server:

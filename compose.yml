@@ -26,7 +26,7 @@ services:
     ports:
       - "8080:8080"
     environment:
-      # Tyto proměnné přepíší ${...} hodnoty v application.properties
+      # Tyto proměnné přepíší ${...} hodnoty v applicationn.propertiess
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/tda_app
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: TenBobr69!
