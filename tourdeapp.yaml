@@ -21,10 +21,10 @@ containers:
       SPRING_DATASOURCE_USERNAME: "postgres"
       SPRING_DATASOURCE_PASSWORD: "TenBobr69!"
 
-  # React frontend
-  - name: react
-    image: registry.tourde.cloud/bobr-layer-4035/react
-    port: 3000
+#  # React frontend
+#  - name: react
+#    image: registry.tourde.cloud/bobr-layer-4035/react
+#    port: 3000
 
   # Caddy reverse proxy
   - name: caddy
