@@ -1,7 +1,7 @@
 services:
   # PostgreSQL databáze
   db:
-    image: postgres:16-alpine
+    image: postgres
     container_name: tda26-db
     environment:
       POSTGRES_DB: tda_app
