@@ -28,7 +28,7 @@ containers:
     port: 5432
     env:
       POSTGRES_DB: "tda_app"
-      POSTGRES_USER: "root"
+      POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "TenBobr69!"
 
 build:
