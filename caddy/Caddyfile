@@ -10,6 +10,6 @@
 #    }
  # Spring Boot API
     route /* {
-        reverse_proxy spring:8080
+        reverse_proxy localhost:8080
     }
 }
