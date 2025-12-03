@@ -9,7 +9,7 @@
 #        reverse_proxy spring:8080
 #    }
  # Spring Boot API
-    route / {
+    route /* {
         reverse_proxy spring:8080
     }
 }
