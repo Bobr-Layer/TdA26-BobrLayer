@@ -24,7 +24,7 @@ containers:
 
   # PostgreSQL db
   - name: db
-    image: postgres
+    image: registry.tourde.cloud/bobr-layer-4035/db
     port: 5432
     env:
       POSTGRES_DB: "tda_app"
