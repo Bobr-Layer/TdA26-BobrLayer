@@ -11,6 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 @Service
@@ -50,8 +51,12 @@ public class CourseServiceImpl implements ICourseService{
 //        User lektor = userRepository.findByUsername(username)
 //                .orElseThrow(() -> new ResourceNotFoundException("Uživatel s uživatelským jménem " + username + " nebyl nalezen"));
         User lektor = new User();
-        lektor.setUsername("pepa");
-        lektor.setPassword("pepa");
+        Random rand = new Random();
+
+// Vygeneruje náhodné číslo od 0 do 999
+        int nahodneCislo = rand.nextInt(1000);
+
+        lektor.setUsername("pepa" + nahodneCislo);        lektor.setPassword("pepa");
         userRepository.save(lektor);
 
         course.setLector(lektor);
