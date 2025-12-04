@@ -47,10 +47,9 @@ public class CourseServiceImpl implements ICourseService{
     @Transactional
     public Course create(Course course) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        User lektor = userRepository.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("Uživatel s uživatelským jménem " + username + " nebyl nalezen"));
-
-        course.setLector(lektor);
+//        User lektor = userRepository.findByUsername(username)
+//                .orElseThrow(() -> new ResourceNotFoundException("Uživatel s uživatelským jménem " + username + " nebyl nalezen"));
+//        course.setLector(lektor);
 
         return repository.save(course);
     }
