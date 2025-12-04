@@ -1,7 +1,7 @@
 package cz.projektant_pata.tda26.service;
 
 import cz.projektant_pata.tda26.exception.ResourceNotFoundException;
-import cz.projektant_pata.tda26.model.Question;
+import cz.projektant_pata.tda26.model.course.quiz.Question;
 import cz.projektant_pata.tda26.model.course.Course;
 import cz.projektant_pata.tda26.model.course.material.Material;
 import cz.projektant_pata.tda26.model.course.quiz.Quiz;

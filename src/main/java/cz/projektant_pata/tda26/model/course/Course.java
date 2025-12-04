@@ -1,6 +1,7 @@
 package cz.projektant_pata.tda26.model.course;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import cz.projektant_pata.tda26.model.course.quiz.Quiz;
 import cz.projektant_pata.tda26.model.user.User;
 import cz.projektant_pata.tda26.model.course.material.Material;
 import jakarta.persistence.*;
@@ -32,6 +33,17 @@ public class Course {
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Material> materials = new ArrayList<>();
 
+//    @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, orphanRemoval = true)
+@OneToMany(cascade = CascadeType.ALL)
+@JoinColumn(name = "course_id") // Creates a foreign key in the Quiz table
+private List<Quiz> quizzes;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "course_id")
+    private List<Quiz> feed = new ArrayList<>();
+
+
+
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
@@ -44,7 +56,6 @@ public class Course {
     @JoinColumn(name = "lector_id", nullable = false)
     private User lector;
 
-    // V souboru Course.java přidejte:
 
     @ManyToMany
     @JoinTable(

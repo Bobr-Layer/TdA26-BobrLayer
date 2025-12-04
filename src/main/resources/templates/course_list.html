@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Seznam kurzů</title>
+    <style>
+        body { font-family: sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .course-card { border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; border-radius: 5px; }
+        .course-name { font-size: 1.2em; font-weight: bold; color: #333; }
+        .btn { display: inline-block; margin-top: 10px; padding: 5px 10px; background: #007bff; color: white; text-decoration: none; border-radius: 3px; }
+    </style>
+</head>
+<body>
+<h1>Dostupné kurzy</h1>
+
+<div th:if="${courses.empty}">
+    <p>Zatím nebyly vytvořeny žádné kurzy.</p>
+</div>
+
+<div th:each="course : ${courses}" class="course-card">
+    <div class="course-name" th:text="${course.name}">Název kurzu</div>
+    <p th:text="${course.description}">Popis kurzu</p>
+    <!-- Odkaz na detail: localhost/courses/{uuid} -->
+    <a class="btn" th:href="@{/courses/{id}(id=${course.uuid})}">Zobrazit detail</a>
+</div>
+</body>
+</html>

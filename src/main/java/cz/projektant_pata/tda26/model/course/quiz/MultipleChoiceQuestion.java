@@ -1,6 +1,6 @@
 package cz.projektant_pata.tda26.model.course.quiz;
 
-import cz.projektant_pata.tda26.model.Question;
+import cz.projektant_pata.tda26.model.course.quiz.Question;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
