@@ -14,6 +14,12 @@
 #    }
 #}
 http://:80 {
-#    reverse_proxy /api/* 127.0:3000
+# Pokud URL konci na /, orizni ho (ale necha samotny root /)
+    @trailingSlash {
+                       path_regexp pattern .*/$
+                       not path /
+                   }
+    uri @trailingSlash strip_suffix /
+
     reverse_proxy * 127.0.0.1:8080
 }
