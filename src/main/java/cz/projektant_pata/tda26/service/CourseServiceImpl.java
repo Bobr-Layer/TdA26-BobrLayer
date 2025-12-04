@@ -46,10 +46,15 @@ public class CourseServiceImpl implements ICourseService{
     @Override
     @Transactional
     public Course create(Course course) {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+//        String username = SecurityContextHolder.getContext().getAuthentication().getName();
 //        User lektor = userRepository.findByUsername(username)
 //                .orElseThrow(() -> new ResourceNotFoundException("Uživatel s uživatelským jménem " + username + " nebyl nalezen"));
-//        course.setLector(lektor);
+        User lektor = new User();
+        lektor.setUsername("pepa");
+        lektor.setPassword("pepa");
+        userRepository.save(lektor);
+
+        course.setLector(lektor);
 
         return repository.save(course);
     }

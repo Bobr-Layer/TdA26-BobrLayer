@@ -40,9 +40,9 @@ public class Course {
     @Column(nullable = false)
     private Instant updatedAt;
 
-//    @ManyToOne
-//    @JoinColumn(name = "lector_id", nullable = false)
-//    private User lector;
+    @ManyToOne
+    @JoinColumn(name = "lector_id", nullable = false)
+    private User lector;
 
     // V souboru Course.java přidejte:
 

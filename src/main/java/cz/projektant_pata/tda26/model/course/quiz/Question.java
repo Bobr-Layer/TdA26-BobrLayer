@@ -1,4 +1,4 @@
-package cz.projektant_pata.tda26.model;
+package cz.projektant_pata.tda26.model.course.quiz;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
