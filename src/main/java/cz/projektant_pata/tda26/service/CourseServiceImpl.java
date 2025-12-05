@@ -28,7 +28,8 @@ public class CourseServiceImpl implements ICourseService{
     @Override
     @Transactional(readOnly = true)
     public Course find(UUID uuid) {
-        Course course = repository.findById(uuid).orElseThrow(() -> new RuntimeException("Kurz nebyl nalezen"));
+        Course course = repository.findById(uuid)
+                .orElseThrow(() -> new ResourceNotFoundException("Kurz s ID " + uuid + " nebyl nalezen"));
         course.getMaterials().size();
         return course;
     }
@@ -36,7 +37,8 @@ public class CourseServiceImpl implements ICourseService{
     @Override
     @Transactional
     public Course update(UUID uuid, Course course) {
-        Course existingCourse = repository.findById(uuid).orElseThrow(() -> new RuntimeException("Kurz nebyl nalezen"));
+        Course existingCourse = repository.findById(uuid)
+                .orElseThrow(() -> new ResourceNotFoundException("Kurz s ID " + uuid + " nebyl nalezen"));
 
         existingCourse.setName(course.getName());
         existingCourse.setDescription(course.getDescription());
