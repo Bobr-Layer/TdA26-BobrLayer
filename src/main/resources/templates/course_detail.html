@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${course.name}">Detail kurzu</title>
+    <style>
+        body { font-family: sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        h1 { color: #2c3e50; }
+        .section { margin-top: 20px; padding: 10px; background-color: #f9f9f9; border-left: 4px solid #007bff; }
+        .back-link { display: block; margin-top: 20px; color: #666; }
+    </style>
+</head>
+<body>
+<h1 th:text="${course.name}">Název kurzu</h1>
+<p th:text="${course.description}">Popis kurzu</p>
+
+<p><strong>Lektor:</strong> <span th:text="${course.lectorName}">Jméno lektora</span></p>
+
+<!-- Materiály -->
+<div class="section">
+    <h3>Materiály</h3>
+    <!-- th:if kontroluje, zda seznam existuje a není prázdný -->
+    <ul th:if="${course.materials != null and !course.materials.empty}">
+        <li th:each="material : ${course.materials}" th:text="${material.name}">Materiál</li>
+    </ul>
+    <p th:unless="${course.materials != null and !course.materials.empty}">Žádné materiály.</p>
+</div>
+
+<!-- Kvízy (zde to padalo v testech, přidána ochrana null check) -->
+<div class="section">
+    <h3>Kvízy</h3>
+    <ul th:if="${course.quizzes != null and !course.quizzes.empty}">
+        <li th:each="quiz : ${course.quizzes}" th:text="${quiz.name}">Kvíz</li>
+    </ul>
+    <p th:unless="${course.quizzes != null and !course.quizzes.empty}">Žádné kvízy.</p>
+</div>
+
+<!-- Feed -->
+<div class="section">
+    <h3>Feed</h3>
+    <ul th:if="${course.feed != null and !course.feed.empty}">
+        <li th:each="post : ${course.feed}" th:text="${post.content}">Příspěvek</li>
+    </ul>
+    <p th:unless="${course.feed != null and !course.feed.empty}">Žádné příspěvky.</p>
+</div>
+
+<a class="back-link" th:href="@{/courses}">← Zpět na seznam kurzů</a>
+</body>
+</html>
