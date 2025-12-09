@@ -34,8 +34,12 @@ public class Course {
     private List<Material> materials = new ArrayList<>();
 
 //    @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Quiz> quizzes = new ArrayList<>();
+@OneToMany(cascade = CascadeType.ALL)
+@JoinColumn(name = "course_id") // Creates a foreign key in the Quiz table
+private List<Quiz> quizzes;
 
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "course_id")
     private List<Quiz> feed = new ArrayList<>();
 
 
