@@ -7,8 +7,10 @@ import cz.projektant_pata.tda26.service.IMaterialService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -39,13 +41,27 @@ public class MaterialController {
         return ResponseEntity.ok(mapper.toResponse(material));
     }
 
-    @PostMapping
-    public ResponseEntity<MaterialResponse> create(
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<MaterialResponse> createLink(
             @PathVariable UUID courseUuid,
             @Valid @RequestBody MaterialRequest request
     ) {
         Material materialDraft = mapper.toEntity(request);
         Material savedMaterial = service.create(courseUuid, materialDraft);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(mapper.toResponse(savedMaterial));
+    }
+
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<MaterialResponse> createFile(
+            @PathVariable UUID courseUuid,
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("name") String name,
+            @RequestParam(value = "description", required = false) String description
+    ) {
+        Material savedMaterial = service.create(courseUuid, file, name, description);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)

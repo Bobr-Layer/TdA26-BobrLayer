@@ -1,10 +1,12 @@
 package cz.projektant_pata.tda26.dto.course;
 
 import cz.projektant_pata.tda26.dto.course.material.MaterialResponse;
+import cz.projektant_pata.tda26.model.course.quiz.Quiz;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,4 +22,6 @@ public class CourseResponse {
     private String lectorName;
 
     private List<MaterialResponse> materials;
+    private List<Quiz> quizzes = new ArrayList<>();
+    private List<Quiz> feed = new ArrayList<>();
 }
