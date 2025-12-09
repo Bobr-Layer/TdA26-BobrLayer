@@ -39,7 +39,7 @@ public class SecurityConfig {
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/**", "/").permitAll()
+                        .requestMatchers("/**", "/").permitAll()
 //                        .requestMatchers("/api/auth/**", "/").permitAll()
 
                         .anyRequest().authenticated()
