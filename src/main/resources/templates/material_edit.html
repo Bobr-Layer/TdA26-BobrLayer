@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Upravit materiál</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8f9fa; }
+        .container { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h2 { margin-top: 0; color: #333; }
+
+        label { display: block; margin-top: 15px; font-weight: 600; color: #555; }
+        input[type="text"], input[type="url"], textarea, input[type="file"] {
+            width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;
+        }
+        textarea { height: 80px; resize: vertical; }
+
+        .btn-group { margin-top: 20px; display: flex; gap: 10px; }
+        button.submit-btn {
+            flex: 1; padding: 12px; background-color: #007bff; color: white;
+            border: none; border-radius: 4px; font-size: 16px; cursor: pointer; font-weight: bold;
+        }
+        button.submit-btn:hover { background-color: #0056b3; }
+
+        a.cancel-btn {
+            padding: 12px 20px; background-color: #6c757d; color: white; text-decoration: none; border-radius: 4px; font-weight: bold; text-align: center;
+        }
+        a.cancel-btn:hover { background-color: #5a6268; }
+
+        .info-text { font-size: 0.9em; color: #888; margin-top: 5px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Upravit materiál</h2>
+
+    <!-- Formulář pro URL (zobrazí se jen pokud je type == 'url') -->
+    <div th:if="${type == 'url'}">
+        <form th:action="@{/courses/{cid}/materials/{mid}/edit/link(cid=${course.uuid}, mid=${material.uuid})}" method="post">
+            <label>Název materiálu *</label>
+            <input type="text" name="name" required th:value="${material.name}">
+
+            <label>Webová adresa (URL) *</label>
+            <input type="url" name="url" required th:value="${urlValue}">
+
+            <label>Popis (volitelné)</label>
+            <textarea name="description" th:text="${material.description}"></textarea>
+
+            <div class="btn-group">
+                <a class="cancel-btn" th:href="@{/courses/{id}(id=${course.uuid})}">Zrušit</a>
+                <button type="submit" class="submit-btn">Uložit změny</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Formulář pro SOUBOR (zobrazí se jen pokud je type == 'file') -->
+    <div th:if="${type == 'file'}">
+        <form th:action="@{/courses/{cid}/materials/{mid}/edit/file(cid=${course.uuid}, mid=${material.uuid})}" method="post" enctype="multipart/form-data">
+            <label>Název materiálu *</label>
+            <input type="text" name="name" required th:value="${material.name}">
+
+            <label>Popis (volitelné)</label>
+            <textarea name="description" th:text="${material.description}"></textarea>
+
+            <label>Nahradit soubor (volitelné)</label>
+            <input type="file" name="file">
+            <div class="info-text">Pokud nevyberete žádný soubor, zůstane zachován ten původní.</div>
+
+            <div class="btn-group">
+                <a class="cancel-btn" th:href="@{/courses/{id}(id=${course.uuid})}">Zrušit</a>
+                <button type="submit" class="submit-btn">Uložit změny</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

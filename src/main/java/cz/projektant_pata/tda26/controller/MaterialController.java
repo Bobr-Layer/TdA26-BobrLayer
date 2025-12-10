@@ -68,17 +68,30 @@ public class MaterialController {
                 .body(mapper.toResponse(savedMaterial));
     }
 
-    @PutMapping("/{materialUuid}")
-    public ResponseEntity<MaterialResponse> update(
+    // 1. UPDATE pro URL a metadata (JSON)
+    @PutMapping(path = "/{materialUuid}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<MaterialResponse> updateJson(
             @PathVariable UUID courseUuid,
             @PathVariable UUID materialUuid,
             @Valid @RequestBody MaterialRequest request
     ) {
         Material materialUpdates = mapper.toEntity(request);
         Material updatedMaterial = service.update(courseUuid, materialUuid, materialUpdates);
-
         return ResponseEntity.ok(mapper.toResponse(updatedMaterial));
     }
+
+    @PutMapping(path = "/{materialUuid}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<MaterialResponse> updateFile(
+            @PathVariable UUID courseUuid,
+            @PathVariable UUID materialUuid,
+            @RequestParam(value = "file", required = false) MultipartFile file, // File je volitelný
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "description", required = false) String description
+    ) {
+        Material updatedMaterial = service.updateFile(courseUuid, materialUuid, file, name, description);
+        return ResponseEntity.ok(mapper.toResponse(updatedMaterial));
+    }
+
 
     @DeleteMapping("/{materialUuid}")
     public ResponseEntity<Void> kill(

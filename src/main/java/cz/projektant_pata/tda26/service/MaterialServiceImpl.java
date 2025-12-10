@@ -48,7 +48,7 @@ public class MaterialServiceImpl implements IMaterialService {
     @Override
     public List<Material> find(UUID courseUuid) {
         // Doporučuji přidat řazení (např. OrderByCreatedAtDesc v repository)
-        return materialRepository.findByCourseUuid(courseUuid);
+        return materialRepository.findByCourseUuidOrderByCreatedAtDesc(courseUuid);
     }
 
     @Override
@@ -85,6 +85,70 @@ public class MaterialServiceImpl implements IMaterialService {
         return materialRepository.save(existingMaterial);
     }
 
+    @Transactional
+    @Override
+    public Material updateFile(UUID courseUuid, UUID materialUuid, MultipartFile file, String name, String description) {
+        Material existingMaterial = this.find(courseUuid, materialUuid);
+
+        // Validace typu - musí to být FileMaterial
+        if (!(existingMaterial instanceof FileMaterial)) {
+            throw new IllegalArgumentException("Tento endpoint slouží jen pro aktualizaci souborových materiálů.");
+        }
+
+        FileMaterial fileMaterial = (FileMaterial) existingMaterial;
+
+        // 1. Aktualizace metadat (pokud jsou poslána)
+        if (name != null && !name.isBlank()) {
+            fileMaterial.setName(name);
+        }
+        if (description != null) { // Description může být prázdná
+            fileMaterial.setDescription(description);
+        }
+
+        // 2. Aktualizace souboru (pokud je poslán nový)
+        if (file != null && !file.isEmpty()) {
+            // Validace nového souboru
+            if (file.getSize() > MAX_FILE_SIZE) {
+                throw new FileValidationException("Soubor je příliš velký (limit 30 MB).");
+            }
+            // Zde by měla být i validace MIME type jako v create()
+            String contentType = file.getContentType();
+            if (contentType == null || !ALLOWED_MIME_TYPES.contains(contentType)) {
+                throw new FileValidationException("Nepodporovaný formát souboru: " + contentType);
+            }
+
+            try {
+                // Smazat STARÝ soubor z disku
+                String oldFilename = fileMaterial.getFileUrl().replace("/uploads/", "");
+                Path oldPath = Paths.get(UPLOAD_DIR).resolve(oldFilename);
+                Files.deleteIfExists(oldPath);
+
+                // Získání přípony z NOVÉHO souboru
+                String originalFilename = file.getOriginalFilename();
+                String extension = "";
+                if (originalFilename != null && originalFilename.contains(".")) {
+                    extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+                }
+
+                // Uložit NOVÝ soubor s příponou
+                String storedFileName = UUID.randomUUID().toString() + extension;
+                Path targetLocation = Paths.get(UPLOAD_DIR).resolve(storedFileName);
+                Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+
+                // Aktualizovat entitu
+                fileMaterial.setFileUrl("/uploads/" + storedFileName);
+                fileMaterial.setMimeType(contentType);
+                fileMaterial.setSizeBytes((int) file.getSize());
+
+            } catch (IOException e) {
+                throw new FileStorageException("Chyba při aktualizaci souboru", e);
+            }
+        }
+
+        return materialRepository.save(fileMaterial);
+    }
+
+
     @Override
     @Transactional
     public Material create(UUID courseUuid, MultipartFile file, String name, String description) {
@@ -107,7 +171,11 @@ public class MaterialServiceImpl implements IMaterialService {
             if (!Files.exists(uploadPath)) {
                 Files.createDirectories(uploadPath);
             }
-            String storedFileName = UUID.randomUUID().toString();
+            String originalFilename = file.getOriginalFilename();
+            String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+
+
+            String storedFileName = UUID.randomUUID().toString() + extension;
 
             Path targetLocation = uploadPath.resolve(storedFileName);
 

@@ -7,7 +7,9 @@ import cz.projektant_pata.tda26.model.course.Course;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp; // Důležité pro automatický čas
 
+import java.time.LocalDateTime; // Nový import
 import java.util.UUID;
 
 @Entity
@@ -32,11 +34,14 @@ public abstract class Material {
     private String name;
     private String description;
 
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
+
     @ManyToOne
     @JoinColumn(name = "course_id")
     @JsonIgnore
     private Course course;
 
     public abstract String getTypeLabel();
-
 }
