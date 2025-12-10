@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Přidat materiál</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8f9fa; }
+        .container { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h2 { margin-top: 0; color: #333; }
+
+        .form-toggle { display: flex; gap: 10px; margin-bottom: 20px; }
+        .toggle-btn { flex: 1; padding: 10px; text-align: center; background: #eee; cursor: pointer; border-radius: 4px; font-weight: bold; }
+        .toggle-btn.active { background: #007bff; color: white; }
+
+        .form-box { display: none; }
+        .form-box.active { display: block; animation: fadeIn 0.3s; }
+
+        label { display: block; margin-top: 15px; font-weight: 600; color: #555; }
+        input[type="text"], input[type="url"], textarea, input[type="file"] {
+            width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;
+        }
+        textarea { height: 80px; resize: vertical; }
+
+        button.submit-btn {
+            width: 100%; margin-top: 20px; padding: 12px; background-color: #28a745; color: white;
+            border: none; border-radius: 4px; font-size: 16px; cursor: pointer; font-weight: bold;
+        }
+        button.submit-btn:hover { background-color: #218838; }
+
+        .back-link { display: block; margin-bottom: 15px; text-decoration: none; color: #6c757d; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+
+    <script>
+        function showForm(type) {
+            // Skryje všechny formuláře
+            document.querySelectorAll('.form-box').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.toggle-btn').forEach(el => el.classList.remove('active'));
+
+            // Zobrazí vybraný
+            document.getElementById('form-' + type).classList.add('active');
+            document.getElementById('btn-' + type).classList.add('active');
+        }
+    </script>
+</head>
+<body>
+
+<a class="back-link" th:href="@{/courses/{id}(id=${course.uuid})}">← Zpět na detail kurzu</a>
+
+<div class="container">
+    <h2>Přidat nový materiál</h2>
+    <p style="color: #666; margin-bottom: 20px;">Vyberte typ materiálu, který chcete přidat.</p>
+
+    <!-- Přepínač -->
+    <div class="form-toggle">
+        <div id="btn-link" class="toggle-btn active" onclick="showForm('link')">🔗 Odkaz (URL)</div>
+        <div id="btn-file" class="toggle-btn" onclick="showForm('file')">📂 Soubor (Upload)</div>
+    </div>
+
+    <!-- 1. Formulář pro URL -->
+    <div id="form-link" class="form-box active">
+        <form th:action="@{/courses/{cid}/materials/link(cid=${course.uuid})}" method="post">
+            <label>Název materiálu *</label>
+            <input type="text" name="name" required placeholder="Např. Dokumentace k projektu">
+
+            <label>Webová adresa (URL) *</label>
+            <input type="url" name="url" required placeholder="https://google.com">
+
+            <label>Popis (volitelné)</label>
+            <textarea name="description" placeholder="Krátký popis obsahu..."></textarea>
+
+            <button type="submit" class="submit-btn">Uložit odkaz</button>
+        </form>
+    </div>
+
+    <!-- 2. Formulář pro SOUBOR -->
+    <div id="form-file" class="form-box">
+        <form th:action="@{/courses/{cid}/materials/file(cid=${course.uuid})}" method="post" enctype="multipart/form-data">
+            <label>Vybrat soubor *</label>
+            <input type="file" name="file" required>
+
+            <label>Název materiálu *</label>
+            <input type="text" name="name" required placeholder="Např. Prezentace (PDF)">
+
+            <label>Popis (volitelné)</label>
+            <textarea name="description" placeholder="Krátký popis souboru..."></textarea>
+
+            <button type="submit" class="submit-btn">Nahrát soubor</button>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

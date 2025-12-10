@@ -11,4 +11,9 @@ public class FileMaterial extends Material {
     private String fileUrl;
     private String mimeType;
     private Integer sizeBytes;
+
+    @Override
+    public String getTypeLabel() {
+        return "file";
+    }
 }

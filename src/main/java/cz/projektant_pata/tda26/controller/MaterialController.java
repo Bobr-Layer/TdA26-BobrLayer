@@ -42,7 +42,7 @@ public class MaterialController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<MaterialResponse> createLink(
+    public ResponseEntity<MaterialResponse> create(
             @PathVariable UUID courseUuid,
             @Valid @RequestBody MaterialRequest request
     ) {
@@ -55,7 +55,7 @@ public class MaterialController {
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<MaterialResponse> createFile(
+    public ResponseEntity<MaterialResponse> create(
             @PathVariable UUID courseUuid,
             @RequestParam("file") MultipartFile file,
             @RequestParam("name") String name,
