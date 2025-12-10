@@ -7,76 +7,107 @@
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 900px; margin: 0 auto; padding: 20px; background-color: #f8f9fa; color: #333; }
         h1 { color: #2c3e50; border-bottom: 2px solid #e9ecef; padding-bottom: 10px; }
         .card { background: white; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .btn { display: inline-block; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-weight: 500; cursor: pointer; border: none; font-size: 14px; }
+
+        /* Tlačítka */
+        .btn { display: inline-block; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-weight: 500; cursor: pointer; border: none; font-size: 14px; transition: background 0.2s; }
         .btn-primary { background-color: #007bff; color: white; }
+        .btn-primary:hover { background-color: #0069d9; }
         .btn-success { background-color: #28a745; color: white; }
-        .btn-danger { background-color: #dc3545; color: white; padding: 4px 8px; font-size: 12px; }
-        .btn:hover { opacity: 0.9; }
+        .btn-success:hover { background-color: #218838; }
+
+        /* Malá tlačítka pro akce v seznamu */
+        .btn-sm { padding: 4px 10px; font-size: 13px; }
+        .btn-edit { background-color: #ffc107; color: #212529; } /* Žlutá pro edit */
+        .btn-edit:hover { background-color: #e0a800; }
+        .btn-delete { background-color: #dc3545; color: white; } /* Červená pro smazat */
+        .btn-delete:hover { background-color: #c82333; }
 
         ul { list-style-type: none; padding: 0; }
-        li { padding: 10px; border-bottom: 1px solid #eee; display: flex; align-items: center; justify-content: space-between; }
+        li { padding: 12px; border-bottom: 1px solid #eee; display: flex; align-items: center; justify-content: space-between; }
         li:last-child { border-bottom: none; }
+        li:hover { background-color: #fafafa; }
 
-        .material-link { font-weight: bold; color: #007bff; text-decoration: none; font-size: 1.1em; }
+        .material-content { flex-grow: 1; padding-right: 20px; }
+        .material-link { font-weight: 600; color: #007bff; text-decoration: none; font-size: 1.05em; }
         .material-link:hover { text-decoration: underline; }
-        .meta { color: #6c757d; font-size: 0.9em; margin-left: 10px; }
+        .meta { display: block; color: #6c757d; font-size: 0.9em; margin-top: 4px; }
+        .icon { font-size: 1.2em; margin-right: 8px; vertical-align: middle; }
 
-        .back-link { color: #6c757d; text-decoration: none; display: inline-block; margin-top: 20px; }
-        .back-link:hover { color: #333; }
+        .actions { display: flex; gap: 8px; align-items: center; }
+
+        .back-link { color: #6c757d; text-decoration: none; display: inline-block; margin-top: 20px; font-weight: 500; }
+        .back-link:hover { color: #333; text-decoration: underline; }
     </style>
 </head>
 <body>
 
 <a class="back-link" th:href="@{/courses}">← Zpět na seznam kurzů</a>
 
+<!-- Hlavička kurzu -->
 <div class="card">
     <h1 th:text="${course.name}">Název kurzu</h1>
-    <p th:text="${course.description}" style="font-size: 1.1em;">Popis kurzu</p>
+    <p th:text="${course.description}" style="font-size: 1.1em; line-height: 1.5;">Popis kurzu</p>
+    <!-- Zde může být info o lektorovi atd. -->
 </div>
 
 <!-- Sekce Materiály -->
 <div class="card">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-        <h2 style="margin: 0;">Materiály</h2>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
+        <h2 style="margin: 0; color: #495057;">Materiály</h2>
         <a th:href="@{/courses/{id}/materials/new(id=${course.uuid})}" class="btn btn-success">+ Přidat materiál</a>
     </div>
 
     <ul th:if="${course.materials != null and !course.materials.empty}">
         <li th:each="material : ${course.materials}">
-            <div style="flex-grow: 1;">
+
+            <!-- Levá část: Ikona, Název, Popis -->
+            <div class="material-content">
                 <!-- Varianta pro URL -->
-                <span th:if="${material.typeLabel == 'url'}">🔗</span>
-                <a th:if="${material.typeLabel == 'url'}"
-                   th:href="${material.url}"
-                   th:text="${material.name}"
-                   class="material-link" target="_blank">Název odkazu</a>
+                <div th:if="${material.typeLabel == 'url'}">
+                    <span class="icon">🔗</span>
+                    <a th:href="${material.url}"
+                       th:text="${material.name}"
+                       class="material-link" target="_blank">Název odkazu</a>
+                </div>
 
                 <!-- Varianta pro SOUBOR -->
-                <span th:if="${material.typeLabel == 'file'}">📄</span>
-                <a th:if="${material.typeLabel == 'file'}"
-                   th:href="${material.fileUrl}"
-                   th:text="${material.name}"
-                   class="material-link" target="_blank">Název souboru</a>
+                <div th:if="${material.typeLabel == 'file'}">
+                    <span class="icon">📄</span>
+                    <a th:href="${material.fileUrl}"
+                       th:text="${material.name}"
+                       class="material-link" target="_blank">Název souboru</a>
+                </div>
 
-                <!-- Popis -->
-                <span class="meta" th:if="${material.description}" th:text="'— ' + ${material.description}"></span>
+                <!-- Popis (pokud existuje) -->
+                <span class="meta" th:if="${material.description}" th:text="${material.description}">Popis materiálu</span>
             </div>
 
-            <!-- Tlačítko Smazat -->
-            <form th:action="@{/courses/{cid}/materials/{mid}/delete(cid=${course.uuid}, mid=${material.uuid})}" method="post">
-                <button type="submit" class="btn btn-danger" onclick="return confirm('Opravdu smazat?')">Odstranit</button>
-            </form>
+            <!-- Pravá část: Akční tlačítka -->
+            <div class="actions">
+                <!-- Tlačítko Editovat -->
+                <a th:href="@{/courses/{cid}/materials/{mid}/edit(cid=${course.uuid}, mid=${material.uuid})}"
+                   class="btn btn-sm btn-edit">
+                    Upravit
+                </a>
+
+                <!-- Tlačítko Smazat -->
+                <form th:action="@{/courses/{cid}/materials/{mid}/delete(cid=${course.uuid}, mid=${material.uuid})}" method="post" style="margin: 0;">
+                    <button type="submit" class="btn btn-sm btn-delete" onclick="return confirm('Opravdu smazat tento materiál?')">
+                        Smazat
+                    </button>
+                </form>
+            </div>
         </li>
     </ul>
 
-    <p th:unless="${course.materials != null and !course.materials.empty}" style="color: #666; font-style: italic;">
-        Zatím zde nejsou žádné materiály.
+    <p th:unless="${course.materials != null and !course.materials.empty}" style="color: #666; font-style: italic; text-align: center; padding: 20px;">
+        Zatím zde nejsou žádné materiály. Klikněte na tlačítko "Přidat materiál".
     </p>
 </div>
 
 <!-- Sekce Kvízy (Placeholder) -->
-<div class="card">
-    <h2>Kvízy</h2>
+<div class="card" style="opacity: 0.7;">
+    <h2 style="margin-top: 0;">Kvízy</h2>
     <p style="color: #999;">Funkce kvízů zatím není implementována ve view.</p>
 </div>
 
