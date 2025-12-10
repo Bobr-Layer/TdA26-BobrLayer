@@ -36,4 +36,7 @@ public abstract class Material {
     @JoinColumn(name = "course_id")
     @JsonIgnore
     private Course course;
+
+    public abstract String getTypeLabel();
+
 }

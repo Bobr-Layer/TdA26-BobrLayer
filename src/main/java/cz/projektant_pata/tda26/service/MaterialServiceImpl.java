@@ -1,5 +1,7 @@
 package cz.projektant_pata.tda26.service;
 
+import cz.projektant_pata.tda26.exception.FileStorageException;
+import cz.projektant_pata.tda26.exception.FileValidationException;
 import cz.projektant_pata.tda26.exception.ResourceNotFoundException;
 import cz.projektant_pata.tda26.model.course.Course;
 import cz.projektant_pata.tda26.model.course.material.FileMaterial;
@@ -17,6 +19,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,8 +32,22 @@ public class MaterialServiceImpl implements IMaterialService {
 
     private static final String UPLOAD_DIR = "/app/uploads";
 
+    private static final List<String> ALLOWED_MIME_TYPES = Arrays.asList(
+            "application/pdf",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "text/plain",
+            "image/png",
+            "image/jpeg",
+            "image/gif",
+            "video/mp4",
+            "audio/mpeg"
+    );
+    // 30 MB
+    private static final long MAX_FILE_SIZE = 30 * 1024 * 1024;
+
     @Override
     public List<Material> find(UUID courseUuid) {
+        // Doporučuji přidat řazení (např. OrderByCreatedAtDesc v repository)
         return materialRepository.findByCourseUuid(courseUuid);
     }
 
@@ -75,7 +92,14 @@ public class MaterialServiceImpl implements IMaterialService {
                 .orElseThrow(() -> new ResourceNotFoundException("Kurz nebyl nalezen"));
 
         if (file.isEmpty()) {
-            throw new ResourceNotFoundException("Soubor je prázdný");
+            throw new FileValidationException("Soubor je prázdný");
+        }
+        if (file.getSize() > MAX_FILE_SIZE) {
+            throw new FileValidationException("Soubor je příliš velký (limit 30 MB).");
+        }
+        String contentType = file.getContentType();
+        if (contentType == null || !ALLOWED_MIME_TYPES.contains(contentType)) {
+            throw new FileValidationException("Nepodporovaný formát souboru: " + contentType);
         }
 
         try {
@@ -83,9 +107,8 @@ public class MaterialServiceImpl implements IMaterialService {
             if (!Files.exists(uploadPath)) {
                 Files.createDirectories(uploadPath);
             }
+            String storedFileName = UUID.randomUUID().toString();
 
-            String originalFilename = file.getOriginalFilename();
-            String storedFileName = UUID.randomUUID() + "_" + originalFilename;
             Path targetLocation = uploadPath.resolve(storedFileName);
 
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
@@ -95,13 +118,13 @@ public class MaterialServiceImpl implements IMaterialService {
             material.setName(name);
             material.setDescription(description);
             material.setFileUrl("/uploads/" + storedFileName);
-            material.setMimeType(file.getContentType());
+            material.setMimeType(contentType);
             material.setSizeBytes((int) file.getSize());
 
             return materialRepository.save(material);
 
         } catch (IOException e) {
-            throw new RuntimeException("Nepodařilo se uložit soubor " + file.getOriginalFilename(), e);
+            throw new FileStorageException("Nepodařilo se uložit soubor " + file.getOriginalFilename(), e);
         }
     }
 
@@ -112,10 +135,6 @@ public class MaterialServiceImpl implements IMaterialService {
                 .orElseThrow(() -> new RuntimeException("Kurz nebyl nalezen"));
 
         material.setCourse(course);
-
-        if (material instanceof UrlMaterial) {
-        }
-
         return materialRepository.save(material);
     }
 
@@ -127,10 +146,13 @@ public class MaterialServiceImpl implements IMaterialService {
         if (material instanceof FileMaterial fileMaterial) {
             try {
                 String relativePath = fileMaterial.getFileUrl();
+                // Ošetření cesty
                 String filename = relativePath.replace("/uploads/", "");
-                Path filePath = Paths.get(UPLOAD_DIR).resolve(filename);
-
-                Files.deleteIfExists(filePath);
+                // Pro jistotu mažeme jen pokud název neobsahuje ".." (path traversal)
+                if (!filename.contains("..")) {
+                    Path filePath = Paths.get(UPLOAD_DIR).resolve(filename);
+                    Files.deleteIfExists(filePath);
+                }
             } catch (IOException e) {
                 System.err.println("Nepodařilo se smazat fyzický soubor: " + e.getMessage());
             }

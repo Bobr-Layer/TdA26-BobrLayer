@@ -49,17 +49,17 @@ public class CourseServiceImpl implements ICourseService{
     @Override
     @Transactional
     public Course create(Course course) {
-//        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-//        User lektor = userRepository.findByUsername(username)
-//                .orElseThrow(() -> new ResourceNotFoundException("Uživatel s uživatelským jménem " + username + " nebyl nalezen"));
-        User lektor = new User();
-        Random rand = new Random();
-
-// Vygeneruje náhodné číslo od 0 do 999
-        int nahodneCislo = rand.nextInt(1000);
-
-        lektor.setUsername("pepa" + nahodneCislo);        lektor.setPassword("pepa");
-        userRepository.save(lektor);
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User lektor = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("Uživatel s uživatelským jménem " + username + " nebyl nalezen"));
+//        User lektor = new User();
+//        Random rand = new Random();
+//
+//// Vygeneruje náhodné číslo od 0 do 999
+//        int nahodneCislo = rand.nextInt(1000);
+//
+//        lektor.setUsername("pepa" + nahodneCislo);        lektor.setPassword("pepa");
+//        userRepository.save(lektor);
 
         course.setLector(lektor);
 

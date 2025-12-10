@@ -10,5 +10,10 @@ import lombok.Setter;
 public class UrlMaterial extends Material {
     private String url;
     private String faviconUrl;
+
+    @Override
+    public String getTypeLabel() {
+        return "url";
+    }
 }
 

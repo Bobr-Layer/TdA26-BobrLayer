@@ -4,46 +4,81 @@
     <meta charset="UTF-8">
     <title th:text="${course.name}">Detail kurzu</title>
     <style>
-        body { font-family: sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
-        h1 { color: #2c3e50; }
-        .section { margin-top: 20px; padding: 10px; background-color: #f9f9f9; border-left: 4px solid #007bff; }
-        .back-link { display: block; margin-top: 20px; color: #666; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 900px; margin: 0 auto; padding: 20px; background-color: #f8f9fa; color: #333; }
+        h1 { color: #2c3e50; border-bottom: 2px solid #e9ecef; padding-bottom: 10px; }
+        .card { background: white; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .btn { display: inline-block; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-weight: 500; cursor: pointer; border: none; font-size: 14px; }
+        .btn-primary { background-color: #007bff; color: white; }
+        .btn-success { background-color: #28a745; color: white; }
+        .btn-danger { background-color: #dc3545; color: white; padding: 4px 8px; font-size: 12px; }
+        .btn:hover { opacity: 0.9; }
+
+        ul { list-style-type: none; padding: 0; }
+        li { padding: 10px; border-bottom: 1px solid #eee; display: flex; align-items: center; justify-content: space-between; }
+        li:last-child { border-bottom: none; }
+
+        .material-link { font-weight: bold; color: #007bff; text-decoration: none; font-size: 1.1em; }
+        .material-link:hover { text-decoration: underline; }
+        .meta { color: #6c757d; font-size: 0.9em; margin-left: 10px; }
+
+        .back-link { color: #6c757d; text-decoration: none; display: inline-block; margin-top: 20px; }
+        .back-link:hover { color: #333; }
     </style>
 </head>
 <body>
-<h1 th:text="${course.name}">Název kurzu</h1>
-<p th:text="${course.description}">Popis kurzu</p>
-
-<!--<p><strong>Lektor:</strong> <span th:text="${course.lectorName}">Jméno lektora</span></p>-->
-
-<!-- Materiály -->
-<div class="section">
-    <h3>Materiály</h3>
-    <!-- th:if kontroluje, zda seznam existuje a není prázdný -->
-    <ul th:if="${course.materials != null and !course.materials.empty}">
-        <li th:each="material : ${course.materials}" th:text="${material.name}">Materiál</li>
-    </ul>
-    <p th:unless="${course.materials != null and !course.materials.empty}">Žádné materiály.</p>
-</div>
-
-<!-- Kvízy (zde to padalo v testech, přidána ochrana null check) -->
-<div class="section">
-    <h3>Kvízy</h3>
-    <ul th:if="${course.quizzes != null and !course.quizzes.empty}">
-        <li th:each="quiz : ${course.quizzes}" th:text="${quiz.name}">Kvíz</li>
-    </ul>
-    <p th:unless="${course.quizzes != null and !course.quizzes.empty}">Žádné kvízy.</p>
-</div>
-
-<!-- Feed -->
-<div class="section">
-    <h3>Feed</h3>
-    <ul th:if="${course.feed != null and !course.feed.empty}">
-        <li th:each="post : ${course.feed}" th:text="${post.content}">Příspěvek</li>
-    </ul>
-    <p th:unless="${course.feed != null and !course.feed.empty}">Žádné příspěvky.</p>
-</div>
 
 <a class="back-link" th:href="@{/courses}">← Zpět na seznam kurzů</a>
+
+<div class="card">
+    <h1 th:text="${course.name}">Název kurzu</h1>
+    <p th:text="${course.description}" style="font-size: 1.1em;">Popis kurzu</p>
+</div>
+
+<!-- Sekce Materiály -->
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+        <h2 style="margin: 0;">Materiály</h2>
+        <a th:href="@{/courses/{id}/materials/new(id=${course.uuid})}" class="btn btn-success">+ Přidat materiál</a>
+    </div>
+
+    <ul th:if="${course.materials != null and !course.materials.empty}">
+        <li th:each="material : ${course.materials}">
+            <div style="flex-grow: 1;">
+                <!-- Varianta pro URL -->
+                <span th:if="${material.typeLabel == 'url'}">🔗</span>
+                <a th:if="${material.typeLabel == 'url'}"
+                   th:href="${material.url}"
+                   th:text="${material.name}"
+                   class="material-link" target="_blank">Název odkazu</a>
+
+                <!-- Varianta pro SOUBOR -->
+                <span th:if="${material.typeLabel == 'file'}">📄</span>
+                <a th:if="${material.typeLabel == 'file'}"
+                   th:href="${material.fileUrl}"
+                   th:text="${material.name}"
+                   class="material-link" target="_blank">Název souboru</a>
+
+                <!-- Popis -->
+                <span class="meta" th:if="${material.description}" th:text="'— ' + ${material.description}"></span>
+            </div>
+
+            <!-- Tlačítko Smazat -->
+            <form th:action="@{/courses/{cid}/materials/{mid}/delete(cid=${course.uuid}, mid=${material.uuid})}" method="post">
+                <button type="submit" class="btn btn-danger" onclick="return confirm('Opravdu smazat?')">Odstranit</button>
+            </form>
+        </li>
+    </ul>
+
+    <p th:unless="${course.materials != null and !course.materials.empty}" style="color: #666; font-style: italic;">
+        Zatím zde nejsou žádné materiály.
+    </p>
+</div>
+
+<!-- Sekce Kvízy (Placeholder) -->
+<div class="card">
+    <h2>Kvízy</h2>
+    <p style="color: #999;">Funkce kvízů zatím není implementována ve view.</p>
+</div>
+
 </body>
 </html>
