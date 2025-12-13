@@ -21,7 +21,7 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();  // <- DŮLEŽITÉ: toto chybí
+        return new BCryptPasswordEncoder();
     }
 
     @Bean

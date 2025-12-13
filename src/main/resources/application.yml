@@ -2,15 +2,12 @@ spring:
   application:
     name: tda26
 
-  # PostgreSQL databáze
   datasource:
-    # ZMĚNA: Defaultní host je 'db' a databáze 'tda_app' (aby to sedělo s Docker Compose)
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://db:5432/tda_app}
     username: ${SPRING_DATASOURCE_USERNAME:postgres}
     password: ${SPRING_DATASOURCE_PASSWORD:TenBobr69!}
     driver-class-name: org.postgresql.Driver
 
-  # JPA/Hibernate
   jpa:
     hibernate:
       ddl-auto: update
@@ -20,38 +17,34 @@ spring:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
-  # File Upload (max 30MB)
   servlet:
     multipart:
       max-file-size: 30MB
       max-request-size: 30MB
       enabled: true
 
-  # Security - základní credentials
+  web:
+    resources:
+      static-locations: classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/,file:./uploads/
+
   security:
     user:
       name: lecturer
       password: TdA26!
 
-  # MVC nastavení (přeneseno z properties)
   mvc:
     throw-exception-if-no-handler-found: true
-    static-path-pattern: /static/**
 
-# Server
 server:
   port: 8080
   error:
     include-message: always
 
-# OpenAPI dokumentace
 springdoc:
   api-docs:
     path: /api
   swagger-ui:
     path: /swagger-ui.html
 
-# Vlastní nastavení
-app:
-  file:
-    upload-dir: ./uploads
+file:
+  upload-dir: ./uploads

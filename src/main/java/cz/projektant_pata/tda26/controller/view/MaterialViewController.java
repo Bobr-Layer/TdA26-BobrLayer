@@ -1,12 +1,13 @@
 package cz.projektant_pata.tda26.controller.view;
 
-import cz.projektant_pata.tda26.controller.MaterialController;
 import cz.projektant_pata.tda26.dto.course.material.MaterialResponse;
-import cz.projektant_pata.tda26.dto.course.material.MaterialUpdateRequest; // NOVÝ IMPORT
 import cz.projektant_pata.tda26.dto.course.material.UrlMaterialRequest;
 import cz.projektant_pata.tda26.dto.course.material.FileMaterialResponse;
 import cz.projektant_pata.tda26.dto.course.material.UrlMaterialResponse;
+import cz.projektant_pata.tda26.mapper.MaterialMapper;
+import cz.projektant_pata.tda26.model.course.material.Material;
 import cz.projektant_pata.tda26.service.ICourseService;
+import cz.projektant_pata.tda26.service.IMaterialService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,10 +21,9 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class MaterialViewController {
 
-    private final MaterialController apiController;
+    private final IMaterialService materialService;
     private final ICourseService courseService;
-
-    // ... create metody zůstávají stejné ...
+    private final MaterialMapper mapper;
 
     @GetMapping("/new")
     public String showAddForms(@PathVariable UUID courseUuid, Model model) {
@@ -31,85 +31,76 @@ public class MaterialViewController {
         return "material_form";
     }
 
-    // --- Create metody (zkráceno pro přehlednost) ---
     @PostMapping("/link")
     public String addUrlMaterial(@PathVariable UUID courseUuid, @RequestParam String name, @RequestParam String url, @RequestParam(required = false) String description) {
         UrlMaterialRequest request = new UrlMaterialRequest();
-        request.setCourseId(courseUuid); request.setName(name); request.setDescription(description); request.setUrl(url);
-        apiController.create(courseUuid, request);
+        request.setCourseId(courseUuid);
+        request.setName(name);
+        request.setDescription(description);
+        request.setUrl(url);
+
+        Material materialDraft = mapper.toEntity(request);
+        materialService.create(courseUuid, materialDraft);
+
         return "redirect:/courses/" + courseUuid;
     }
+
     @PostMapping("/file")
     public String addFileMaterial(@PathVariable UUID courseUuid, @RequestParam("file") MultipartFile file, @RequestParam String name, @RequestParam(required = false) String description) {
-        apiController.create(courseUuid, file, name, description);
+        materialService.create(courseUuid, file, name, description);
         return "redirect:/courses/" + courseUuid;
     }
+
     @PostMapping("/{materialUuid}/delete")
     public String deleteMaterial(@PathVariable UUID courseUuid, @PathVariable UUID materialUuid) {
-        apiController.kill(courseUuid, materialUuid);
+        materialService.kill(courseUuid, materialUuid);
         return "redirect:/courses/" + courseUuid;
     }
 
-    // --- NOVÉ: Editace ---
-
-    // 1. Zobrazení formuláře pro editaci
     @GetMapping("/{materialUuid}/edit")
     public String showEditForm(
             @PathVariable UUID courseUuid,
             @PathVariable UUID materialUuid,
             Model model
     ) {
-        // Načteme materiál přes API controller (získáme DTO Response)
-        MaterialResponse material = apiController.find(courseUuid, materialUuid).getBody();
+        Material materialEntity = materialService.find(courseUuid, materialUuid);
+        MaterialResponse material = mapper.toResponse(materialEntity);
 
-        // Přidáme data do modelu
         model.addAttribute("course", courseService.find(courseUuid));
         model.addAttribute("material", material);
 
-        // Pomocná proměnná pro typ, abychom v šabloně věděli, co zobrazit
         if (material instanceof UrlMaterialResponse) {
             model.addAttribute("type", "url");
             model.addAttribute("urlValue", ((UrlMaterialResponse) material).getUrl());
         } else if (material instanceof FileMaterialResponse) {
             model.addAttribute("type", "file");
-            // fileUrl není pro input třeba, ale pro info se hodí
         }
 
         return "material_edit";
     }
 
-    // 2. Zpracování editace URL (JSON update) - OPRAVENO
     @PostMapping("/{materialUuid}/edit/link")
-    public String updateUrlMaterial(
+    public String updateLink(
             @PathVariable UUID courseUuid,
             @PathVariable UUID materialUuid,
             @RequestParam String name,
             @RequestParam String url,
             @RequestParam(required = false) String description
     ) {
-        // ZMĚNA: Používáme MaterialUpdateRequest místo UrlMaterialRequest
-        MaterialUpdateRequest request = new MaterialUpdateRequest();
-        request.setName(name);
-        request.setDescription(description);
-        request.setUrl(url);
-
-        // Voláme API metodu updateJson
-        apiController.updateJson(courseUuid, materialUuid, request);
+        materialService.update(courseUuid, materialUuid, name, description, url);
 
         return "redirect:/courses/" + courseUuid;
     }
 
-    // 3. Zpracování editace SOUBORU (Multipart update)
     @PostMapping("/{materialUuid}/edit/file")
-    public String updateFileMaterial(
+    public String updateFile(
             @PathVariable UUID courseUuid,
             @PathVariable UUID materialUuid,
-            @RequestParam(value = "file", required = false) MultipartFile file, // Volitelné
+            @RequestParam(value = "file", required = false) MultipartFile file,
             @RequestParam String name,
             @RequestParam(required = false) String description
     ) {
-        // Voláme API metodu updateFile
-        apiController.updateFile(courseUuid, materialUuid, file, name, description);
+        materialService.update(courseUuid, materialUuid, file, name, description);
 
         return "redirect:/courses/" + courseUuid;
     }

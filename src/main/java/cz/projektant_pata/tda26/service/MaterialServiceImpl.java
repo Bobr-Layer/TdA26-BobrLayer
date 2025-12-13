@@ -1,15 +1,18 @@
 package cz.projektant_pata.tda26.service;
 
-import cz.projektant_pata.tda26.exception.FileStorageException;
-import cz.projektant_pata.tda26.exception.FileValidationException;
+import cz.projektant_pata.tda26.exception.file.FileStorageException;
+import cz.projektant_pata.tda26.exception.file.FileValidationException;
 import cz.projektant_pata.tda26.exception.ResourceNotFoundException;
 import cz.projektant_pata.tda26.model.course.Course;
 import cz.projektant_pata.tda26.model.course.material.FileMaterial;
 import cz.projektant_pata.tda26.model.course.material.Material;
 import cz.projektant_pata.tda26.model.course.material.UrlMaterial;
-import cz.projektant_pata.tda26.repository.CourseRepository;
 import cz.projektant_pata.tda26.repository.MaterialRepository;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,22 +31,34 @@ import java.util.UUID;
 public class MaterialServiceImpl implements IMaterialService {
 
     private final MaterialRepository materialRepository;
-    private final CourseRepository courseRepository;
+    private final ICourseService courseService;
+    private static final Logger logger = LoggerFactory.getLogger(MaterialServiceImpl.class);
 
-    private static final String UPLOAD_DIR = "/app/uploads";
+    @Value("${file.upload-dir:/app/uploads}")
+    private String uploadDir;
+    private Path uploadPath;
 
     private static final List<String> ALLOWED_MIME_TYPES = Arrays.asList(
             "application/pdf",
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // .docx
             "text/plain",
             "image/png",
             "image/jpeg",
             "image/gif",
             "video/mp4",
-            "audio/mpeg"
+            "audio/mpeg" // .mp3
     );
-    // 30 MB
-    private static final long MAX_FILE_SIZE = 30 * 1024 * 1024;
+    private static final long MAX_FILE_SIZE = 30 * 1024 * 1024; // 30 MB
+
+    @PostConstruct
+    public void init() {
+        this.uploadPath = Paths.get(uploadDir);
+        try {
+            Files.createDirectories(uploadPath);
+        } catch (IOException e) {
+            throw new RuntimeException("Could not create upload directory!", e);
+        }
+    }
 
     @Override
     public List<Material> find(UUID courseUuid) {
@@ -52,181 +67,142 @@ public class MaterialServiceImpl implements IMaterialService {
 
     @Override
     public Material find(UUID courseUuid, UUID materialUuid) {
-        Material material = materialRepository.findById(materialUuid)
-                .orElseThrow(() -> new ResourceNotFoundException("Materiál nebyl nalezen"));
-
-        if (!material.getCourse().getUuid().equals(courseUuid)) {
-            throw new RuntimeException("Materiál nepatří k danému kurzu");
-        }
-
-        return material;
-    }
-
-    @Override
-    @Transactional
-    public Material update(UUID courseUuid, UUID materialUuid, String name, String description, String url) {
-        Material existingMaterial = this.find(courseUuid, materialUuid);
-
-        if (name != null) existingMaterial.setName(name);
-        if (description != null) existingMaterial.setDescription(description);
-
-        if (existingMaterial instanceof UrlMaterial urlMaterial) {
-            if (url != null) {
-                urlMaterial.setUrl(url);
-            }
-        }
-        else if (existingMaterial instanceof FileMaterial) {
-            // Jen update metadat
-        }
-
-        return materialRepository.save(existingMaterial);
-    }
-
-    @Transactional
-    @Override
-    public Material updateFile(UUID courseUuid, UUID materialUuid, MultipartFile file, String name, String description) {
-        Material existingMaterial = this.find(courseUuid, materialUuid);
-
-        if (!(existingMaterial instanceof FileMaterial)) {
-            throw new IllegalArgumentException("Tento endpoint slouží jen pro aktualizaci souborových materiálů.");
-        }
-
-        FileMaterial fileMaterial = (FileMaterial) existingMaterial;
-
-        if (name != null && !name.isBlank()) {
-            fileMaterial.setName(name);
-        }
-        if (description != null) {
-            fileMaterial.setDescription(description);
-        }
-
-        if (file != null && !file.isEmpty()) {
-            if (file.getSize() > MAX_FILE_SIZE) {
-                throw new FileValidationException("Soubor je příliš velký (limit 30 MB).");
-            }
-
-            // OPRAVA: Získání čistého MIME typu (bez charsetu)
-            String contentType = file.getContentType();
-            if (contentType != null && contentType.contains(";")) {
-                contentType = contentType.split(";")[0];
-            }
-
-            if (contentType == null || !ALLOWED_MIME_TYPES.contains(contentType)) {
-                throw new FileValidationException("Nepodporovaný formát souboru: " + file.getContentType());
-            }
-
-            try {
-                String oldFilename = fileMaterial.getFileUrl().replace("/uploads/", "");
-                Path oldPath = Paths.get(UPLOAD_DIR).resolve(oldFilename);
-                Files.deleteIfExists(oldPath);
-
-                String originalFilename = file.getOriginalFilename();
-                String extension = "";
-                if (originalFilename != null && originalFilename.contains(".")) {
-                    extension = originalFilename.substring(originalFilename.lastIndexOf("."));
-                }
-
-                String storedFileName = UUID.randomUUID().toString() + extension;
-                Path targetLocation = Paths.get(UPLOAD_DIR).resolve(storedFileName);
-                Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-
-                fileMaterial.setFileUrl("/uploads/" + storedFileName);
-                fileMaterial.setMimeType(contentType); // Ukládáme ten čistý typ
-                fileMaterial.setSizeBytes((int) file.getSize());
-
-            } catch (IOException e) {
-                throw new FileStorageException("Chyba při aktualizaci souboru", e);
-            }
-        }
-
-        return materialRepository.save(fileMaterial);
-    }
-
-
-    @Override
-    @Transactional
-    public Material create(UUID courseUuid, MultipartFile file, String name, String description) {
-        Course course = courseRepository.findById(courseUuid)
-                .orElseThrow(() -> new ResourceNotFoundException("Kurz nebyl nalezen"));
-
-        if (file.isEmpty()) {
-            throw new FileValidationException("Soubor je prázdný");
-        }
-        if (file.getSize() > MAX_FILE_SIZE) {
-            throw new FileValidationException("Soubor je příliš velký (limit 30 MB).");
-        }
-
-        // OPRAVA: Získání čistého MIME typu (bez charsetu)
-        String contentType = file.getContentType();
-        if (contentType != null && contentType.contains(";")) {
-            contentType = contentType.split(";")[0];
-        }
-
-        if (contentType == null || !ALLOWED_MIME_TYPES.contains(contentType)) {
-            throw new FileValidationException("Nepodporovaný formát souboru: " + file.getContentType());
-        }
-
-        try {
-            Path uploadPath = Paths.get(UPLOAD_DIR);
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
-            }
-            String originalFilename = file.getOriginalFilename();
-            String extension = "";
-            if (originalFilename != null && originalFilename.contains(".")) {
-                extension = originalFilename.substring(originalFilename.lastIndexOf("."));
-            }
-
-            String storedFileName = UUID.randomUUID().toString() + extension;
-
-            Path targetLocation = uploadPath.resolve(storedFileName);
-
-            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-
-            FileMaterial material = new FileMaterial();
-            material.setCourse(course);
-            material.setName(name);
-            material.setDescription(description);
-            material.setFileUrl("/uploads/" + storedFileName);
-            material.setMimeType(contentType); // Ukládáme ten čistý typ
-            material.setSizeBytes((int) file.getSize());
-
-            return materialRepository.save(material);
-
-        } catch (IOException e) {
-            throw new FileStorageException("Nepodařilo se uložit soubor " + file.getOriginalFilename(), e);
-        }
+        return getMaterialOrThrow(courseUuid, materialUuid);
     }
 
     @Override
     @Transactional
     public Material create(UUID courseUuid, Material material) {
-        Course course = courseRepository.findById(courseUuid)
-                .orElseThrow(() -> new ResourceNotFoundException("Kurz nebyl nalezen"));
-
+        Course course = courseService.find(courseUuid);
         material.setCourse(course);
         return materialRepository.save(material);
     }
 
     @Override
     @Transactional
+    public Material create(UUID courseUuid, MultipartFile file, String name, String description) {
+        Course course = courseService.find(courseUuid);
+
+        String storedFileName = storeFile(file);
+
+        FileMaterial material = new FileMaterial();
+        material.setCourse(course);
+        material.setName(name);
+        material.setDescription(description);
+        material.setFileUrl("/uploads/" + storedFileName);
+        material.setMimeType(getCleanContentType(file.getContentType()));
+        material.setSizeBytes((int) file.getSize());
+
+        return materialRepository.save(material);
+    }
+
+    @Override
+    @Transactional
+    public Material update(UUID courseUuid, UUID materialUuid, String name, String description, String url) {
+        Material existingMaterial = getMaterialOrThrow(courseUuid, materialUuid);
+
+        if (name != null) existingMaterial.setName(name);
+        if (description != null) existingMaterial.setDescription(description);
+
+        if (existingMaterial instanceof UrlMaterial urlMaterial && url != null) {
+            urlMaterial.setUrl(url);
+        }
+
+        return materialRepository.save(existingMaterial);
+    }
+
+    @Override
+    @Transactional
+    public Material update(UUID courseUuid, UUID materialUuid, MultipartFile file, String name, String description) {
+        Material existingMaterial = getMaterialOrThrow(courseUuid, materialUuid);
+
+        if (!(existingMaterial instanceof FileMaterial fileMaterial)) {
+            throw new IllegalArgumentException("Tento endpoint slouží jen pro aktualizaci souborových materiálů.");
+        }
+
+        if (name != null && !name.isBlank()) fileMaterial.setName(name);
+        if (description != null) fileMaterial.setDescription(description);
+
+        if (file != null && !file.isEmpty()) {
+            deletePhysicalFile(fileMaterial.getFileUrl());
+
+            String newStoredFileName = storeFile(file);
+            fileMaterial.setFileUrl("/uploads/" + newStoredFileName);
+            fileMaterial.setMimeType(getCleanContentType(file.getContentType()));
+            fileMaterial.setSizeBytes((int) file.getSize());
+        }
+
+        return materialRepository.save(fileMaterial);
+    }
+
+    @Override
+    @Transactional
     public Material kill(UUID courseUuid, UUID materialUuid) {
-        Material material = find(courseUuid, materialUuid);
+        Material material = getMaterialOrThrow(courseUuid, materialUuid);
 
         if (material instanceof FileMaterial fileMaterial) {
-            try {
-                String relativePath = fileMaterial.getFileUrl();
-                String filename = relativePath.replace("/uploads/", "");
-                if (!filename.contains("..")) {
-                    Path filePath = Paths.get(UPLOAD_DIR).resolve(filename);
-                    Files.deleteIfExists(filePath);
-                }
-            } catch (IOException e) {
-                System.err.println("Nepodařilo se smazat fyzický soubor: " + e.getMessage());
-            }
+            deletePhysicalFile(fileMaterial.getFileUrl());
         }
 
         materialRepository.delete(material);
         return material;
+    }
+
+    private Material getMaterialOrThrow(UUID courseUuid, UUID materialUuid) {
+        Material material = materialRepository.findById(materialUuid)
+                .orElseThrow(() -> new ResourceNotFoundException("Materiál s ID " + materialUuid + " nebyl nalezen"));
+
+        if (!material.getCourse().getUuid().equals(courseUuid)) {
+            throw new IllegalArgumentException("Materiál nepatří k danému kurzu.");
+        }
+        return material;
+    }
+
+    private String storeFile(MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            throw new FileValidationException("Soubor nesmí být prázdný.");
+        }
+        if (file.getSize() > MAX_FILE_SIZE) {
+            throw new FileValidationException("Soubor je příliš velký (limit 30 MB).");
+        }
+
+        String contentType = getCleanContentType(file.getContentType());
+        if (contentType == null || !ALLOWED_MIME_TYPES.contains(contentType)) {
+            throw new FileValidationException("Nepodporovaný formát souboru: " + file.getContentType());
+        }
+
+        try {
+            String originalFilename = file.getOriginalFilename();
+            String extension = (originalFilename != null && originalFilename.contains("."))
+                    ? originalFilename.substring(originalFilename.lastIndexOf(".")) : "";
+
+            String storedFileName = UUID.randomUUID() + extension;
+            Path targetLocation = this.uploadPath.resolve(storedFileName);
+            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+            return storedFileName;
+
+        } catch (IOException e) {
+            throw new FileStorageException("Nepodařilo se uložit soubor " + file.getOriginalFilename(), e);
+        }
+    }
+
+    private void deletePhysicalFile(String fileUrl) {
+        if (fileUrl == null || fileUrl.isBlank()) return;
+        try {
+            String filename = fileUrl.replace("/uploads/", "");
+            if (!filename.contains("..")) {
+                Path filePath = this.uploadPath.resolve(filename);
+                Files.deleteIfExists(filePath);
+            }
+        } catch (IOException e) {
+            logger.error("Nepodařilo se smazat fyzický soubor: {}", fileUrl, e);
+        }
+    }
+
+    private String getCleanContentType(String fullContentType) {
+        if (fullContentType != null && fullContentType.contains(";")) {
+            return fullContentType.split(";")[0].trim();
+        }
+        return fullContentType;
     }
 }

@@ -33,9 +33,8 @@ public class Course {
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Material> materials = new ArrayList<>();
 
-//    @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, orphanRemoval = true)
 @OneToMany(cascade = CascadeType.ALL)
-@JoinColumn(name = "course_id") // Creates a foreign key in the Quiz table
+@JoinColumn(name = "course_id")
 private List<Quiz> quizzes;
 
     @OneToMany(cascade = CascadeType.ALL)
