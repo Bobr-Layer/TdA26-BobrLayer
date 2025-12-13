@@ -1,13 +1,13 @@
 package cz.projektant_pata.tda26.mapper;
 
-import cz.projektant_pata.tda26.dto.auth.RegisterRequest;
-import cz.projektant_pata.tda26.dto.user.UserResponse;
+import cz.projektant_pata.tda26.dto.auth.RegisterRequestDTO;
+import cz.projektant_pata.tda26.dto.user.UserResponseDTO;
 import cz.projektant_pata.tda26.model.user.User;
 import org.springframework.stereotype.Component;
 
 @Component
 public class UserMapper {
-    public User toEntity(RegisterRequest req){
+    public User toEntity(RegisterRequestDTO req){
         User user = new User();
 
         user.setUsername(req.getUsername());
@@ -16,8 +16,8 @@ public class UserMapper {
         return user;
     }
 
-    public UserResponse toResponse(User user){
-        UserResponse res = new UserResponse();
+    public UserResponseDTO toResponse(User user){
+        UserResponseDTO res = new UserResponseDTO();
 
         res.setUuid(user.getUuid());
         res.setUsername(user.getUsername());

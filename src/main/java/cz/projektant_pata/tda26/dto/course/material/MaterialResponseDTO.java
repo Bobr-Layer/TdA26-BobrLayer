@@ -13,10 +13,10 @@ import java.util.UUID;
         property = "type"
 )
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = FileMaterialResponse.class, name = "file"),
-        @JsonSubTypes.Type(value = UrlMaterialResponse.class, name = "url")
+        @JsonSubTypes.Type(value = FileMaterialResponseDTO.class, name = "file"),
+        @JsonSubTypes.Type(value = UrlMaterialResponseDTO.class, name = "url")
 })
-public abstract class MaterialResponse {
+public abstract class MaterialResponseDTO {
     private UUID uuid;
     private String name;
     private String description;

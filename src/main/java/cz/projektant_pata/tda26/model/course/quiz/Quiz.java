@@ -38,4 +38,16 @@ public class Quiz {
     public void incrementAttempts() {
         this.attemptsCount++;
     }
+
+    public void addQuestion(Question question) {
+        if (question == null) return;
+        this.questions.add(question);
+        question.setQuiz(this);
+    }
+
+    public void removeQuestion(Question question) {
+        if (question == null) return;
+        this.questions.remove(question);
+        question.setQuiz(null);
+    }
 }

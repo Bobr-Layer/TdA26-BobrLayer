@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class MaterialMapper {
-    public MaterialResponse toResponse(Material entity) {
+    public MaterialResponseDTO toResponse(Material entity) {
         if (entity instanceof FileMaterial) {
             return toFileResponse((FileMaterial) entity);
         } else if (entity instanceof UrlMaterial) {
@@ -18,8 +18,8 @@ public class MaterialMapper {
         throw new IllegalArgumentException("Neznámý typ materiálu: " + entity.getClass());
     }
 
-    private FileMaterialResponse toFileResponse(FileMaterial entity) {
-        FileMaterialResponse dto = new FileMaterialResponse();
+    private FileMaterialResponseDTO toFileResponse(FileMaterial entity) {
+        FileMaterialResponseDTO dto = new FileMaterialResponseDTO();
         mapCommonFields(entity, dto);
         dto.setFileUrl(entity.getFileUrl());
         dto.setMimeType(entity.getMimeType());
@@ -27,30 +27,30 @@ public class MaterialMapper {
         return dto;
     }
 
-    private UrlMaterialResponse toUrlResponse(UrlMaterial entity) {
-        UrlMaterialResponse dto = new UrlMaterialResponse();
+    private UrlMaterialResponseDTO toUrlResponse(UrlMaterial entity) {
+        UrlMaterialResponseDTO dto = new UrlMaterialResponseDTO();
         mapCommonFields(entity, dto);
         dto.setUrl(entity.getUrl());
         dto.setFaviconUrl(entity.getFaviconUrl());
         return dto;
     }
 
-    private void mapCommonFields(Material entity, MaterialResponse dto) {
+    private void mapCommonFields(Material entity, MaterialResponseDTO dto) {
         dto.setUuid(entity.getUuid());
         dto.setName(entity.getName());
         dto.setDescription(entity.getDescription());
     }
 
-    public Material toEntity(MaterialRequest request) {
-        if (request instanceof FileMaterialRequest) {
-            return toFileEntity((FileMaterialRequest) request);
-        } else if (request instanceof UrlMaterialRequest) {
-            return toUrlEntity((UrlMaterialRequest) request);
+    public Material toEntity(MaterialRequestDTO request) {
+        if (request instanceof FileMaterialRequestDTO) {
+            return toFileEntity((FileMaterialRequestDTO) request);
+        } else if (request instanceof UrlMaterialRequestDTO) {
+            return toUrlEntity((UrlMaterialRequestDTO) request);
         }
         throw new IllegalArgumentException("Neznámý typ requestu: " + request.getClass());
     }
 
-    private FileMaterial toFileEntity(FileMaterialRequest request) {
+    private FileMaterial toFileEntity(FileMaterialRequestDTO request) {
         FileMaterial entity = new FileMaterial();
         mapCommonEntityFields(request, entity);
         entity.setFileUrl(request.getFileUrl());
@@ -59,7 +59,7 @@ public class MaterialMapper {
         return entity;
     }
 
-    private UrlMaterial toUrlEntity(UrlMaterialRequest request) {
+    private UrlMaterial toUrlEntity(UrlMaterialRequestDTO request) {
         UrlMaterial entity = new UrlMaterial();
         mapCommonEntityFields(request, entity);
         entity.setUrl(request.getUrl());
@@ -67,7 +67,7 @@ public class MaterialMapper {
         return entity;
     }
 
-    private void mapCommonEntityFields(MaterialRequest request, Material entity) {
+    private void mapCommonEntityFields(MaterialRequestDTO request, Material entity) {
         entity.setName(request.getName());
         entity.setDescription(request.getDescription());
 

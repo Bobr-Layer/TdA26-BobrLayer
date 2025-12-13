@@ -1,6 +1,6 @@
 package cz.projektant_pata.tda26.handler;
 
-import cz.projektant_pata.tda26.dto.server.ErrorResponse;
+import cz.projektant_pata.tda26.dto.server.ErrorResponseDTO;
 import cz.projektant_pata.tda26.exception.file.FileStorageException;
 import cz.projektant_pata.tda26.exception.file.FileValidationException;
 import cz.projektant_pata.tda26.exception.ResourceAlreadyExistsException;
@@ -14,33 +14,33 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 
 public interface IGlobalExceptionHandler {
 
-    ResponseEntity<ErrorResponse> handleNoHandlerFound(
+    ResponseEntity<ErrorResponseDTO> handleNoHandlerFound(
             NoHandlerFoundException ex, HttpServletRequest request);
 
-    ResponseEntity<ErrorResponse> handleResourceNotFound(
+    ResponseEntity<ErrorResponseDTO> handleResourceNotFound(
             ResourceNotFoundException ex, HttpServletRequest request);
 
-    ResponseEntity<ErrorResponse> handleResourceAlreadyExists(
+    ResponseEntity<ErrorResponseDTO> handleResourceAlreadyExists(
             ResourceAlreadyExistsException ex, HttpServletRequest request);
 
-    ResponseEntity<ErrorResponse> handleValidationErrors(
+    ResponseEntity<ErrorResponseDTO> handleValidationErrors(
             MethodArgumentNotValidException ex, HttpServletRequest request);
 
-    ResponseEntity<ErrorResponse> handleIllegalArgument(
+    ResponseEntity<ErrorResponseDTO> handleIllegalArgument(
             IllegalArgumentException ex, HttpServletRequest request);
 
-    ResponseEntity<ErrorResponse> handleTypeMismatch(
+    ResponseEntity<ErrorResponseDTO> handleTypeMismatch(
             MethodArgumentTypeMismatchException ex, HttpServletRequest request);
 
-    ResponseEntity<ErrorResponse> handleFileValidation(
+    ResponseEntity<ErrorResponseDTO> handleFileValidation(
             FileValidationException ex, HttpServletRequest request);
 
-    ResponseEntity<ErrorResponse> handleMaxSizeException(
+    ResponseEntity<ErrorResponseDTO> handleMaxSizeException(
             MaxUploadSizeExceededException ex, HttpServletRequest request);
 
-    ResponseEntity<ErrorResponse> handleFileStorage(
+    ResponseEntity<ErrorResponseDTO> handleFileStorage(
             FileStorageException ex, HttpServletRequest request);
 
-    ResponseEntity<ErrorResponse> handleGlobalException(
+    ResponseEntity<ErrorResponseDTO> handleGlobalException(
             Exception ex, HttpServletRequest request);
 }

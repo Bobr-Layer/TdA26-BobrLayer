@@ -1,8 +1,8 @@
 package cz.projektant_pata.tda26.mapper;
 
-import cz.projektant_pata.tda26.dto.course.CourseRequest;
-import cz.projektant_pata.tda26.dto.course.CourseResponse;
-import cz.projektant_pata.tda26.dto.course.material.MaterialResponse;
+import cz.projektant_pata.tda26.dto.course.CourseRequestDTO;
+import cz.projektant_pata.tda26.dto.course.CourseResponseDTO;
+import cz.projektant_pata.tda26.dto.course.material.MaterialResponseDTO;
 import cz.projektant_pata.tda26.model.course.Course;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -17,15 +17,15 @@ public class CourseMapper {
 
     private final MaterialMapper materialMapper;
 
-    public Course toEntity(CourseRequest dto) {
+    public Course toEntity(CourseRequestDTO dto) {
         Course course = new Course();
         course.setName(dto.getName());
         course.setDescription(dto.getDescription());
         return course;
     }
 
-    public CourseResponse toResponse(Course entity) {
-        CourseResponse response = new CourseResponse();
+    public CourseResponseDTO toResponse(Course entity) {
+        CourseResponseDTO response = new CourseResponseDTO();
         response.setUuid(entity.getUuid());
         response.setName(entity.getName());
         response.setDescription(entity.getDescription());
@@ -33,7 +33,7 @@ public class CourseMapper {
         response.setLectorName(entity.getLector().getUsername());
 
         if (entity.getMaterials() != null) {
-            List<MaterialResponse> materials = entity.getMaterials().stream()
+            List<MaterialResponseDTO> materials = entity.getMaterials().stream()
                     .map(materialMapper::toResponse)
                     .collect(Collectors.toList());
             response.setMaterials(materials);

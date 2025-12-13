@@ -13,9 +13,10 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 import java.util.UUID;
 
+
 @Entity
 @Table(name = "questions")
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE) // Všechny typy otázek v jedné tabulce
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "question_type", discriminatorType = DiscriminatorType.STRING)
 @Getter
 @Setter
@@ -37,6 +38,7 @@ public abstract class Question {
 
     @ElementCollection
     @CollectionTable(name = "question_options", joinColumns = @JoinColumn(name = "question_uuid"))
+    @OrderColumn(name = "option_order") // DOPORUČENÍ: Aby se možnosti A, B, C nepřeházely
     @Column(name = "option_text")
     private List<String> options;
 
@@ -48,15 +50,16 @@ public abstract class Question {
     @Column(nullable = false)
     private Integer correctAttempts = 0;
 
-
     @Column(name = "question_type", insertable = false, updatable = false)
     private String type;
 
     public void incrementCorrectAttempts() {
         this.correctAttempts++;
     }
+
+    @Transient
     public Double getSuccessRate() {
-        if (quiz == null || quiz.getAttemptsCount() == 0) {
+        if (quiz == null || quiz.getAttemptsCount() == null || quiz.getAttemptsCount() == 0) {
             return 0.0;
         }
         return (double) correctAttempts / quiz.getAttemptsCount() * 100;

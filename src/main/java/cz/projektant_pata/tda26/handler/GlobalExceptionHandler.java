@@ -1,6 +1,6 @@
 package cz.projektant_pata.tda26.handler;
 
-import cz.projektant_pata.tda26.dto.server.ErrorResponse;
+import cz.projektant_pata.tda26.dto.server.ErrorResponseDTO;
 import cz.projektant_pata.tda26.exception.ResourceAlreadyExistsException;
 import cz.projektant_pata.tda26.exception.file.FileStorageException;
 import cz.projektant_pata.tda26.exception.file.FileValidationException;
@@ -22,10 +22,10 @@ import java.util.stream.Collectors;
 public class GlobalExceptionHandler implements IGlobalExceptionHandler{
 
     @ExceptionHandler(NoHandlerFoundException.class)
-    public ResponseEntity<ErrorResponse> handleNoHandlerFound(
+    public ResponseEntity<ErrorResponseDTO> handleNoHandlerFound(
             NoHandlerFoundException ex, HttpServletRequest request) {
 
-        ErrorResponse error = new ErrorResponse(
+        ErrorResponseDTO error = new ErrorResponseDTO(
                 LocalDateTime.now(),
                 HttpStatus.NOT_FOUND.value(),
                 "Not Found",
@@ -37,10 +37,10 @@ public class GlobalExceptionHandler implements IGlobalExceptionHandler{
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleResourceNotFound(
+    public ResponseEntity<ErrorResponseDTO> handleResourceNotFound(
             ResourceNotFoundException ex, HttpServletRequest request) {
 
-        ErrorResponse error = new ErrorResponse(
+        ErrorResponseDTO error = new ErrorResponseDTO(
                 LocalDateTime.now(),
                 HttpStatus.NOT_FOUND.value(),
                 "Not Found",
@@ -52,7 +52,7 @@ public class GlobalExceptionHandler implements IGlobalExceptionHandler{
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleValidationErrors(
+    public ResponseEntity<ErrorResponseDTO> handleValidationErrors(
             MethodArgumentNotValidException ex, HttpServletRequest request) {
 
         List<String> details = ex.getBindingResult()
@@ -61,7 +61,7 @@ public class GlobalExceptionHandler implements IGlobalExceptionHandler{
                 .map(error -> error.getField() + ": " + error.getDefaultMessage())
                 .collect(Collectors.toList());
 
-        ErrorResponse error = new ErrorResponse(
+        ErrorResponseDTO error = new ErrorResponseDTO(
                 LocalDateTime.now(),
                 HttpStatus.BAD_REQUEST.value(),
                 "Validation Error",
@@ -73,10 +73,10 @@ public class GlobalExceptionHandler implements IGlobalExceptionHandler{
     }
 
     @ExceptionHandler(ResourceAlreadyExistsException.class)
-    public ResponseEntity<ErrorResponse> handleResourceAlreadyExists(
+    public ResponseEntity<ErrorResponseDTO> handleResourceAlreadyExists(
             ResourceAlreadyExistsException ex, HttpServletRequest request) {
 
-        ErrorResponse error = new ErrorResponse(
+        ErrorResponseDTO error = new ErrorResponseDTO(
                 LocalDateTime.now(),
                 HttpStatus.CONFLICT.value(), // 409 Conflict
                 "Resource Already Exists",
@@ -89,10 +89,10 @@ public class GlobalExceptionHandler implements IGlobalExceptionHandler{
 
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorResponse> handleIllegalArgument(
+    public ResponseEntity<ErrorResponseDTO> handleIllegalArgument(
             IllegalArgumentException ex, HttpServletRequest request) {
 
-        ErrorResponse error = new ErrorResponse(
+        ErrorResponseDTO error = new ErrorResponseDTO(
                 LocalDateTime.now(),
                 HttpStatus.BAD_REQUEST.value(),
                 "Bad Request",
@@ -104,13 +104,13 @@ public class GlobalExceptionHandler implements IGlobalExceptionHandler{
     }
 
     @ExceptionHandler(org.springframework.web.method.annotation.MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<ErrorResponse> handleTypeMismatch(
+    public ResponseEntity<ErrorResponseDTO> handleTypeMismatch(
             org.springframework.web.method.annotation.MethodArgumentTypeMismatchException ex, HttpServletRequest request) {
 
         String message = String.format("Parametr '%s' má neplatnou hodnotu '%s'. Očekávaný typ je '%s'.",
                 ex.getName(), ex.getValue(), ex.getRequiredType().getSimpleName());
 
-        ErrorResponse error = new ErrorResponse(
+        ErrorResponseDTO error = new ErrorResponseDTO(
                 LocalDateTime.now(),
                 HttpStatus.BAD_REQUEST.value(),
                 "Bad Request",
@@ -122,12 +122,12 @@ public class GlobalExceptionHandler implements IGlobalExceptionHandler{
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGlobalException(
+    public ResponseEntity<ErrorResponseDTO> handleGlobalException(
             Exception ex, HttpServletRequest request) {
 
         ex.printStackTrace();
 
-        ErrorResponse error = new ErrorResponse(
+        ErrorResponseDTO error = new ErrorResponseDTO(
                 LocalDateTime.now(),
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "Internal Server Error",
@@ -139,10 +139,10 @@ public class GlobalExceptionHandler implements IGlobalExceptionHandler{
     }
 
     @ExceptionHandler(FileValidationException.class)
-    public ResponseEntity<ErrorResponse> handleFileValidation(
+    public ResponseEntity<ErrorResponseDTO> handleFileValidation(
             FileValidationException ex, HttpServletRequest request) {
 
-        ErrorResponse error = new ErrorResponse(
+        ErrorResponseDTO error = new ErrorResponseDTO(
                 LocalDateTime.now(),
                 HttpStatus.BAD_REQUEST.value(),
                 "File Validation Error",
@@ -154,10 +154,10 @@ public class GlobalExceptionHandler implements IGlobalExceptionHandler{
     }
 
     @ExceptionHandler(MaxUploadSizeExceededException.class)
-    public ResponseEntity<ErrorResponse> handleMaxSizeException(
+    public ResponseEntity<ErrorResponseDTO> handleMaxSizeException(
             MaxUploadSizeExceededException ex, HttpServletRequest request) {
 
-        ErrorResponse error = new ErrorResponse(
+        ErrorResponseDTO error = new ErrorResponseDTO(
                 LocalDateTime.now(),
                 HttpStatus.BAD_REQUEST.value(),
                 "File Too Large",
@@ -169,12 +169,12 @@ public class GlobalExceptionHandler implements IGlobalExceptionHandler{
     }
 
     @ExceptionHandler(FileStorageException.class)
-    public ResponseEntity<ErrorResponse> handleFileStorage(
+    public ResponseEntity<ErrorResponseDTO> handleFileStorage(
             FileStorageException ex, HttpServletRequest request) {
 
         ex.printStackTrace();
 
-        ErrorResponse error = new ErrorResponse(
+        ErrorResponseDTO error = new ErrorResponseDTO(
                 LocalDateTime.now(),
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "File Storage Error",

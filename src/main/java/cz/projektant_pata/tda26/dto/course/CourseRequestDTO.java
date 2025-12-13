@@ -7,7 +7,7 @@ import lombok.AllArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CourseRequest {
+public class CourseRequestDTO {
     private String name;
     private String description;
 }

@@ -1,9 +1,9 @@
 package cz.projektant_pata.tda26.controller;
 
-import cz.projektant_pata.tda26.dto.auth.LoginRequest;
-import cz.projektant_pata.tda26.dto.auth.RegisterRequest;
-import cz.projektant_pata.tda26.dto.auth.ResetPassword;
-import cz.projektant_pata.tda26.dto.user.UserResponse;
+import cz.projektant_pata.tda26.dto.auth.LoginRequestDTO;
+import cz.projektant_pata.tda26.dto.auth.RegisterRequestDTO;
+import cz.projektant_pata.tda26.dto.auth.ResetPasswordDTO;
+import cz.projektant_pata.tda26.dto.user.UserResponseDTO;
 import cz.projektant_pata.tda26.mapper.UserMapper;
 import cz.projektant_pata.tda26.model.user.RoleEnum;
 import cz.projektant_pata.tda26.model.user.User;
@@ -34,16 +34,16 @@ public class AuthController {
     private final UserMapper mapper;
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequestDTO request) {
         return registerUserWithRole(request, RoleEnum.LEKTOR);
     }
 
     @PostMapping("/registerAdmin")
-    public ResponseEntity<?> registerAdmin(@RequestBody RegisterRequest request) {
+    public ResponseEntity<?> registerAdmin(@RequestBody RegisterRequestDTO request) {
         return registerUserWithRole(request, RoleEnum.ADMIN);
     }
 
-    private ResponseEntity<?> registerUserWithRole(RegisterRequest request, RoleEnum role) {
+    private ResponseEntity<?> registerUserWithRole(RegisterRequestDTO request, RoleEnum role) {
         User user = mapper.toEntity(request);
         user.setRole(role);
 
@@ -55,7 +55,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequestDTO request) {
         try {
             Authentication authentication = authManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
@@ -84,7 +84,7 @@ public class AuthController {
 
 
     @GetMapping("/me")
-    public ResponseEntity<UserResponse> getCurrentUser() {
+    public ResponseEntity<UserResponseDTO> getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated() && authentication.getPrincipal() instanceof User) {
             User user = (User) authentication.getPrincipal();
@@ -94,7 +94,7 @@ public class AuthController {
     }
 
     @PutMapping("/reset-password/{uuid}")
-    public ResponseEntity<UserResponse> updatePassword(@PathVariable UUID uuid, @RequestBody ResetPassword request){
+    public ResponseEntity<UserResponseDTO> updatePassword(@PathVariable UUID uuid, @RequestBody ResetPasswordDTO request){
 
         User updatedUser = service.update(uuid, request.getPassword());
 

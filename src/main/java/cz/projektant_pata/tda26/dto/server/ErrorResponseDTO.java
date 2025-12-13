@@ -7,7 +7,7 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class ErrorResponse {
+public class ErrorResponseDTO {
     private LocalDateTime timestamp;
     private int status;
     private String error;
