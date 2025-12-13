@@ -45,6 +45,20 @@ public abstract class Question {
     @JsonIgnore
     private Quiz quiz;
 
+    @Column(nullable = false)
+    private Integer correctAttempts = 0;
+
+
     @Column(name = "question_type", insertable = false, updatable = false)
     private String type;
+
+    public void incrementCorrectAttempts() {
+        this.correctAttempts++;
+    }
+    public Double getSuccessRate() {
+        if (quiz == null || quiz.getAttemptsCount() == 0) {
+            return 0.0;
+        }
+        return (double) correctAttempts / quiz.getAttemptsCount() * 100;
+    }
 }

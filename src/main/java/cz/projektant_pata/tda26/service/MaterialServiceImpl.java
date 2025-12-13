@@ -8,11 +8,11 @@ import cz.projektant_pata.tda26.model.course.material.FileMaterial;
 import cz.projektant_pata.tda26.model.course.material.Material;
 import cz.projektant_pata.tda26.model.course.material.UrlMaterial;
 import cz.projektant_pata.tda26.repository.MaterialRepository;
-import jakarta.annotation.PostConstruct; // Nový import
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger; // Nový import
-import org.slf4j.LoggerFactory; // Nový import
-import org.springframework.beans.factory.annotation.Value; // Pro načítání z properties
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,7 +38,16 @@ public class MaterialServiceImpl implements IMaterialService {
     private String uploadDir;
     private Path uploadPath;
 
-    private static final List<String> ALLOWED_MIME_TYPES = Arrays.asList("application/pdf", "image/png", "image/jpeg");
+    private static final List<String> ALLOWED_MIME_TYPES = Arrays.asList(
+            "application/pdf",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // .docx
+            "text/plain",
+            "image/png",
+            "image/jpeg",
+            "image/gif",
+            "video/mp4",
+            "audio/mpeg" // .mp3
+    );
     private static final long MAX_FILE_SIZE = 30 * 1024 * 1024; // 30 MB
 
     @PostConstruct
@@ -58,7 +67,6 @@ public class MaterialServiceImpl implements IMaterialService {
 
     @Override
     public Material find(UUID courseUuid, UUID materialUuid) {
-        // Použití nové pomocné metody
         return getMaterialOrThrow(courseUuid, materialUuid);
     }
 
@@ -75,7 +83,6 @@ public class MaterialServiceImpl implements IMaterialService {
     public Material create(UUID courseUuid, MultipartFile file, String name, String description) {
         Course course = courseService.find(courseUuid);
 
-        // 2. Veškerá logika uložení souboru je v jedné metodě
         String storedFileName = storeFile(file);
 
         FileMaterial material = new FileMaterial();
@@ -169,7 +176,7 @@ public class MaterialServiceImpl implements IMaterialService {
             String extension = (originalFilename != null && originalFilename.contains("."))
                     ? originalFilename.substring(originalFilename.lastIndexOf(".")) : "";
 
-            String storedFileName = UUID.randomUUID().toString() + extension;
+            String storedFileName = UUID.randomUUID() + extension;
             Path targetLocation = this.uploadPath.resolve(storedFileName);
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
             return storedFileName;

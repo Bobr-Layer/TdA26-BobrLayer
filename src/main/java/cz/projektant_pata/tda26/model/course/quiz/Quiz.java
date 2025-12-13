@@ -1,6 +1,5 @@
 package cz.projektant_pata.tda26.model.course.quiz;
 
-import cz.projektant_pata.tda26.model.course.quiz.Question;
 import cz.projektant_pata.tda26.model.course.Course;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -33,10 +32,10 @@ public class Quiz {
     private Course course;
 
     @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderColumn(name = "question_index")
     private List<Question> questions = new ArrayList<>();
 
-    public void addQuestion(Question question) {
-        questions.add(question);
-        question.setQuiz(this);
+    public void incrementAttempts() {
+        this.attemptsCount++;
     }
 }
