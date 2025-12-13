@@ -98,8 +98,9 @@ public class QuizServiceImpl implements IQuizService {
 
     @Override
     @Transactional
-    public Double submitQuiz(UUID courseUuid, UUID quizUuid, SubmitQuizDTO submission) {
+    public SubmitQuizResultDTO submitQuiz(UUID courseUuid, UUID quizUuid, SubmitQuizDTO submission) {
         Quiz quiz = getQuizOrThrow(courseUuid, quizUuid);
+
         quiz.incrementAttempts();
 
         Map<UUID, SubmitAnswerDTO> userAnswersMap = (submission == null || submission.answers() == null)
@@ -108,7 +109,9 @@ public class QuizServiceImpl implements IQuizService {
                 .collect(Collectors.toMap(SubmitAnswerDTO::uuid, dto -> dto));
 
         int totalQuestions = quiz.getQuestions().size();
-        int correctlyAnsweredCount = 0;
+        int correctCount = 0;
+
+        List<Boolean> correctPerQuestion = new java.util.ArrayList<>();
 
         for (Question question : quiz.getQuestions()) {
             SubmitAnswerDTO userAnswer = userAnswersMap.get(question.getUuid());
@@ -117,7 +120,6 @@ public class QuizServiceImpl implements IQuizService {
             if (userAnswer != null) {
                 if (question instanceof SingleChoiceQuestion sq) {
                     isCorrect = Objects.equals(userAnswer.selectedIndex(), sq.getCorrectIndex());
-
                 } else if (question instanceof MultipleChoiceQuestion mq) {
                     isCorrect = validateMultipleChoice(mq, userAnswer.selectedIndices());
                 }
@@ -125,17 +127,23 @@ public class QuizServiceImpl implements IQuizService {
 
             if (isCorrect) {
                 question.incrementCorrectAttempts();
-                correctlyAnsweredCount++;
+                correctCount++;
             }
+
+            correctPerQuestion.add(isCorrect);
         }
 
         quizRepository.save(quiz);
 
-        if (totalQuestions == 0) {
-            return 0.0;
-        }
-        return ((double) correctlyAnsweredCount / totalQuestions) * 100.0;
+        return new SubmitQuizResultDTO(
+                quiz.getUuid(),
+                (double) correctCount,
+                (double) totalQuestions,
+                correctPerQuestion,
+                java.time.LocalDateTime.now()
+        );
     }
+
 
     private boolean validateMultipleChoice(MultipleChoiceQuestion question, List<Integer> userIndices) {
         List<Integer> effectiveUserIndices = (userIndices == null) ? Collections.emptyList() : userIndices;

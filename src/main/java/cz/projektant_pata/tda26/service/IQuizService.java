@@ -2,6 +2,7 @@ package cz.projektant_pata.tda26.service;
 
 import cz.projektant_pata.tda26.dto.course.quiz.QuizRequestDTO;
 import cz.projektant_pata.tda26.dto.course.quiz.question.SubmitQuizDTO;
+import cz.projektant_pata.tda26.dto.course.quiz.question.SubmitQuizResultDTO;
 import cz.projektant_pata.tda26.model.course.quiz.Quiz;
 
 import java.util.List;
@@ -14,5 +15,5 @@ public interface IQuizService {
     Quiz create(UUID courseUuid, QuizRequestDTO dto);
     void kill(UUID courseUuid, UUID quizUuid);
 
-    Double submitQuiz(UUID courseUuid, UUID quizUuid, SubmitQuizDTO submission);
+    SubmitQuizResultDTO submitQuiz(UUID courseUuid, UUID quizUuid, SubmitQuizDTO submission);
 }

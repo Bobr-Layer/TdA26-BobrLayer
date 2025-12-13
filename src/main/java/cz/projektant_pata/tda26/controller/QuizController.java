@@ -2,10 +2,7 @@ package cz.projektant_pata.tda26.controller;
 
 import cz.projektant_pata.tda26.dto.course.quiz.QuizRequestDTO;
 import cz.projektant_pata.tda26.dto.course.quiz.QuizResponseDTO;
-import cz.projektant_pata.tda26.dto.course.quiz.question.QuestionResponseDTO;
-import cz.projektant_pata.tda26.dto.course.quiz.question.MultipleChoiceQuestionResponseDTO;
-import cz.projektant_pata.tda26.dto.course.quiz.question.SingleChoiceQuestionResponseDTO;
-import cz.projektant_pata.tda26.dto.course.quiz.question.SubmitQuizDTO;
+import cz.projektant_pata.tda26.dto.course.quiz.question.*;
 import cz.projektant_pata.tda26.model.course.quiz.MultipleChoiceQuestion;
 import cz.projektant_pata.tda26.model.course.quiz.Question;
 import cz.projektant_pata.tda26.model.course.quiz.Quiz;
@@ -72,14 +69,15 @@ public class QuizController {
     }
 
     @PostMapping("/{quizUuid}/submit")
-    public ResponseEntity<Double> submitQuiz(
+    public ResponseEntity<SubmitQuizResultDTO> submitQuiz(
             @PathVariable UUID courseUuid,
             @PathVariable UUID quizUuid,
             @RequestBody @Valid SubmitQuizDTO submission) {
 
-        Double score = quizService.submitQuiz(courseUuid, quizUuid, submission);
-        return ResponseEntity.ok(score);
+        SubmitQuizResultDTO result = quizService.submitQuiz(courseUuid, quizUuid, submission);
+        return ResponseEntity.ok(result);
     }
+
 
 
     private QuizResponseDTO mapToResponse(Quiz quiz) {
