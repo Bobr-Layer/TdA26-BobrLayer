@@ -5,7 +5,7 @@ import cz.projektant_pata.tda26.model.user.User;
 import cz.projektant_pata.tda26.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.security.crypto.password.PasswordEncoder; // Pokud používáš Security
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -15,6 +15,7 @@ public class DataInitializer implements CommandLineRunner {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
+    //bo potrebuji lektora v DB
     @Override
     public void run(String... args) {
         if (userRepository.findByUsername("lecturer").isEmpty()) {

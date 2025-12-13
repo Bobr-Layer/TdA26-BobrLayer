@@ -13,7 +13,7 @@ public interface IMaterialService {
 
     // Změň nebo přidej:
     Material update(UUID courseUuid, UUID materialUuid, String name, String description, String url);
-    Material updateFile(UUID courseUuid, UUID materialUuid, MultipartFile file, String name, String description);
+    Material update(UUID courseUuid, UUID materialUuid, MultipartFile file, String name, String description);
 
     Material create(UUID courseUuid, MultipartFile file, String name, String description);
     Material create(UUID courseUuid, Material material);

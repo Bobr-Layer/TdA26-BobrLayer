@@ -35,7 +35,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
-        return registerUserWithRole(request, RoleEnum.STUDENT);
+        return registerUserWithRole(request, RoleEnum.LEKTOR);
     }
 
     @PostMapping("/registerAdmin")
@@ -43,17 +43,7 @@ public class AuthController {
         return registerUserWithRole(request, RoleEnum.ADMIN);
     }
 
-    @PostMapping("/registerLector")
-    public ResponseEntity<?> registerLector(@RequestBody RegisterRequest request) {
-        return registerUserWithRole(request, RoleEnum.LEKTOR);
-    }
-
     private ResponseEntity<?> registerUserWithRole(RegisterRequest request, RoleEnum role) {
-        if (service.exists(request.getUsername())) {
-            return ResponseEntity
-                    .badRequest()
-                    .body("Username already exists");
-        }
         User user = mapper.toEntity(request);
         user.setRole(role);
 
@@ -74,7 +64,7 @@ public class AuthController {
             User user = (User) authentication.getPrincipal();
             return ResponseEntity.ok(mapper.toResponse(user));
         } catch (Exception e) {
-            log.error("Login failed for user: {}", request.getUsername(), e); // Správné logování
+            log.error("Login failed for user: {}", request.getUsername(), e);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
         }
     }

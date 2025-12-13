@@ -70,19 +70,12 @@ public class MaterialController {
 
     // 1. UPDATE pro URL a metadata (JSON)
     @PutMapping(path = "/{materialUuid}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<MaterialResponse> updateJson(
+    public ResponseEntity<MaterialResponse> update(
             @PathVariable UUID courseUuid,
             @PathVariable UUID materialUuid,
-            @RequestBody cz.projektant_pata.tda26.dto.course.material.MaterialUpdateRequest request // Změna DTO
+            @RequestBody MaterialUpdateRequest request
     ) {
-        // Musíme ručně namapovat update DTO na entitu nebo poslat hodnoty do servisy
-        // Nejjednodušší je upravit servisní metodu, aby brala DTO nebo jednotlivé fieldy
-        // Ale abychom nerozbili service interface, vytvoříme si "fake" entitu pro přenos dat
 
-        // Zde si pomůžeme tím, že vytvoříme instanci podle toho, co service očekává,
-        // nebo ideálně upravíme service metodu update().
-
-        // VARIANTA A: Úprava Service (viz Krok 3) - DOPORUČENO
         Material updatedMaterial = service.update(courseUuid, materialUuid, request.getName(), request.getDescription(), request.getUrl());
 
         return ResponseEntity.ok(mapper.toResponse(updatedMaterial));
@@ -90,14 +83,14 @@ public class MaterialController {
 
 
     @PutMapping(path = "/{materialUuid}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<MaterialResponse> updateFile(
+    public ResponseEntity<MaterialResponse> update(
             @PathVariable UUID courseUuid,
             @PathVariable UUID materialUuid,
-            @RequestParam(value = "file", required = false) MultipartFile file, // File je volitelný
+            @RequestParam(value = "file", required = false) MultipartFile file,
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "description", required = false) String description
     ) {
-        Material updatedMaterial = service.updateFile(courseUuid, materialUuid, file, name, description);
+        Material updatedMaterial = service.update(courseUuid, materialUuid, file, name, description);
         return ResponseEntity.ok(mapper.toResponse(updatedMaterial));
     }
 

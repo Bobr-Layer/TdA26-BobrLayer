@@ -1,8 +1,9 @@
 package cz.projektant_pata.tda26.handler;
 
 import cz.projektant_pata.tda26.dto.server.ErrorResponse;
-import cz.projektant_pata.tda26.exception.FileStorageException;
-import cz.projektant_pata.tda26.exception.FileValidationException;
+import cz.projektant_pata.tda26.exception.ResourceAlreadyExistsException;
+import cz.projektant_pata.tda26.exception.file.FileStorageException;
+import cz.projektant_pata.tda26.exception.file.FileValidationException;
 import cz.projektant_pata.tda26.exception.ResourceNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -18,7 +19,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
-public class GlobalExceptionHandler {
+public class GlobalExceptionHandler implements IGlobalExceptionHandler{
 
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<ErrorResponse> handleNoHandlerFound(
@@ -70,6 +71,22 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(ResourceAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> handleResourceAlreadyExists(
+            ResourceAlreadyExistsException ex, HttpServletRequest request) {
+
+        ErrorResponse error = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.CONFLICT.value(), // 409 Conflict
+                "Resource Already Exists",
+                ex.getMessage(),
+                request.getRequestURI(),
+                null
+        );
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> handleIllegalArgument(
@@ -136,7 +153,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
-    // 3. Max Upload Size (globální limit Springu) -> 400 Bad Request (nebo 413 Payload Too Large)
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ResponseEntity<ErrorResponse> handleMaxSizeException(
             MaxUploadSizeExceededException ex, HttpServletRequest request) {
@@ -152,19 +168,17 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
-    // 4. File Storage (chyba při zápisu na disk) -> 500 Internal Server Error
     @ExceptionHandler(FileStorageException.class)
     public ResponseEntity<ErrorResponse> handleFileStorage(
             FileStorageException ex, HttpServletRequest request) {
 
-        // Logování chyby je zde kritické
         ex.printStackTrace();
 
         ErrorResponse error = new ErrorResponse(
                 LocalDateTime.now(),
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "File Storage Error",
-                "Nepodařilo se uložit soubor. Kontaktujte administrátora.", // Neukazujeme detail uživateli
+                "Nepodařilo se uložit soubor. Kontaktujte administrátora.",
                 request.getRequestURI(),
                 null
         );
