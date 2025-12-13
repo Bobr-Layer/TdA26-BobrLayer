@@ -11,7 +11,8 @@ public interface IMaterialService {
     List<Material> find(UUID courseUuid);
     Material find(UUID courseUuid, UUID materialUuid);
 
-    Material update(UUID courseUuid, UUID materialUuid, Material material);
+    // Změň nebo přidej:
+    Material update(UUID courseUuid, UUID materialUuid, String name, String description, String url);
     Material updateFile(UUID courseUuid, UUID materialUuid, MultipartFile file, String name, String description);
 
     Material create(UUID courseUuid, MultipartFile file, String name, String description);

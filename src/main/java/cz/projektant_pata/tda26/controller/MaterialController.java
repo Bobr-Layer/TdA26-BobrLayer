@@ -73,12 +73,21 @@ public class MaterialController {
     public ResponseEntity<MaterialResponse> updateJson(
             @PathVariable UUID courseUuid,
             @PathVariable UUID materialUuid,
-            @Valid @RequestBody MaterialRequest request
+            @RequestBody cz.projektant_pata.tda26.dto.course.material.MaterialUpdateRequest request // Změna DTO
     ) {
-        Material materialUpdates = mapper.toEntity(request);
-        Material updatedMaterial = service.update(courseUuid, materialUuid, materialUpdates);
+        // Musíme ručně namapovat update DTO na entitu nebo poslat hodnoty do servisy
+        // Nejjednodušší je upravit servisní metodu, aby brala DTO nebo jednotlivé fieldy
+        // Ale abychom nerozbili service interface, vytvoříme si "fake" entitu pro přenos dat
+
+        // Zde si pomůžeme tím, že vytvoříme instanci podle toho, co service očekává,
+        // nebo ideálně upravíme service metodu update().
+
+        // VARIANTA A: Úprava Service (viz Krok 3) - DOPORUČENO
+        Material updatedMaterial = service.update(courseUuid, materialUuid, request.getName(), request.getDescription(), request.getUrl());
+
         return ResponseEntity.ok(mapper.toResponse(updatedMaterial));
     }
+
 
     @PutMapping(path = "/{materialUuid}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<MaterialResponse> updateFile(
