@@ -5,8 +5,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class FileMaterialResponse extends MaterialResponse {
-    private String fileUrl;
-    private String mimeType;
-    private Integer sizeBytes;
+public class UrlMaterialRequestDTO extends MaterialRequestDTO {
+    private String url;
+    private String faviconUrl;
 }

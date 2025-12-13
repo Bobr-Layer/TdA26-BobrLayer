@@ -152,9 +152,9 @@ public class MaterialServiceImpl implements IMaterialService {
         Material material = materialRepository.findById(materialUuid)
                 .orElseThrow(() -> new ResourceNotFoundException("Materiál s ID " + materialUuid + " nebyl nalezen"));
 
-        if (!material.getCourse().getUuid().equals(courseUuid)) {
+        if (!material.getCourse().getUuid().equals(courseUuid))
             throw new IllegalArgumentException("Materiál nepatří k danému kurzu.");
-        }
+
         return material;
     }
 

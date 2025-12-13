@@ -25,15 +25,15 @@ public class MaterialController {
     private final MaterialMapper mapper;
 
     @GetMapping
-    public ResponseEntity<List<MaterialResponse>> find(@PathVariable UUID courseUuid) {
-        List<MaterialResponse> response = service.find(courseUuid).stream()
+    public ResponseEntity<List<MaterialResponseDTO>> find(@PathVariable UUID courseUuid) {
+        List<MaterialResponseDTO> response = service.find(courseUuid).stream()
                 .map(mapper::toResponse)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{materialUuid}")
-    public ResponseEntity<MaterialResponse> find(
+    public ResponseEntity<MaterialResponseDTO> find(
             @PathVariable UUID courseUuid,
             @PathVariable UUID materialUuid
     ) {
@@ -42,9 +42,9 @@ public class MaterialController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<MaterialResponse> create(
+    public ResponseEntity<MaterialResponseDTO> create(
             @PathVariable UUID courseUuid,
-            @Valid @RequestBody MaterialRequest request
+            @Valid @RequestBody MaterialRequestDTO request
     ) {
         Material materialDraft = mapper.toEntity(request);
         Material savedMaterial = service.create(courseUuid, materialDraft);
@@ -55,7 +55,7 @@ public class MaterialController {
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<MaterialResponse> create(
+    public ResponseEntity<MaterialResponseDTO> create(
             @PathVariable UUID courseUuid,
             @RequestParam("file") MultipartFile file,
             @RequestParam("name") String name,
@@ -70,10 +70,10 @@ public class MaterialController {
 
     // 1. UPDATE pro URL a metadata (JSON)
     @PutMapping(path = "/{materialUuid}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<MaterialResponse> update(
+    public ResponseEntity<MaterialResponseDTO> update(
             @PathVariable UUID courseUuid,
             @PathVariable UUID materialUuid,
-            @RequestBody MaterialUpdateRequest request
+            @RequestBody MaterialUpdateRequestDTO request
     ) {
 
         Material updatedMaterial = service.update(courseUuid, materialUuid, request.getName(), request.getDescription(), request.getUrl());
@@ -83,7 +83,7 @@ public class MaterialController {
 
 
     @PutMapping(path = "/{materialUuid}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<MaterialResponse> update(
+    public ResponseEntity<MaterialResponseDTO> update(
             @PathVariable UUID courseUuid,
             @PathVariable UUID materialUuid,
             @RequestParam(value = "file", required = false) MultipartFile file,

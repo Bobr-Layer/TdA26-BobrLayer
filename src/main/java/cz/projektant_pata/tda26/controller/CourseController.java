@@ -1,7 +1,7 @@
 package cz.projektant_pata.tda26.controller;
 
-import cz.projektant_pata.tda26.dto.course.CourseRequest;
-import cz.projektant_pata.tda26.dto.course.CourseResponse;
+import cz.projektant_pata.tda26.dto.course.CourseRequestDTO;
+import cz.projektant_pata.tda26.dto.course.CourseResponseDTO;
 import cz.projektant_pata.tda26.mapper.CourseMapper;
 import cz.projektant_pata.tda26.model.course.Course;
 import cz.projektant_pata.tda26.model.user.User;
@@ -24,10 +24,10 @@ public class CourseController {
     private final CourseMapper mapper;
 
     @GetMapping
-    public ResponseEntity<List<CourseResponse>> find() {
+    public ResponseEntity<List<CourseResponseDTO>> find() {
         List<Course> courses = service.find();
 
-        List<CourseResponse> response = courses.stream()
+        List<CourseResponseDTO> response = courses.stream()
                 .map(mapper::toResponse)
                 .collect(Collectors.toList());
 
@@ -35,13 +35,13 @@ public class CourseController {
     }
 
     @GetMapping("/{uuid}")
-    public ResponseEntity<CourseResponse> find(@PathVariable UUID uuid) {
+    public ResponseEntity<CourseResponseDTO> find(@PathVariable UUID uuid) {
         Course course = service.find(uuid);
         return ResponseEntity.ok(mapper.toResponse(course));
     }
 
     @PutMapping("/{uuid}")
-    public ResponseEntity<CourseResponse> update(@PathVariable UUID uuid, @RequestBody CourseRequest request) {
+    public ResponseEntity<CourseResponseDTO> update(@PathVariable UUID uuid, @RequestBody CourseRequestDTO request) {
         Course courseUpdateData = mapper.toEntity(request);
         Course updatedCourse = service.update(uuid, courseUpdateData);
 
@@ -49,7 +49,7 @@ public class CourseController {
     }
 
     @PostMapping
-    public ResponseEntity<CourseResponse> create(@RequestBody CourseRequest request) {
+    public ResponseEntity<CourseResponseDTO> create(@RequestBody CourseRequestDTO request) {
         Course newCourse = mapper.toEntity(request);
         Course savedCourse = service.create(newCourse);
 

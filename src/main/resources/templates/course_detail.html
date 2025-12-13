@@ -105,11 +105,59 @@
     </p>
 </div>
 
-<!-- Sekce Kvízy (Placeholder) -->
-<div class="card" style="opacity: 0.7;">
-    <h2 style="margin-top: 0;">Kvízy</h2>
-    <p style="color: #999;">Funkce kvízů zatím není implementována ve view.</p>
+<!-- Sekce Kvízy -->
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
+        <h2 style="margin: 0; color: #495057;">Kvízy</h2>
+        <a th:href="@{/courses/{id}/quizzes/new(id=${course.uuid})}" class="btn btn-success">+ Vytvořit kvíz</a>
+    </div>
+
+    <ul th:if="${course.quizzes != null and !course.quizzes.empty}">
+        <li th:each="quiz : ${course.quizzes}">
+
+            <!-- Levá část: Ikona, Název, Statistiky -->
+            <div class="material-content">
+                <span class="icon">❓</span>
+                <!-- Kliknutí na název spustí kvíz -->
+                <a th:href="@{/courses/{cid}/quizzes/{qid}/play(cid=${course.uuid}, qid=${quiz.uuid})}"
+                   th:text="${quiz.title}"
+                   class="material-link">Název kvízu</a>
+
+                <span class="meta">
+                    <span th:text="${quiz.questions.size()} + ' otázek'">5 otázek</span> •
+                    <span th:text="${quiz.attemptsCount} + ' vyplnění'">10 vyplnění</span>
+                </span>
+            </div>
+
+            <!-- Pravá část: Akční tlačítka -->
+            <div class="actions">
+                <!-- Tlačítko Spustit (Play) -->
+                <a th:href="@{/courses/{cid}/quizzes/{qid}/play(cid=${course.uuid}, qid=${quiz.uuid})}"
+                   class="btn btn-sm btn-primary" title="Spustit kvíz">
+                    ▶ Spustit
+                </a>
+
+                <!-- Tlačítko Editovat -->
+                <a th:href="@{/courses/{cid}/quizzes/{qid}/edit(cid=${course.uuid}, qid=${quiz.uuid})}"
+                   class="btn btn-sm btn-edit">
+                    Upravit
+                </a>
+
+                <!-- Tlačítko Smazat -->
+                <form th:action="@{/courses/{cid}/quizzes/{qid}/delete(cid=${course.uuid}, qid=${quiz.uuid})}" method="post" style="margin: 0;">
+                    <button type="submit" class="btn btn-sm btn-delete" onclick="return confirm('Opravdu smazat tento kvíz?')">
+                        Smazat
+                    </button>
+                </form>
+            </div>
+        </li>
+    </ul>
+
+    <p th:unless="${course.quizzes != null and !course.quizzes.empty}" style="color: #666; font-style: italic; text-align: center; padding: 20px;">
+        Zatím zde nejsou žádné kvízy.
+    </p>
 </div>
+
 
 </body>
 </html>

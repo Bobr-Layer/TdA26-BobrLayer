@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-public class ResetPassword {
+public class ResetPasswordDTO {
 
     @NotBlank(message = "Nové heslo je povinné")
     @Size(min = 6, message = "Nové heslo musí mít alespoň 6 znaků")

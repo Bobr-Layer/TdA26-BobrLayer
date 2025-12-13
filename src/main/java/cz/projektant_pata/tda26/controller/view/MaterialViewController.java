@@ -1,9 +1,9 @@
 package cz.projektant_pata.tda26.controller.view;
 
-import cz.projektant_pata.tda26.dto.course.material.MaterialResponse;
-import cz.projektant_pata.tda26.dto.course.material.UrlMaterialRequest;
-import cz.projektant_pata.tda26.dto.course.material.FileMaterialResponse;
-import cz.projektant_pata.tda26.dto.course.material.UrlMaterialResponse;
+import cz.projektant_pata.tda26.dto.course.material.MaterialResponseDTO;
+import cz.projektant_pata.tda26.dto.course.material.UrlMaterialRequestDTO;
+import cz.projektant_pata.tda26.dto.course.material.FileMaterialResponseDTO;
+import cz.projektant_pata.tda26.dto.course.material.UrlMaterialResponseDTO;
 import cz.projektant_pata.tda26.mapper.MaterialMapper;
 import cz.projektant_pata.tda26.model.course.material.Material;
 import cz.projektant_pata.tda26.service.ICourseService;
@@ -33,7 +33,7 @@ public class MaterialViewController {
 
     @PostMapping("/link")
     public String addUrlMaterial(@PathVariable UUID courseUuid, @RequestParam String name, @RequestParam String url, @RequestParam(required = false) String description) {
-        UrlMaterialRequest request = new UrlMaterialRequest();
+        UrlMaterialRequestDTO request = new UrlMaterialRequestDTO();
         request.setCourseId(courseUuid);
         request.setName(name);
         request.setDescription(description);
@@ -64,15 +64,15 @@ public class MaterialViewController {
             Model model
     ) {
         Material materialEntity = materialService.find(courseUuid, materialUuid);
-        MaterialResponse material = mapper.toResponse(materialEntity);
+        MaterialResponseDTO material = mapper.toResponse(materialEntity);
 
         model.addAttribute("course", courseService.find(courseUuid));
         model.addAttribute("material", material);
 
-        if (material instanceof UrlMaterialResponse) {
+        if (material instanceof UrlMaterialResponseDTO) {
             model.addAttribute("type", "url");
-            model.addAttribute("urlValue", ((UrlMaterialResponse) material).getUrl());
-        } else if (material instanceof FileMaterialResponse) {
+            model.addAttribute("urlValue", ((UrlMaterialResponseDTO) material).getUrl());
+        } else if (material instanceof FileMaterialResponseDTO) {
             model.addAttribute("type", "file");
         }
 

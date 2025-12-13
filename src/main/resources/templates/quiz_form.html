@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Kvíz</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: #f8f9fa; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input[type="text"] { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+        .btn { padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        .hint { font-size: 0.9em; color: #666; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+<h1 th:text="${quiz.uuid == null ? 'Vytvořit nový kvíz' : 'Upravit kvíz'}">Kvíz</h1>
+
+<form th:action="@{${quiz.uuid == null ? '/courses/' + courseUuid + '/quizzes/new' : '/courses/' + courseUuid + '/quizzes/' + quiz.uuid + '/edit'}}"
+      th:object="${quiz}" method="post">
+
+    <div class="form-group">
+        <label>Název kvízu:</label>
+        <input type="text" th:field="*{title}" required placeholder="Např. Test z Java Basics" />
+    </div>
+
+    <!-- Tady by byla sekce pro otázky -->
+    <div class="hint">
+        <em>Poznámka: Přidávání otázek v tomto formuláři vyžaduje JavaScript interaktivitu. Pro tento prototyp uložte název a otázky přidejte přes API klienta.</em>
+    </div>
+
+    <div style="margin-top: 20px;">
+        <button type="submit" class="btn">Uložit</button>
+        <a th:href="@{/courses/{id}(id=${courseUuid})}" style="margin-left: 10px;">Zrušit</a>
+    </div>
+</form>
+
+</body>
+</html>

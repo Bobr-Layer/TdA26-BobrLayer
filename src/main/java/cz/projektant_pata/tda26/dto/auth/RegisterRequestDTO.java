@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-public class RegisterRequest {
+public class RegisterRequestDTO {
 
     @NotBlank(message = "Uživatelské jméno je povinné")
     @Size(min = 3, max = 50, message = "Jméno musí mít 3 až 50 znaků")

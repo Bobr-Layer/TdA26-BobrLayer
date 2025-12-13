@@ -1,6 +1,6 @@
 package cz.projektant_pata.tda26.controller;
 
-import cz.projektant_pata.tda26.dto.user.UserResponse;
+import cz.projektant_pata.tda26.dto.user.UserResponseDTO;
 import cz.projektant_pata.tda26.mapper.UserMapper;
 import cz.projektant_pata.tda26.model.user.User;
 import cz.projektant_pata.tda26.service.IUserService;
@@ -19,8 +19,8 @@ public class UserController {
     private final UserMapper mapper;
 
     @GetMapping
-    public ResponseEntity<List<UserResponse>> find() {
-        List<UserResponse> users = service.find()
+    public ResponseEntity<List<UserResponseDTO>> find() {
+        List<UserResponseDTO> users = service.find()
                 .stream()
                 .map(mapper::toResponse)
                 .toList();
@@ -28,7 +28,7 @@ public class UserController {
     }
 
     @GetMapping("/{uuid}")
-    public ResponseEntity<UserResponse> find(@PathVariable UUID uuid) {
+    public ResponseEntity<UserResponseDTO> find(@PathVariable UUID uuid) {
         User user = service.find(uuid);
         return ResponseEntity.ok(mapper.toResponse(user));
     }

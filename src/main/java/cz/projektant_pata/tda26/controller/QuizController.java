@@ -1,9 +1,12 @@
 package cz.projektant_pata.tda26.controller;
 
-import cz.projektant_pata.tda26.dto.course.quiz.QuizRequest;
-import cz.projektant_pata.tda26.dto.course.quiz.QuizResponse;
-import cz.projektant_pata.tda26.mapper.QuizMapper;
+import cz.projektant_pata.tda26.dto.course.quiz.QuizRequestDTO;
+import cz.projektant_pata.tda26.dto.course.quiz.QuizResponseDTO;
+import cz.projektant_pata.tda26.dto.course.quiz.question.*;
+import cz.projektant_pata.tda26.model.course.quiz.MultipleChoiceQuestion;
+import cz.projektant_pata.tda26.model.course.quiz.Question;
 import cz.projektant_pata.tda26.model.course.quiz.Quiz;
+import cz.projektant_pata.tda26.model.course.quiz.SingleChoiceQuestion;
 import cz.projektant_pata.tda26.service.IQuizService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -16,59 +19,103 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/courses/{courseUuid}/quizes")
+@RequestMapping("/api/courses/{courseUuid}/quizzes")
 @RequiredArgsConstructor
 public class QuizController {
-    private final IQuizService service;
-    private final QuizMapper mapper;
+
+    private final IQuizService quizService;
 
     @GetMapping
-    public ResponseEntity<List<QuizResponse>> find(@PathVariable UUID courseUuid){
-        List<QuizResponse> response = service.find(courseUuid).stream()
-                .map(mapper::toResponse)
+    public ResponseEntity<List<QuizResponseDTO>> getAllQuizzes(@PathVariable UUID courseUuid) {
+        List<Quiz> quizzes = quizService.find(courseUuid);
+        List<QuizResponseDTO> response = quizzes.stream()
+                .map(this::mapToResponse)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/{quizUuid}")
-    public ResponseEntity<QuizResponse> find(
+    @PostMapping
+    public ResponseEntity<QuizResponseDTO> createQuiz(
             @PathVariable UUID courseUuid,
-            @PathVariable UUID quizUuid
-    ){
-        Quiz quiz = service.find(courseUuid, quizUuid);
-        return ResponseEntity.ok(mapper.toResponse(quiz));
+            @RequestBody @Valid QuizRequestDTO request) {
+        Quiz createdQuiz = quizService.create(courseUuid, request);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(mapToResponse(createdQuiz));
     }
 
-    @PostMapping
-    public ResponseEntity<QuizResponse> create(
+    @GetMapping("/{quizUuid}")
+    public ResponseEntity<QuizResponseDTO> getQuiz(
             @PathVariable UUID courseUuid,
-            @Valid @RequestBody QuizRequest request
-    ) {
-        Quiz quizDraft = mapper.toEntity(request);
-        Quiz createdQuiz = service.create(courseUuid, quizDraft);
-
-        QuizResponse response = mapper.toResponse(createdQuiz);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+            @PathVariable UUID quizUuid) {
+        Quiz quiz = quizService.find(courseUuid, quizUuid);
+        return ResponseEntity.ok(mapToResponse(quiz));
     }
 
     @PutMapping("/{quizUuid}")
-    public ResponseEntity<QuizResponse> update(
+    public ResponseEntity<QuizResponseDTO> updateQuiz(
             @PathVariable UUID courseUuid,
             @PathVariable UUID quizUuid,
-            @Valid @RequestBody QuizRequest request
-    ) {
-        Quiz quizDraft = mapper.toEntity(request);
-        Quiz updatedQuiz = service.update(courseUuid, quizUuid, quizDraft);
-
-        return ResponseEntity.ok(mapper.toResponse(updatedQuiz));
+            @RequestBody @Valid QuizRequestDTO request) {
+        Quiz updatedQuiz = quizService.update(courseUuid, quizUuid, request);
+        return ResponseEntity.ok(mapToResponse(updatedQuiz));
     }
 
     @DeleteMapping("/{quizUuid}")
-    public ResponseEntity<Void> delete(
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteQuiz(
             @PathVariable UUID courseUuid,
-            @PathVariable UUID quizUuid
-    ) {
-        service.kill(courseUuid, quizUuid);
-        return ResponseEntity.noContent().build();
+            @PathVariable UUID quizUuid) {
+        quizService.kill(courseUuid, quizUuid);
+    }
+
+    @PostMapping("/{quizUuid}/submit")
+    public ResponseEntity<SubmitQuizResultDTO> submitQuiz(
+            @PathVariable UUID courseUuid,
+            @PathVariable UUID quizUuid,
+            @RequestBody @Valid SubmitQuizDTO submission) {
+
+        SubmitQuizResultDTO result = quizService.submitQuiz(courseUuid, quizUuid, submission);
+        return ResponseEntity.ok(result);
+    }
+
+
+
+    private QuizResponseDTO mapToResponse(Quiz quiz) {
+        QuizResponseDTO dto = new QuizResponseDTO();
+        dto.setUuid(quiz.getUuid());
+        dto.setTitle(quiz.getTitle());
+        dto.setAttemptsCount(quiz.getAttemptsCount());
+
+        List<QuestionResponseDTO> questions = quiz.getQuestions().stream()
+                .map(this::mapQuestionToResponse)
+                .collect(Collectors.toList());
+        dto.setQuestions(questions);
+
+        return dto;
+    }
+
+    private QuestionResponseDTO mapQuestionToResponse(Question q) {
+        if (q instanceof SingleChoiceQuestion sq) {
+            SingleChoiceQuestionResponseDTO dto = new SingleChoiceQuestionResponseDTO();
+            fillCommonFields(dto, sq);
+            dto.setCorrectIndex(sq.getCorrectIndex());
+            dto.setType("singleChoice");
+            return dto;
+
+        } else if (q instanceof MultipleChoiceQuestion mq) {
+            MultipleChoiceQuestionResponseDTO dto = new MultipleChoiceQuestionResponseDTO();
+            fillCommonFields(dto, mq);
+            dto.setCorrectIndices(mq.getCorrectIndices());
+            dto.setType("multipleChoice");
+            return dto;
+        }
+        throw new IllegalStateException("Unknown question type: " + q.getClass());
+    }
+
+    private void fillCommonFields(QuestionResponseDTO dto, Question q) {
+        dto.setUuid(q.getUuid());
+        dto.setQuestion(q.getQuestion());
+        dto.setOptions(q.getOptions());
+        dto.setSuccessRate(q.getSuccessRate());
     }
 }

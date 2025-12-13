@@ -3,7 +3,7 @@ package cz.projektant_pata.tda26.dto.course.material;
 import lombok.Data;
 
 @Data
-public class MaterialUpdateRequest {
+public class MaterialUpdateRequestDTO {
     private String name;
     private String description;
 

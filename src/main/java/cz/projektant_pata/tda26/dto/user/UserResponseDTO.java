@@ -7,7 +7,7 @@ import java.util.UUID;
 
 @Getter
 @Setter
-public class UserResponse {
+public class UserResponseDTO {
     private UUID uuid;
     private String username;
     private String role;
