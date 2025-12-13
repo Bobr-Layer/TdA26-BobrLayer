@@ -2,6 +2,7 @@ package cz.projektant_pata.tda26.controller.view;
 
 import cz.projektant_pata.tda26.controller.MaterialController;
 import cz.projektant_pata.tda26.dto.course.material.MaterialResponse;
+import cz.projektant_pata.tda26.dto.course.material.MaterialUpdateRequest; // NOVÝ IMPORT
 import cz.projektant_pata.tda26.dto.course.material.UrlMaterialRequest;
 import cz.projektant_pata.tda26.dto.course.material.FileMaterialResponse;
 import cz.projektant_pata.tda26.dto.course.material.UrlMaterialResponse;
@@ -77,7 +78,7 @@ public class MaterialViewController {
         return "material_edit";
     }
 
-    // 2. Zpracování editace URL (JSON update)
+    // 2. Zpracování editace URL (JSON update) - OPRAVENO
     @PostMapping("/{materialUuid}/edit/link")
     public String updateUrlMaterial(
             @PathVariable UUID courseUuid,
@@ -86,8 +87,8 @@ public class MaterialViewController {
             @RequestParam String url,
             @RequestParam(required = false) String description
     ) {
-        UrlMaterialRequest request = new UrlMaterialRequest();
-        request.setCourseId(courseUuid); // Pro jistotu
+        // ZMĚNA: Používáme MaterialUpdateRequest místo UrlMaterialRequest
+        MaterialUpdateRequest request = new MaterialUpdateRequest();
         request.setName(name);
         request.setDescription(description);
         request.setUrl(url);
