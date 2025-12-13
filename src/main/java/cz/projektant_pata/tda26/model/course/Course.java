@@ -35,7 +35,7 @@ public class Course {
 
 @OneToMany(cascade = CascadeType.ALL)
 @JoinColumn(name = "course_id")
-private List<Quiz> quizzes;
+private List<Quiz> quizzes = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "course_id")

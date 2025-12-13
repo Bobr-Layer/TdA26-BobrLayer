@@ -22,6 +22,6 @@ public class CourseResponseDTO {
     private String lectorName;
 
     private List<MaterialResponseDTO> materials;
-    private List<Quiz> quizzes = new ArrayList<>();
+    private List<Quiz> quizzes;
     private List<Quiz> feed = new ArrayList<>();
 }
