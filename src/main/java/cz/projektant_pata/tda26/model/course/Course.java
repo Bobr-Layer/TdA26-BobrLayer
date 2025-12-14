@@ -34,8 +34,7 @@ public class Course {
     private List<Material> materials = new ArrayList<>();
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "course_id")
-private List<Quiz> quizzes = new ArrayList<>();
+    private List<Quiz> quizzes = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "course_id")
