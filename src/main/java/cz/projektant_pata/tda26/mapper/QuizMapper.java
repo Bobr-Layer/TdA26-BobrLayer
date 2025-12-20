@@ -22,9 +22,8 @@ public class QuizMapper {
         QuizResponseDTO response = new QuizResponseDTO();
         response.setUuid(quiz.getUuid());
         response.setTitle(quiz.getTitle());
-        response.setAttemptsCount(quiz.getAttemptsCount()); // Nezapomeň na statistiky
+        response.setAttemptsCount(quiz.getAttemptsCount());
 
-        // Mapování otázek
         if (quiz.getQuestions() != null) {
             List<QuestionResponseDTO> questionDtos = quiz.getQuestions().stream()
                     .map(this::mapQuestionToResponse)
@@ -40,25 +39,21 @@ public class QuizMapper {
     public Quiz toEntity(QuizRequestDTO request) {
         Quiz quiz = new Quiz();
         quiz.setTitle(request.getTitle());
-        // Pozor: Questions se zde obvykle neresolvují, to dělá QuizService
-        // při vytváření entit z DTO (metoda mapDtoToEntity v service).
         return quiz;
     }
-
-    // --- POMOCNÉ METODY PRO OTÁZKY (Polymorfismus) ---
 
     private QuestionResponseDTO mapQuestionToResponse(Question q) {
         if (q instanceof SingleChoiceQuestion sq) {
             SingleChoiceQuestionResponseDTO dto = new SingleChoiceQuestionResponseDTO();
             fillCommonFields(dto, sq);
             dto.setCorrectIndex(sq.getCorrectIndex());
-            // dto.setType("singleChoice"); // Pokud to Jackson neudělá sám
+            dto.setType("singleChoice"); // Pokud to Jackson neudělá sám
             return dto;
         } else if (q instanceof MultipleChoiceQuestion mq) {
             MultipleChoiceQuestionResponseDTO dto = new MultipleChoiceQuestionResponseDTO();
             fillCommonFields(dto, mq);
             dto.setCorrectIndices(mq.getCorrectIndices());
-            // dto.setType("multipleChoice");
+            dto.setType("multipleChoice");
             return dto;
         }
         throw new IllegalArgumentException("Unknown question type: " + q.getClass());

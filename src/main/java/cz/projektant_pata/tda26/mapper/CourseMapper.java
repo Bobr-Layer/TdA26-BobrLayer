@@ -34,7 +34,6 @@ public class CourseMapper {
         response.setLectorId(entity.getLector().getUuid());
         response.setLectorName(entity.getLector().getUsername());
 
-        // Mapování materiálů
         if (entity.getMaterials() != null) {
             List<MaterialResponseDTO> materials = entity.getMaterials().stream()
                     .map(materialMapper::toResponse)
