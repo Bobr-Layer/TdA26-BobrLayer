@@ -41,7 +41,6 @@ public class Course {
     private List<Quiz> feed = new ArrayList<>();
 
 
-
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private Instant createdAt;

@@ -78,7 +78,6 @@ public class QuizServiceImpl implements IQuizService {
         quiz.setCourse(course);
         quiz.setTitle(dto.getTitle());
 
-        // Mapování a přidání otázek
         if (dto.getQuestions() != null) {
             for (QuestionRequestDTO qDto : dto.getQuestions()) {
                 Question questionEntity = mapDtoToEntity(qDto);
