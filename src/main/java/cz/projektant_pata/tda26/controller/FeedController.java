@@ -50,7 +50,7 @@ public class FeedController {
             @RequestBody FeedRequestDTO request
 //            @AuthenticationPrincipal User user
     ) {
-        FeedItem createdItem = feedService.create(courseId, null, request.message());
+        FeedItem createdItem = feedService.create(courseId, request.message());
         FeedResponseDTO dto = feedMapper.toDto(createdItem);
 
         sseService.update(courseId, dto);

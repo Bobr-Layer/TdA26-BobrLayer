@@ -2,6 +2,7 @@ package cz.projektant_pata.tda26.model.course.feed;
 
 import cz.projektant_pata.tda26.model.course.Course;
 import cz.projektant_pata.tda26.model.user.User;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

@@ -13,6 +13,6 @@ public interface IFeedItemService {
     List<FeedItem> find(UUID courseUuid);
     FeedItem create(UUID courseUuid, UUID authorUuid, String message);
     FeedItem create(UUID courseUuid, String message);
-    FeedItem update(UUID itemUuid, UUID userUuid, String newMessage);
-    void delete(UUID itemUuid, UUID userUuid);
+    FeedItem update(UUID itemUuid, String newMessage);
+    void delete(UUID itemUuid);
 }

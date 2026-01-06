@@ -52,23 +52,24 @@ public class FeedItemServiceImpl implements IFeedItemService {
 
     @Override
     @Transactional
-    public FeedItem update(UUID itemUuid, UUID userUuid, String newMessage) {
+    public FeedItem update(UUID itemUuid, String newMessage) {
         FeedItem item = getFeedItem(itemUuid);
 
-        verifyAuthor(item, userUuid);
+//        verifyAuthor(item, userUuid);
 
         item.setMessage(newMessage);
         item.setEdited(true);
+        item.setAuthor(null);
 
         return feedRepository.save(item);
     }
 
     @Override
     @Transactional
-    public void delete(UUID itemUuid, UUID userUuid) {
+    public void delete(UUID itemUuid) {
         FeedItem item = getFeedItem(itemUuid);
 
-        verifyAuthor(item, userUuid);
+//        verifyAuthor(item, userUuid);
 
         feedRepository.delete(item);
     }
