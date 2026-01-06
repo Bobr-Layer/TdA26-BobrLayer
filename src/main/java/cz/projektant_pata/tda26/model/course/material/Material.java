@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp; // Důležité pro automatický čas
 
+import java.time.Instant;
 import java.time.LocalDateTime; // Nový import
 import java.util.UUID;
 
@@ -36,7 +37,7 @@ public abstract class Material {
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
     @ManyToOne
     @JoinColumn(name = "course_id")
