@@ -1,6 +1,7 @@
 package cz.projektant_pata.tda26.model.course;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import cz.projektant_pata.tda26.model.course.feed.FeedItem;
 import cz.projektant_pata.tda26.model.course.quiz.Quiz;
 import cz.projektant_pata.tda26.model.user.User;
 import cz.projektant_pata.tda26.model.course.material.Material;
@@ -36,9 +37,8 @@ public class Course {
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Quiz> quizzes = new ArrayList<>();
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "course_id")
-    private List<Quiz> feed = new ArrayList<>();
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FeedItem> feed = new ArrayList<>();
 
 
     @CreationTimestamp
@@ -49,8 +49,9 @@ public class Course {
     @Column(nullable = false)
     private Instant updatedAt;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY) // Doporučuji LAZY pro lektora
     @JoinColumn(name = "lector_id", nullable = false)
+    @JsonIgnore // Aby se nenačítal celý lektor, pokud to není nutné (záleží na vašem DTO)
     private User lector;
 
 
@@ -74,6 +75,4 @@ public class Course {
         this.students.remove(student);
         student.getEnrolledCourses().remove(this);
     }
-
-
 }

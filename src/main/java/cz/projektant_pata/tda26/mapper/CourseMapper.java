@@ -2,6 +2,7 @@ package cz.projektant_pata.tda26.mapper;
 
 import cz.projektant_pata.tda26.dto.course.CourseRequestDTO;
 import cz.projektant_pata.tda26.dto.course.CourseResponseDTO;
+import cz.projektant_pata.tda26.dto.course.feed.FeedResponseDTO;
 import cz.projektant_pata.tda26.dto.course.material.MaterialResponseDTO;
 import cz.projektant_pata.tda26.dto.course.quiz.QuizResponseDTO;
 import cz.projektant_pata.tda26.model.course.Course;
@@ -18,6 +19,7 @@ public class CourseMapper {
 
     private final MaterialMapper materialMapper;
     private final QuizMapper quizMapper;
+    private final FeedMapper feedMapper;
 
     public Course toEntity(CourseRequestDTO dto) {
         Course course = new Course();
@@ -52,6 +54,16 @@ public class CourseMapper {
             response.setQuizzes(Collections.emptyList());
         }
 
+        if (entity.getFeed() != null) {
+            List<FeedResponseDTO> feed = entity.getFeed().stream()
+                    .map(feedMapper::toDto) // Použije metodu z FeedMapperu
+                    .collect(Collectors.toList());
+            response.setFeed(feed);
+        } else {
+            response.setFeed(Collections.emptyList());
+        }
+
         return response;
+
     }
 }

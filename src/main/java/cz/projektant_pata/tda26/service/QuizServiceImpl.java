@@ -3,6 +3,9 @@ package cz.projektant_pata.tda26.service;
 
 import cz.projektant_pata.tda26.dto.course.quiz.QuizRequestDTO;
 import cz.projektant_pata.tda26.dto.course.quiz.question.*;
+import cz.projektant_pata.tda26.event.course.quiz.QuizCreatedEvent;
+import cz.projektant_pata.tda26.event.course.quiz.QuizKilledEvent;
+import cz.projektant_pata.tda26.event.course.quiz.QuizUpdatedEvent;
 import cz.projektant_pata.tda26.exception.ResourceNotFoundException;
 import cz.projektant_pata.tda26.model.course.Course;
 import cz.projektant_pata.tda26.model.course.quiz.MultipleChoiceQuestion;
@@ -13,6 +16,7 @@ import cz.projektant_pata.tda26.repository.CourseRepository;
 import cz.projektant_pata.tda26.repository.QuizRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -24,6 +28,8 @@ public class QuizServiceImpl implements IQuizService {
 
     private final QuizRepository quizRepository;
     private final CourseRepository courseRepository;
+    private final ApplicationEventPublisher eventPublisher;
+
 
     @Override
     @Transactional
@@ -41,7 +47,7 @@ public class QuizServiceImpl implements IQuizService {
     @Transactional
     public Quiz update(UUID courseUuid, UUID quizUuid, QuizRequestDTO dto) {
         Quiz existingQuiz = getQuizOrThrow(courseUuid, quizUuid);
-
+        String oldTitle = existingQuiz.getTitle();
         existingQuiz.setTitle(dto.getTitle());
 
         if (dto.getQuestions() == null || dto.getQuestions().isEmpty()) {
@@ -65,7 +71,10 @@ public class QuizServiceImpl implements IQuizService {
             }
         }
 
-        return quizRepository.save(existingQuiz);
+        Quiz saved = quizRepository.save(existingQuiz);
+        eventPublisher.publishEvent(new QuizUpdatedEvent(courseUuid, oldTitle, existingQuiz.getTitle()));
+
+        return saved;
     }
 
     @Override
@@ -85,14 +94,20 @@ public class QuizServiceImpl implements IQuizService {
             }
         }
 
-        return quizRepository.save(quiz);
+        Quiz saved = quizRepository.save(quiz);
+        eventPublisher.publishEvent(new QuizCreatedEvent(courseUuid, saved.getTitle()));
+
+        return saved;
     }
 
     @Override
     @Transactional
     public void kill(UUID courseUuid, UUID quizUuid) {
         Quiz quiz = getQuizOrThrow(courseUuid, quizUuid);
+        String quizTitle = quiz.getTitle();
+
         quizRepository.delete(quiz);
+        eventPublisher.publishEvent(new QuizKilledEvent(courseUuid, quizTitle));
     }
 
     @Override

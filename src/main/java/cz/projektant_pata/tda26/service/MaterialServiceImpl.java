@@ -1,5 +1,8 @@
 package cz.projektant_pata.tda26.service;
 
+import cz.projektant_pata.tda26.event.course.material.MaterialCreatedEvent;
+import cz.projektant_pata.tda26.event.course.material.MaterialKilledEvent;
+import cz.projektant_pata.tda26.event.course.material.MaterialUpdatedEvent;
 import cz.projektant_pata.tda26.exception.file.FileStorageException;
 import cz.projektant_pata.tda26.exception.file.FileValidationException;
 import cz.projektant_pata.tda26.exception.ResourceNotFoundException;
@@ -13,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,6 +35,8 @@ import java.util.UUID;
 public class MaterialServiceImpl implements IMaterialService {
 
     private final MaterialRepository materialRepository;
+    private final ApplicationEventPublisher eventPublisher;
+
     private final ICourseService courseService;
     private static final Logger logger = LoggerFactory.getLogger(MaterialServiceImpl.class);
 
@@ -75,7 +81,59 @@ public class MaterialServiceImpl implements IMaterialService {
     public Material create(UUID courseUuid, Material material) {
         Course course = courseService.find(courseUuid);
         material.setCourse(course);
+        eventPublisher.publishEvent(new MaterialCreatedEvent(courseUuid, material.getName(), material.getTypeLabel()));
         return materialRepository.save(material);
+    }
+
+    @Override
+    @Transactional
+    public Material update(UUID courseUuid, UUID materialUuid, String name, String description, String url) {
+        Material existingMaterial = getMaterialOrThrow(courseUuid, materialUuid);
+        String oldName = existingMaterial.getName(); // Uložíme původní jméno
+
+        if (name != null) existingMaterial.setName(name);
+        if (description != null) existingMaterial.setDescription(description);
+        if (existingMaterial instanceof UrlMaterial urlMaterial && url != null) {
+            urlMaterial.setUrl(url);
+        }
+
+        Material saved = materialRepository.save(existingMaterial);
+
+        // EVENT: Updated (jen pokud se změnilo jméno, volitelně i jindy)
+        if (!oldName.equals(saved.getName())) {
+            eventPublisher.publishEvent(new MaterialUpdatedEvent(courseUuid, oldName, saved.getName(), saved.getTypeLabel()));
+        }
+
+        return saved;
+    }
+
+    @Override
+    @Transactional
+    public Material update(UUID courseUuid, UUID materialUuid, MultipartFile file, String name, String description) {
+        Material existingMaterial = getMaterialOrThrow(courseUuid, materialUuid);
+        if (!(existingMaterial instanceof FileMaterial fileMaterial)) {
+            throw new IllegalArgumentException("Invalid material type");
+        }
+
+        String oldName = existingMaterial.getName();
+
+        if (name != null && !name.isBlank()) fileMaterial.setName(name);
+        if (description != null) fileMaterial.setDescription(description);
+
+        if (file != null && !file.isEmpty()) {
+            deletePhysicalFile(fileMaterial.getFileUrl());
+            String newStoredFileName = storeFile(file);
+            fileMaterial.setFileUrl("/uploads/" + newStoredFileName);
+            fileMaterial.setMimeType(getCleanContentType(file.getContentType()));
+            fileMaterial.setSizeBytes((int) file.getSize());
+        }
+
+        Material saved = materialRepository.save(fileMaterial);
+
+        eventPublisher.publishEvent(new MaterialUpdatedEvent(courseUuid, oldName, saved.getName(), saved.getTypeLabel()));
+
+
+        return saved;
     }
 
     @Override
@@ -92,59 +150,28 @@ public class MaterialServiceImpl implements IMaterialService {
         material.setFileUrl("/uploads/" + storedFileName);
         material.setMimeType(getCleanContentType(file.getContentType()));
         material.setSizeBytes((int) file.getSize());
+        eventPublisher.publishEvent(new MaterialCreatedEvent(courseUuid, material.getName(), material.getTypeLabel()));
 
         return materialRepository.save(material);
     }
 
-    @Override
-    @Transactional
-    public Material update(UUID courseUuid, UUID materialUuid, String name, String description, String url) {
-        Material existingMaterial = getMaterialOrThrow(courseUuid, materialUuid);
-
-        if (name != null) existingMaterial.setName(name);
-        if (description != null) existingMaterial.setDescription(description);
-
-        if (existingMaterial instanceof UrlMaterial urlMaterial && url != null) {
-            urlMaterial.setUrl(url);
-        }
-
-        return materialRepository.save(existingMaterial);
-    }
-
-    @Override
-    @Transactional
-    public Material update(UUID courseUuid, UUID materialUuid, MultipartFile file, String name, String description) {
-        Material existingMaterial = getMaterialOrThrow(courseUuid, materialUuid);
-
-        if (!(existingMaterial instanceof FileMaterial fileMaterial)) {
-            throw new IllegalArgumentException("Tento endpoint slouží jen pro aktualizaci souborových materiálů.");
-        }
-
-        if (name != null && !name.isBlank()) fileMaterial.setName(name);
-        if (description != null) fileMaterial.setDescription(description);
-
-        if (file != null && !file.isEmpty()) {
-            deletePhysicalFile(fileMaterial.getFileUrl());
-
-            String newStoredFileName = storeFile(file);
-            fileMaterial.setFileUrl("/uploads/" + newStoredFileName);
-            fileMaterial.setMimeType(getCleanContentType(file.getContentType()));
-            fileMaterial.setSizeBytes((int) file.getSize());
-        }
-
-        return materialRepository.save(fileMaterial);
-    }
 
     @Override
     @Transactional
     public Material kill(UUID courseUuid, UUID materialUuid) {
         Material material = getMaterialOrThrow(courseUuid, materialUuid);
+        String materialName = material.getName();
+        String type = material.getTypeLabel();
 
         if (material instanceof FileMaterial fileMaterial) {
             deletePhysicalFile(fileMaterial.getFileUrl());
         }
 
         materialRepository.delete(material);
+
+        // EVENT: Deleted
+        eventPublisher.publishEvent(new MaterialKilledEvent(courseUuid, materialName, type));
+
         return material;
     }
 
