@@ -65,7 +65,7 @@ public class FeedController {
             @RequestBody FeedRequestDTO request
 //            @AuthenticationPrincipal User user
     ) {
-        FeedItem updatedItem = feedService.update(itemId, null, request.message());
+        FeedItem updatedItem = feedService.update(itemId, request.message());
         FeedResponseDTO dto = feedMapper.toDto(updatedItem);
 
         sseService.update(courseId, dto);
@@ -79,7 +79,7 @@ public class FeedController {
             @PathVariable UUID itemId
 //            @AuthenticationPrincipal User user
     ) {
-        feedService.delete(itemId, null);
+        feedService.delete(itemId);
         sseService.kill(courseId, itemId);
 
         return ResponseEntity.noContent().build();
