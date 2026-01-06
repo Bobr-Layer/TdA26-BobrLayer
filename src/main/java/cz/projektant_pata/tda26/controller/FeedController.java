@@ -4,6 +4,7 @@ import cz.projektant_pata.tda26.dto.course.feed.FeedRequestDTO;
 import cz.projektant_pata.tda26.dto.course.feed.FeedResponseDTO;
 import cz.projektant_pata.tda26.mapper.FeedMapper;
 import cz.projektant_pata.tda26.model.course.feed.FeedItem;
+import cz.projektant_pata.tda26.model.course.feed.FeedType;
 import cz.projektant_pata.tda26.model.user.User;
 import cz.projektant_pata.tda26.service.IFeedItemService;
 import cz.projektant_pata.tda26.service.SseService;
@@ -50,7 +51,7 @@ public class FeedController {
             @RequestBody FeedRequestDTO request
 //            @AuthenticationPrincipal User user
     ) {
-        FeedItem createdItem = feedService.create(courseId, request.message());
+        FeedItem createdItem = feedService.create(courseId, FeedType.MANUAL,request.message());
         FeedResponseDTO dto = feedMapper.toDto(createdItem);
 
         sseService.update(courseId, dto);

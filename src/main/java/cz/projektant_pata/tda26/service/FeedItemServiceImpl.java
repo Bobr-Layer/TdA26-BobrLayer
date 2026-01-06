@@ -45,7 +45,7 @@ public class FeedItemServiceImpl implements IFeedItemService {
 
     @Override
     @Transactional
-    public FeedItem create(UUID courseUuid, String message) {
+    public FeedItem create(UUID courseUuid, FeedType type, String message) {
         Course course = getCourse(courseUuid);
         return saveFeedItem(course, null, FeedType.SYSTEM, message);
     }

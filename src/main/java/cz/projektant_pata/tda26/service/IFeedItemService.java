@@ -1,6 +1,7 @@
 package cz.projektant_pata.tda26.service;
 
 import cz.projektant_pata.tda26.model.course.feed.FeedItem;
+import cz.projektant_pata.tda26.model.course.feed.FeedType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -12,7 +13,7 @@ public interface IFeedItemService {
     List<FeedItem> find();
     List<FeedItem> find(UUID courseUuid);
     FeedItem create(UUID courseUuid, UUID authorUuid, String message);
-    FeedItem create(UUID courseUuid, String message);
+    FeedItem create(UUID courseUuid, FeedType type, String message);
     FeedItem update(UUID itemUuid, String newMessage);
     void delete(UUID itemUuid);
 }

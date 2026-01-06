@@ -9,6 +9,7 @@ import cz.projektant_pata.tda26.event.course.quiz.QuizKilledEvent;
 import cz.projektant_pata.tda26.event.course.quiz.QuizUpdatedEvent;
 import cz.projektant_pata.tda26.mapper.FeedMapper;
 import cz.projektant_pata.tda26.model.course.feed.FeedItem;
+import cz.projektant_pata.tda26.model.course.feed.FeedType;
 import cz.projektant_pata.tda26.service.IFeedItemService;
 import cz.projektant_pata.tda26.service.SseService;
 import lombok.RequiredArgsConstructor;
@@ -101,7 +102,7 @@ public class FeedEventListener {
 
     private void createAndBroadcast(java.util.UUID courseId, String message) {
         try {
-            FeedItem item = feedService.create(courseId, message);
+            FeedItem item = feedService.create(courseId, FeedType.SYSTEM ,message);
             FeedResponseDTO dto = feedMapper.toDto(item);
             sseService.update(courseId, dto);
         } catch (Exception e) {
