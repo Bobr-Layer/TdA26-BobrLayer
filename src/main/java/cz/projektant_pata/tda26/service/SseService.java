@@ -28,6 +28,15 @@ public class SseService {
 
         emitter.onCompletion(cleanup);
         emitter.onTimeout(cleanup);
+
+        try {
+            emitter.send(SseEmitter.event().comment("connected"));
+
+        } catch (IOException e) {
+            emitter.completeWithError(e);
+            cleanup.run();
+        }
+
         return emitter;
     }
 

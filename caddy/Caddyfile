@@ -14,12 +14,21 @@
 #    }
 #}
 http://:80 {
-# Pokud URL konci na /, orizni ho (ale necha samotny root /)
+# Řešení koncových lomítek (volitelné, z vašeho příkladu)
     @trailingSlash {
                        path_regexp pattern .*/$
                        not path /
                    }
     uri @trailingSlash strip_suffix /
 
-    reverse_proxy * 127.0.0.1:8080
+# 1. Pravidlo pro React/Frontend na portu 3000
+# Vše, co začíná /web, pošli na 127.0.0.1:3000
+    route /web* {
+                    reverse_proxy 127.0.0.1:3000
+                }
+
+# 2. Vše ostatní pošli na Spring Boot API (port 8080)
+    route /* {
+                 reverse_proxy 127.0.0.1:8080
+             }
 }
