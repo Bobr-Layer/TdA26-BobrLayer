@@ -1,0 +1,61 @@
+@use "../../../index.scss" as *;
+
+.input {
+    color: map-get($colors, darkerShadow);
+    background-color: map-get($colors, shadow);
+    font-size: 1rem;
+    padding-inline: 1.5rem;
+    padding-block: 0.75rem;
+    border: 0;
+    outline: 0;
+    width: 25rem;
+    box-sizing: border-box;
+
+    &:focus,
+    &:hover {
+        border: 0;
+        outline: 0;
+    }
+
+    &::placeholder {
+        color: map-get($colors, darkerShadow);
+        font-size: 1rem;
+    }
+
+    &.bigger {
+        width: 100%;
+        color: map-get($colors, txt);
+        padding: 0.938rem;
+
+        &::placeholder {
+            color: map-get($colors, txt);
+        }
+    }
+
+    &.title {
+        width: 100%;
+        padding: 1rem;
+        color: map-get($colors, darkerTxt);
+        font-size: 2rem;
+
+        &::placeholder {
+            color: map-get($colors, darkerTxt);
+            font-size: 2rem;
+        }
+    }
+}
+
+.input:-webkit-autofill,
+.input:-webkit-autofill:hover,
+.input:-webkit-autofill:focus,
+.input:-webkit-autofill:active {
+    box-shadow: 0 0 0 1000px transparent inset !important;
+    -webkit-text-fill-color: map-get($colors, darkerShadow) !important;
+    background-color: transparent !important;
+    transition: background-color 9999s ease-in-out 0s;
+}
+
+.input:-moz-autofill {
+    box-shadow: 0 0 0 1000px transparent inset !important;
+    -moz-text-fill-color: inherit !important;
+}

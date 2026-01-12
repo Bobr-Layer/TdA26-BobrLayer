@@ -1,0 +1,49 @@
+@use "../../../index.scss" as *;
+
+.search_input {
+    display: flex;
+    justify-content: space-between;
+    background-color: map-get($colors, shadow);
+    width: 21.188rem;
+
+    input {
+        padding-left: 1.75rem;
+        padding-block: 0.625rem;
+        border: none;
+        outline: none;
+        color: map-get($colors, action);
+        background-color: transparent;
+        font-size: 1rem;
+        width: 100%;
+
+        &:hover,
+        &:focus {
+            border: none;
+            outline: none;
+        }
+
+        &::placeholder {
+            color: map-get($colors, darkShadow);
+            font-size: 1rem;
+        }
+    }
+
+    button {
+        padding-inline: 1.75rem;
+        padding-block: 0.625rem;
+        border: none;
+        outline: none;
+        background-color: transparent;
+        cursor: pointer;
+
+        &:hover,
+        &:focus {
+            border: none;
+            outline: none;
+
+            svg path {
+                fill: map-get($colors, action);
+            }
+        }
+    }
+}

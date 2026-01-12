@@ -1,0 +1,26 @@
+@use "../../../index.scss" as *;
+
+.question_input {
+    display: flex;
+    position: relative;
+    background-color: map-get($colors, lighterShadow);
+
+    button {
+        outline: none;
+        border: none;
+        background-color: transparent;
+        cursor: pointer;
+        border-radius: 0;
+        padding: 0;
+        position: absolute;
+        right: 0.938rem;
+        top: 50%;
+        transform: translate(-50%, -50%);
+
+        &:hover,
+        &:focus {
+            outline: none;
+            border: none;
+        }
+    }
+}

@@ -21,6 +21,7 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @Component
 @RequiredArgsConstructor
 public class FeedEventListener {
+
     private final IFeedItemService feedService;
     private final SseService sseService;
     private final FeedMapper feedMapper;

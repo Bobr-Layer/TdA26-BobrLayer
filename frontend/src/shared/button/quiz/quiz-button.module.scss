@@ -1,0 +1,30 @@
+@use "../../../index.scss" as *;
+
+.quiz_button {
+    text-align: center;
+    height: 3rem;
+    width: 100%;
+    padding-inline: 1rem;
+    padding-block: 0.5rem;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: map-get($colors, action2);
+    font-size: 1rem;
+    color: map-get($colors, bck);
+    cursor: pointer;
+    border-radius: 0;
+    border: none;
+    outline: none;
+
+    &:hover,
+    &:focus {
+        border: none;
+        outline: none;
+    }
+
+    &.red {
+        background-color: map-get($colors, warning);
+    }
+}
