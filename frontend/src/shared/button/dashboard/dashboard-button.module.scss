@@ -1,0 +1,41 @@
+@use "../../../index.scss" as *;
+
+.dashboard_button {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem;
+    gap: 0;
+    background-color: map-get($colors, action);
+    cursor: pointer;
+    border: none;
+    outline: none;
+
+    &:hover,
+    &:focus {
+        border: none;
+        outline: none;
+    }
+
+    span {
+        color: map-get($colors, bck);
+        font-size: 1.25rem;
+        max-width: 0;
+        overflow: hidden;
+        white-space: nowrap;
+        opacity: 0;
+    }
+
+    &:hover {
+        gap: 1.5rem;
+
+        span {
+            max-width: 200px;
+            opacity: 1;
+        }
+    }
+
+
+    &.red {
+        background-color: map-get($colors, warning);
+    }
+}

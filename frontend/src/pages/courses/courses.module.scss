@@ -1,0 +1,33 @@
+@use "../../index.scss" as *;
+
+.courses {
+    display: flex;
+    flex-direction: column;
+    padding-top: 9.375rem;
+    padding-inline: 3.125rem;
+    min-height: 100dvh;
+    box-sizing: border-box;
+    padding-bottom: 3.125rem;
+    gap: 1.875rem;
+
+    .courses_nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        .courses_nav_heading {
+            display: flex;
+            flex-direction: column;
+
+            h1 {
+                font-size: 2.75rem;
+                color: map-get($colors, action);
+            }
+
+            p {
+                font-size: 1.25rem;
+                color: map-get($colors, darkerShadow);
+            }
+        }
+    }
+}

@@ -1,0 +1,51 @@
+@use "../../../index.scss" as *;
+
+.material_card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 2px solid map-get($colors, lighterShadow);
+    background-color: map-get($colors, lighterShadow);
+    padding-block: 0.4rem;
+    padding-inline: 1rem;
+    width: 100%;
+    box-sizing: border-box;
+
+    .material_card_text {
+        display: flex;
+        flex-direction: column;
+
+        h4 {
+            font-size: 1rem;
+            color: map-get($colors, darkerTxt);
+        }
+
+        p {
+            font-size: 0.875rem;
+            color: map-get($colors, darkerShadow);
+        }
+    }
+
+    .material_card_actions {
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+
+        a,
+        button {
+            padding: 0;
+            margin: 0;
+            background-color: transparent;
+            border-radius: 0;
+            border: 0;
+            outline: 0;
+            cursor: pointer;
+
+            &:hover,
+            &:focus {
+                border: 0;
+                outline: 0;
+            }
+        }
+    }
+}
