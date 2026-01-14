@@ -1,7 +1,0 @@
-@use "../../../index.scss" as *;
-
-.course_list {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.25rem;
-}
