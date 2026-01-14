@@ -3,7 +3,17 @@ import styles from './option-list.module.scss';
 import OptionSelect from './option-select/OptionSelect';
 import QuizButton from '../../../../../shared/button/quiz/QuizButton';
 
-export default function OptionList({ multi, options, questionId, currentAnswer, onAnswerChange, uuid, setFinish }) {
+export default function OptionList({ 
+    multi, 
+    options, 
+    questionId, 
+    currentAnswer, 
+    onAnswerChange, 
+    uuid, 
+    onSubmit,
+    submitting,
+    isLastQuestion 
+}) {
     const [selected, setSelected] = useState(() => {
         if (currentAnswer !== undefined && currentAnswer !== null) {
             return multi ? new Set(currentAnswer) : currentAnswer;
@@ -17,17 +27,24 @@ export default function OptionList({ multi, options, questionId, currentAnswer, 
         } else {
             setSelected(multi ? new Set() : null);
         }
-    }, [questionId]);
+    }, [questionId, currentAnswer, multi]);
 
-    useEffect(() => {
-        if (selected !== null && (multi ? selected.size > 0 : true)) {
-            if (multi) {
-                onAnswerChange(questionId, Array.from(selected));
-            } else {
-                onAnswerChange(questionId, selected);
-            }
+    const handleSelectionChange = (newSelected) => {
+        setSelected(newSelected);
+        
+        if (multi) {
+            const selectedArray = Array.from(newSelected);
+            onAnswerChange(questionId, selectedArray);
+        } else {
+            onAnswerChange(questionId, newSelected);
         }
-    }, [selected, questionId, multi, onAnswerChange]);
+    };
+
+    const handleSubmit = () => {
+        if (!submitting && isLastQuestion) {
+            onSubmit();
+        }
+    };
 
     return (
         <article className={styles.option_list}>
@@ -39,13 +56,21 @@ export default function OptionList({ multi, options, questionId, currentAnswer, 
                         option={o} 
                         multi={multi}
                         selected={selected}
-                        setSelected={setSelected}
+                        setSelected={handleSelectionChange}
                     />
                 ))}
             </div>
             <div className={styles.option_list_buttons}>
                 <QuizButton text={'Smazat odpověď'} red={true} link={'/courses/' + uuid}/>
-                <QuizButton text={'Pokračovat'} onClick={() => setFinish(true)}/>
+                {isLastQuestion ? (
+                    <QuizButton 
+                        text={submitting ? 'Odesílám...' : 'Odeslat kvíz'} 
+                        onClick={handleSubmit}
+                        disabled={submitting}
+                    />
+                ) : (
+                    <QuizButton text={'Pokračovat'} />
+                )}
             </div>
         </article>
     )

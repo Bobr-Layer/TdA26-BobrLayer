@@ -13,20 +13,19 @@
     border-radius: 0;
     padding: 1rem;
     box-sizing: border-box;
-
+    
     &:hover,
     &:focus {
         outline: none;
     }
-
-    &:hover {
+    
+    &:hover:not(.answer) {
         border-color: map-get($colors, action);
-
         svg path {
             fill: map-get($colors, action);
         }
     }
-
+    
     &.bigger {
         width: 15rem;
         height: 10rem;

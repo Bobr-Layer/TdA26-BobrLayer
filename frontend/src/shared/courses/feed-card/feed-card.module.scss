@@ -13,7 +13,6 @@
     .feed_card_header {
         display: flex;
         justify-content: space-between;
-        align-items: center;
 
         .feed_card_header_author {
             display: flex;
@@ -22,14 +21,13 @@
 
             img {
                 width: 1.938rem;
+            }
 
-                &.user {
-                    width: 2rem;
-                    height: 2rem;
-                    object-fit: cover;
-                    background-color: map-get($colors, darkerShadow);
-                    border-radius: 1rem;
-                }
+            .user {
+                width: 2rem;
+                height: 2rem;
+                background-color: map-get($colors, darkerShadow);
+                border-radius: 1rem;
             }
 
             p {
@@ -39,23 +37,90 @@
         }
 
         .feed_card_header_date {
-            font-size: 1rem;
-            color: map-get($colors, darkerShadow);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 0.75rem;
+
+            p {
+                font-size: 1rem;
+                color: map-get($colors, darkerShadow);
+            }
+
+            .feed_card_header_date_edit {
+                font-size: 1rem;
+                color: map-get($colors, action);
+            }
+
+            div {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+
+                button {
+                    padding: 0;
+                    border-radius: 0;
+                    outline: none;
+                    cursor: pointer;
+                    border: 0;
+                    background-color: transparent;
+
+                    &:hover,
+                    &:focus {
+                        border: 0;
+                        outline: none;
+                    }
+                }
+            }
         }
     }
 
     .feed_card_content {
         display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
 
         h4 {
             font-size: 1.5rem;
         }
 
-        p {
-            font-size: 0.875rem;
-            color: map-get($colors, darkerTxt);
+        input {
+            font-size: 1.5rem;
+            color: map-get($colors, action);
+            border: 0;
+            outline: none;
+            padding: 0;
+            background-color: transparent;
+            border-bottom: 2px solid map-get($colors, action);
+            padding-bottom: 0.5rem;
+            width: 50%;
+
+            &:hover,
+            &:focus {
+                outline: none;
+            }
+
+            &::placeholder {
+                font-size: 1.5rem;
+                color: map-get($colors, action);
+            }
+        }
+
+        button {
+            border: 1px solid map-get($colors, action);
+            outline: 0;
+            cursor: pointer;
+            background-color: transparent;
+            padding: 0;
+            border-radius: 0;
+            padding-block: 0.5rem;
+            padding-inline: 1.25rem;
+            font-size: 1.25rem;
+            color: map-get($colors, bck);
+            background-color: map-get($colors, action);
+
+            &:hover,
+            &:focus {
+                outline: 0;
+            }
         }
     }
 }

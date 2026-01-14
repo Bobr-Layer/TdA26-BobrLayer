@@ -5,12 +5,11 @@
     align-items: center;
     gap: 0.75rem;
 
-    img {
+    .img {
         width: 3.25rem;
         height: 3.25rem;
         border-radius: 1.625rem;
         background-color: map-get($colors, darkerShadow);
-        object-fit: cover;
     }
 
     div {

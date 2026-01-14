@@ -1,0 +1,18 @@
+@use "../../../../index.scss" as *;
+
+.new_answer {
+    height: 2rem;
+    width: 2rem;
+    box-sizing: border-box;
+    background-color: transparent;
+    border: 1px solid map-get($colors, action);
+    outline: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover, &:focus {
+        outline: none;
+    }
+}

@@ -13,13 +13,14 @@
 #        reverse_proxy localhost:8080
 #    }
 #}
-http://:80 {
-# Pokud URL konci na /, orizni ho (ale necha samotny root /)
-    @trailingSlash {
-                       path_regexp pattern .*/$
-                       not path /
-                   }
-    uri @trailingSlash strip_suffix /
+:80 {
+    route /api* {
+                    reverse_proxy 127.0.0.1:8080 {
+                                                  flush_interval -1
+                                              }
+                }
 
-    reverse_proxy * 127.0.0.1:8080
+    route /* {
+                 reverse_proxy 127.0.0.1:3000
+             }
 }

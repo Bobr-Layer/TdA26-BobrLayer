@@ -8,17 +8,15 @@ export default function OptionSelect({ option, multi, selected, setSelected }) {
 
     const handleOnClick = () => {
         if (multi) {
-            setSelected(prev => {
-                const next = new Set(prev instanceof Set ? prev : []);
-
-                if (next.has(option.id)) {
-                    next.delete(option.id);
-                } else {
-                    next.add(option.id);
-                }
-
-                return next;
-            });
+            const next = new Set(selected instanceof Set ? selected : []);
+            
+            if (next.has(option.id)) {
+                next.delete(option.id);
+            } else {
+                next.add(option.id);
+            }
+            
+            setSelected(next);
         } else {
             if (selected === option.id) {
                 setSelected(null);

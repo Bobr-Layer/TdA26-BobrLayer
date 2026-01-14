@@ -1,0 +1,60 @@
+@use "../../../../index.scss" as *;
+
+.answer_card {
+    padding-inline: 1rem;
+    background-color: transparent;
+    border: 1px solid map-get($colors, darkerShadow);
+    color: map-get($colors, darkerShadow);
+    border-right: none;
+    outline: none;
+    border-radius: 0;
+    width: 15rem;
+    box-sizing: border-box;
+    font-size: 1rem;
+    cursor: pointer;
+    height: 2rem;
+
+    &:hover,
+    &:focus {
+        outline: none;
+    }
+
+    &::placeholder {
+        color: map-get($colors, darkerShadow);
+        font-size: 1rem;
+    }
+
+    &.active {
+        border-color: map-get($colors, action);
+        color: map-get($colors, action);
+
+        &::placeholder {
+            color: map-get($colors, action);
+        }
+    }
+}
+
+.answer_card_wrapper {
+    display: flex;
+}
+
+.answer_card_delete {
+    height: 2rem;
+    width: 2rem;
+    background-color: map-get($colors, darkerShadow);
+    border: 1px solid map-get($colors, darkerShadow);
+    outline: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+
+    &:focus, &:hover {
+        outline: none;
+    }
+
+    &.active {
+        background-color: map-get($colors, action);
+        border-color: map-get($colors, action);
+    }
+}

@@ -4,6 +4,7 @@ import styles from '../dashboard.module.scss';
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { updateCourse, getCourseByUuid } from '../../../services/CourseService';
+import { getUrlMaterials, getFileMaterials, createUrlMaterial, updateUrlMaterial, createFileMaterial, updateFileMaterial, deleteMaterial } from '../../../services/MaterialService';
 import CourseForm from '../courses/course-form/CourseForm';
 
 export default function EditCourse({ user, setUser }) {
@@ -16,9 +17,23 @@ export default function EditCourse({ user, setUser }) {
         description: '',
     });
 
+    const [urlMaterials, setUrlMaterials] = useState([]);
+    const [initialUrlMaterials, setInitialUrlMaterials] = useState([]);
+
+    const [fileMaterials, setFileMaterials] = useState([]);
+    const [initialFileMaterials, setInitialFileMaterials] = useState([]);
+
     const handleCourseChange = (e) => {
         const { name, value } = e.target;
         setCourseData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleUrlsChange = (urls) => {
+        setUrlMaterials(urls);
+    };
+
+    const handleFilesChange = (files) => {
+        setFileMaterials(files);
     };
 
     useEffect(() => {
@@ -26,7 +41,18 @@ export default function EditCourse({ user, setUser }) {
             try {
                 const foundCourse = await getCourseByUuid(uuid);
                 setCourse(foundCourse);
-                setCourseData({ name: foundCourse.name, description: foundCourse.description })
+                setCourseData({
+                    name: foundCourse.name,
+                    description: foundCourse.description
+                });
+
+                const existingUrls = await getUrlMaterials(uuid);
+                setInitialUrlMaterials(existingUrls);
+                setUrlMaterials(existingUrls);
+
+                const existingFiles = await getFileMaterials(uuid);
+                setInitialFileMaterials(existingFiles);
+                setFileMaterials(existingFiles);
             } catch (err) {
                 console.error(err);
                 navigate('/dashboard', { replace: true });
@@ -38,14 +64,95 @@ export default function EditCourse({ user, setUser }) {
 
     const onSubmit = async (e) => {
         e.preventDefault();
+
         try {
-            await updateCourse(course?.uuid, courseData)
-            setCourseData({ name: '', description: '' });
-            navigate('/dashboard', { replace: true });
+            await updateCourse(course?.uuid, courseData);
+
+            await processUrlMaterials();
+            await processFileMaterials();
+
+            navigate(`/dashboard/${course.uuid}`, { replace: true });
         } catch (err) {
-            console.error(err);
+            console.error('Chyba při ukládání:', err);
+            alert('Nepodařilo se uložit změny. Zkuste to prosím znovu.');
         }
-    }
+    };
+
+    const processUrlMaterials = async () => {
+        const validUrls = urlMaterials.filter(url =>
+            url.name && url.name.trim() !== '' &&
+            url.url && url.url.trim() !== ''
+        );
+
+        const existingUuids = new Set(initialUrlMaterials.map(m => m.uuid));
+        const currentUuids = new Set(validUrls.filter(m => m.uuid).map(m => m.uuid));
+
+        const toDelete = initialUrlMaterials.filter(m => !currentUuids.has(m.uuid));
+        for (const material of toDelete) {
+            await deleteMaterial(course.uuid, material.uuid);
+        }
+
+        for (const urlData of validUrls) {
+            const data = {
+                name: urlData.name.trim(),
+                description: urlData.description?.trim() || '',
+                url: urlData.url.trim()
+            };
+
+            if (urlData.uuid && existingUuids.has(urlData.uuid)) {
+                await updateUrlMaterial(course.uuid, urlData.uuid, data);
+            } else {
+                await createUrlMaterial(course.uuid, data);
+            }
+        }
+    };
+
+    const processFileMaterials = async () => {
+        const validFiles = fileMaterials.filter(fileItem => {
+            const hasName = fileItem.name && fileItem.name.trim() !== '';
+            const hasFile = fileItem.file !== null && fileItem.file !== undefined;
+            const isExisting = fileItem.uuid && fileItem.fileName;
+
+            if (fileItem.uuid) {
+                return hasName;
+            } else {
+                return hasName && hasFile;
+            }
+        });
+
+        const existingUuids = new Set(initialFileMaterials.map(m => m.uuid));
+        const currentUuids = new Set(validFiles.filter(m => m.uuid).map(m => m.uuid));
+
+        const toDelete = initialFileMaterials.filter(m => !currentUuids.has(m.uuid));
+        for (const material of toDelete) {
+            await deleteMaterial(course.uuid, material.uuid);
+        }
+
+        for (const fileData of validFiles) {
+            if (fileData.uuid && existingUuids.has(fileData.uuid)) {
+                if (fileData.file) {
+                    await updateFileMaterial(course.uuid, fileData.uuid, {
+                        name: fileData.name.trim(),
+                        description: fileData.description?.trim() || '',
+                        file: fileData.file
+                    });
+                } else {
+                    await updateFileMaterial(course.uuid, fileData.uuid, {
+                        name: fileData.name.trim(),
+                        description: fileData.description?.trim() || ''
+                    });
+                }
+            } else {
+                if (fileData.file) {
+                    await createFileMaterial(course.uuid, {
+                        name: fileData.name.trim(),
+                        description: fileData.description?.trim() || '',
+                        file: fileData.file
+                    });
+                }
+            }
+        }
+    };
 
     const actions = [
         {
@@ -65,15 +172,23 @@ export default function EditCourse({ user, setUser }) {
             onClick: () => course && navigate(`/dashboard/${course.uuid}`),
             red: true
         }
-    ]
+    ];
 
     return (
         <div>
             <Sidenav user={user} setUser={setUser} />
             <section className={styles.dashboard}>
                 <DashboardNav heading={'Upravit kurz'} actions={actions} />
-                <CourseForm courseData={courseData} handleCourseChange={handleCourseChange} onSubmit={onSubmit} />
+                <CourseForm
+                    courseData={courseData}
+                    handleCourseChange={handleCourseChange}
+                    onSubmit={onSubmit}
+                    onUrlsChange={handleUrlsChange}
+                    onFilesChange={handleFilesChange}
+                    initialUrls={initialUrlMaterials}
+                    initialFiles={initialFileMaterials}
+                />
             </section>
         </div>
-    )
+    );
 }

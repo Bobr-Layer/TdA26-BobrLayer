@@ -1,7 +1,18 @@
 import OptionList from './option-list/OptionList';
 import styles from './quiz-question.module.scss';
 
-export default function QuizQuestion({ quiz, currentStep, setCurrentStep, name, length, currentAnswer, onAnswerChange, uuid, setFinish }) {
+export default function QuizQuestion({
+    quiz,
+    currentStep,
+    setCurrentStep,
+    name,
+    length,
+    currentAnswer,
+    onAnswerChange,
+    uuid,
+    onSubmit,
+    submitting
+}) {
     return (
         <section className={styles.quiz_question}>
             <h1>{name}</h1>
@@ -26,14 +37,16 @@ export default function QuizQuestion({ quiz, currentStep, setCurrentStep, name, 
                     )}
                 </div>
             </article>
-            <OptionList 
-                multi={quiz.multi} 
-                options={quiz.options}
-                questionId={quiz.id}
+            <OptionList
+                multi={quiz.type !== 'singleChoice'}
+                options={quiz.options.map((opt, index) => ({ id: index, option: opt }))}
+                questionId={currentStep}
                 currentAnswer={currentAnswer}
                 onAnswerChange={onAnswerChange}
                 uuid={uuid}
-                setFinish={setFinish}
+                onSubmit={onSubmit}
+                submitting={submitting}
+                isLastQuestion={currentStep === length - 1}
             />
         </section>
     )

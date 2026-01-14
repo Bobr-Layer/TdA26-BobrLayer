@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createCourse } from '../../../services/CourseService';
 import CourseForm from '../courses/course-form/CourseForm';
+import { createUrlMaterial, createFileMaterial } from '../../../services/MaterialService';
 
 export default function NewCourse({ user, setUser }) {
     const navigate = useNavigate();
@@ -14,19 +15,86 @@ export default function NewCourse({ user, setUser }) {
         description: '',
     });
 
+    const [urlMaterials, setUrlMaterials] = useState([]);
+    const [fileMaterials, setFileMaterials] = useState([]);
+
     const handleNewCourseChange = (e) => {
         const { name, value } = e.target;
         setNewCourseData(prev => ({ ...prev, [name]: value }));
     };
 
+    const handleUrlsChange = (urls) => {
+        setUrlMaterials(urls);
+    };
+
+    const handleFilesChange = (files) => {
+        setFileMaterials(files);
+    };
+
     const onSubmit = async (e) => {
         e.preventDefault();
+
         try {
-            await createCourse(newCourseData);
+            const createdCourse = await createCourse(newCourseData);
+
+            if (!createdCourse || !createdCourse.uuid) {
+                throw new Error('Kurz byl vytvořen, ale server nevrátil UUID');
+            }
+
+            const validUrls = urlMaterials.filter(url => {
+                const hasName = url.name && url.name.trim() !== '';
+                const hasUrl = url.url && url.url.trim() !== '';
+                return hasName && hasUrl;
+            });
+
+            if (validUrls.length > 0) {
+                for (const urlData of validUrls) {
+                    await createUrlMaterial(createdCourse.uuid, {
+                        name: urlData.name.trim(),
+                        description: urlData.description?.trim() || '',
+                        url: urlData.url.trim()
+                    });
+                }
+            }
+
+            const validFiles = fileMaterials.filter(fileItem => {
+                const hasName = fileItem.name && fileItem.name.trim() !== '';
+                const hasFile = fileItem.file !== null && fileItem.file !== undefined;
+
+                console.log('Kontrola fileItem:', fileItem);
+                console.log('hasName:', hasName, 'hasFile:', hasFile);
+
+                return hasName && hasFile;
+            });
+
+            console.log('Validní soubory k uložení:', validFiles);
+
+            if (validFiles.length > 0) {
+                for (const fileData of validFiles) {
+                    console.log('Ukládám soubor:', {
+                        name: fileData.name,
+                        description: fileData.description,
+                        file: fileData.file,
+                        fileName: fileData.file?.name,
+                        fileSize: fileData.file?.size,
+                        fileType: fileData.file?.type
+                    });
+
+                    await createFileMaterial(createdCourse.uuid, {
+                        name: fileData.name.trim(),
+                        description: fileData.description?.trim() || '',
+                        file: fileData.file
+                    });
+                }
+            }
+
             setNewCourseData({ name: '', description: '' });
+            setUrlMaterials([]);
+            setFileMaterials([]);
             navigate('/dashboard', { replace: true });
         } catch (err) {
-            console.error(err);
+            console.error('Chyba při vytváření kurzu:', err);
+            alert(`Nepodařilo se vytvořit kurz: ${err.message}`);
         }
     }
 
@@ -55,7 +123,13 @@ export default function NewCourse({ user, setUser }) {
             <Sidenav user={user} setUser={setUser} />
             <section className={styles.dashboard}>
                 <DashboardNav heading={'Nový kurz'} actions={actions} />
-                <CourseForm courseData={newCourseData} handleCourseChange={handleNewCourseChange} onSubmit={onSubmit} />
+                <CourseForm
+                    courseData={newCourseData}
+                    handleCourseChange={handleNewCourseChange}
+                    onSubmit={onSubmit}
+                    onUrlsChange={handleUrlsChange}
+                    onFilesChange={handleFilesChange}
+                />
             </section>
         </div>
     )
