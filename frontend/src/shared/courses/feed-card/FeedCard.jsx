@@ -57,8 +57,8 @@ export default function FeedCard({ feed, admin, courseId }) {
                         </>
                     ) : (
                         <>
-                            <div className={styles.user} />
-                            <p>Neznámý autor</p>
+                            <img src="/img/duck-blue.png" alt="" />
+                            <p>Lektor</p>
                         </>
                     )}
                 </div>

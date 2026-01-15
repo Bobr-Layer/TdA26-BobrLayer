@@ -1,15 +1,34 @@
 import styles from './material-dashboard-card.module.scss';
 
 export default function MaterialDashboardCard({ file, material, onDelete }) {
+    const getFaviconUrl = (url) => {
+        try {
+            const { hostname } = new URL(url);
+            return `https://www.google.com/s2/favicons?sz=64&domain=${hostname}`;
+        } catch {
+            return '';
+        }
+    };
+
+    const faviconUrl = !file ? getFaviconUrl(material.url) : '';
+
     return (
         <div className={styles.material_dashboard_card}>
-            <div className={styles.material_dashboard_card_text}>
-                <h4>{material.name}</h4>
-                {file ? (
-                    <p>{material.description}</p>
-                ) : (
-                    <p>{material.description}</p>
+            <div className={styles.material_card_first}>
+                {!file && (
+                    <img
+                        src={faviconUrl}
+                        alt="favicon"
+                    />
                 )}
+                <div className={styles.material_dashboard_card_text}>
+                    <h4>{material.name}</h4>
+                    {file ? (
+                        <p>{material.description}</p>
+                    ) : (
+                        <p>{material.description}</p>
+                    )}
+                </div>
             </div>
             <div className={styles.material_dashboard_card_actions}>
                 {file ? (

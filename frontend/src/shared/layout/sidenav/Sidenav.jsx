@@ -8,7 +8,7 @@ function Sidenav({ user, setUser }) {
             <div className={styles.sidenav_top}>
                 <img src="/img/symbol-w.png" alt="Bile logo Think different academy" />
                 <div className={styles.sidenav_top_lector}>
-                    <div className={styles.img}></div>
+                    <img src='/img/duck-white.png' className={styles.img} alt=''/>
                     <div>
                         <p className={styles.sidenav_top_lector_name}>{user.username}</p>
                     </div>

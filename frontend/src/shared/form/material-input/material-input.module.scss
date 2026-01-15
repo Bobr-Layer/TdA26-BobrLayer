@@ -24,12 +24,16 @@
         input {
             width: 70%;
             color: map-get($colors, txt);
-            font-size: 1rem;
+            font-size: 0.875rem;
 
             &::placeholder {
                 color: map-get($colors, txt);
-                font-size: 1rem;
+                font-size: 0.875rem;
             }
+        }
+
+        span {
+            font-size: 0.875rem;
         }
     }
 

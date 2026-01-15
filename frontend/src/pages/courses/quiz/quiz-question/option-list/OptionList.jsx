@@ -12,7 +12,9 @@ export default function OptionList({
     uuid, 
     onSubmit,
     submitting,
-    isLastQuestion 
+    isLastQuestion,
+    currentStep,
+    setCurrentStep
 }) {
     const [selected, setSelected] = useState(() => {
         if (currentAnswer !== undefined && currentAnswer !== null) {
@@ -69,7 +71,7 @@ export default function OptionList({
                         disabled={submitting}
                     />
                 ) : (
-                    <QuizButton text={'Pokračovat'} />
+                    <QuizButton text={'Pokračovat'} onClick={() => setCurrentStep(currentStep + 1)}/>
                 )}
             </div>
         </article>

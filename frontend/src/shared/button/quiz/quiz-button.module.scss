@@ -10,7 +10,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: map-get($colors, action2);
+    background-color: map-get($colors, action);
     font-size: 1rem;
     color: map-get($colors, bck);
     cursor: pointer;

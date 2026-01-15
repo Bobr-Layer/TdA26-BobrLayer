@@ -3,7 +3,7 @@ import Index from "./pages/index/Index";
 import Courses from "./pages/courses/Courses";
 import Login from "./pages/login/Login";
 import Dashboard from "./pages/dashboard/Dashboard";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Course from "./pages/dashboard/pages/Course";
 import NewCourse from "./pages/dashboard/pages/NewCourse";
 import EditCourse from "./pages/dashboard/pages/EditCourse";
@@ -13,9 +13,19 @@ import Quizz from './pages/dashboard/pages/Quizz';
 import NewQuizz from "./pages/dashboard/pages/NewQuizz";
 import EditQuiz from "./pages/dashboard/pages/EditQuiz";
 import DashboardFeed from "./pages/dashboard/pages/DashboardFeed";
+import { getCurrentUser } from "./services/AuthService";
 
 function App() {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getCurrentUser()
+      .then((user) => setUser(user))
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) return <div>Loading...</div>;
 
   return (
     <Routes>

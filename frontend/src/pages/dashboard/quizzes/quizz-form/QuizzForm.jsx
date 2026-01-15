@@ -36,7 +36,7 @@ export default function QuizzForm({
                             question={q}
                             questionIndex={index}
                             value={q.question}
-                            placeholder={`Otázka ${index + 1}`}
+                            placeholder={`Napiště znění otázky: ${index + 1}`}
                             onChange={(e) => handleQuestionChange(index, e.target.value)}
                             onDelete={() => deleteQuestion(index)}
                             onTypeChange={(isMultiple) => handleQuestionTypeChange(index, isMultiple)}

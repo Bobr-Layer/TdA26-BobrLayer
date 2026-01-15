@@ -47,6 +47,8 @@ export default function QuizQuestion({
                 onSubmit={onSubmit}
                 submitting={submitting}
                 isLastQuestion={currentStep === length - 1}
+                currentStep={currentStep}
+                setCurrentStep={setCurrentStep}
             />
         </section>
     )
