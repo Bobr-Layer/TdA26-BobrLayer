@@ -1,5 +1,4 @@
 import Header from '../../../shared/layout/header/Header';
-import LectorCard from '../../../shared/lectors/lector-card/LectorCard';
 import styles from './feed.module.scss';
 import BackToButton from '../../../shared/button/back-to/BackToButton';
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -96,10 +95,6 @@ export default function Feed() {
                     <article className={styles.feed_course}>
                         <div className={styles.feed_course_content}>
                             <h2>{course.name}</h2>
-                            <LectorCard
-                                lectorMail={course.lectorMail}
-                                lectorName={course.lectorName}
-                            />
                             <p className={styles.feed_course_content_text}>
                                 {course.description}
                             </p>

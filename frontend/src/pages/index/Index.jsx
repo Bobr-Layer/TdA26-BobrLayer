@@ -9,10 +9,11 @@ function Index() {
       <section className={styles.index}>
         <article className={styles.index_text}>
           <h1>Naučte se cokoliv</h1>
-          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+          <p>Nahrávejte materiály, testujte znalosti pomocí kvízů a zůstaňte v kontaktu s členy přes živý feed.
+            Vytvořte prostředí, které podporuje spolupráci, zábavu i růst – ať už jde o školní kroužky, zájmové aktivity nebo online vzdělávání.</p>
           <div className={styles.index_text_buttons}>
             <IndexButton text={'Prohlédnout si kurzy'} link={'/courses'} />
-            <IndexButton text={'Přihlásit se'} link={'/login'} darker={true}/>
+            <IndexButton text={'Přihlásit se'} link={'/login'} darker={true} />
           </div>
         </article>
         <div className={styles.index_line}></div>

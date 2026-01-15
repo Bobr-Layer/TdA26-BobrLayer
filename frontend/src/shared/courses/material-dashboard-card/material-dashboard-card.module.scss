@@ -12,6 +12,17 @@
     padding-block: 0.25rem;
     box-sizing: border-box;
 
+    .material_card_first {
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+
+        img {
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+    }
+
     .material_dashboard_card_text {
         display: flex;
         flex-direction: column;
