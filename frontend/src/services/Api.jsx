@@ -1,3 +1,3 @@
-const Api = 'http://localhost:8080/api';
+const Api = '/api';
 
 export default Api;
