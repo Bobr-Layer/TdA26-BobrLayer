@@ -1,0 +1,33 @@
+@use "../../../index.scss" as *;
+
+.new_button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 3.75rem;
+    border: 2px solid map-get($colors, lighterShadow);
+    cursor: pointer;
+    outline: none;
+    background-color: transparent;
+    border-radius: 0;
+    padding: 1rem;
+    box-sizing: border-box;
+    
+    &:hover,
+    &:focus {
+        outline: none;
+    }
+    
+    &:hover:not(.answer) {
+        border-color: map-get($colors, action);
+        svg path {
+            fill: map-get($colors, action);
+        }
+    }
+    
+    &.bigger {
+        width: 15rem;
+        height: 10rem;
+    }
+}

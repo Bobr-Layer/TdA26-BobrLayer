@@ -1,0 +1,59 @@
+import { useState } from 'react';
+import styles from './login.module.scss';
+import Input from '../../shared/form/input/Input';
+import SubmitButton from '../../shared/button/submit/SubmitButton';
+import { login as loginUser } from '../../services/AuthService';
+
+function Login({ setUser }) {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    try {
+      const user = await loginUser(username, password);
+      setUser(user);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <section className={styles.login}>
+      <article className={styles.login_img}>
+        <img src="/img/w.png" alt="Bílé logo Think Different Academy" />
+      </article>
+      <article className={styles.login_form}>
+        <h1>Přihlásit se</h1>
+        <form onSubmit={handleSubmit}>
+          <Input
+            name="username"
+            placeholder="Uživatelské jméno"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            autoComplete="username"
+          />
+          <Input
+            name="password"
+            placeholder="Heslo"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            autoComplete="current-password"
+          />
+          <SubmitButton text={loading ? 'Probíhá přihlášení...' : 'Pokračovat'} type="submit" />
+          {error && <p style={{ color: 'rgba(217, 33, 33, 1)', marginTop: '0.5rem' }}>{error}</p>}
+        </form>
+      </article>
+    </section>
+  );
+}
+
+export default Login;

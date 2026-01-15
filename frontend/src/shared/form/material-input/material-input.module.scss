@@ -1,0 +1,58 @@
+@use "../../../index.scss" as *;
+
+.material_input {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    border: 2px solid map-get($colors, lighterShadow);
+    background-color: map-get($colors, lighterShadow);
+    width: 100%;
+    padding: 1rem;
+    box-sizing: border-box;
+
+    .material_input_row {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .material_input_between {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        input {
+            width: 70%;
+            color: map-get($colors, txt);
+            font-size: 1rem;
+
+            &::placeholder {
+                color: map-get($colors, txt);
+                font-size: 1rem;
+            }
+        }
+    }
+
+    input {
+        background-color: transparent;
+        border: 0;
+        outline: 0;
+        color: map-get($colors, darkerShadow);
+        font-size: 0.875rem;
+        width: 100%;
+        box-sizing: border-box;
+
+        &::placeholder {
+            color: map-get($colors, darkerShadow);
+            font-size: 0.875rem;
+        }
+    }
+
+    button {
+        background-color: transparent;
+        border: 0;
+        outline: none;
+        padding: 0;
+        cursor: pointer;
+    }
+}

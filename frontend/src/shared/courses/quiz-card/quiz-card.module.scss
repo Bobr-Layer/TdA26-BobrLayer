@@ -1,0 +1,50 @@
+@use "../../../index.scss" as *;
+
+.quiz_card {
+    display: flex;
+    gap: 1.875rem;
+    border: 2px solid map-get($colors, lighterShadow);
+    background-color: map-get($colors, lighterShadow);
+    width: 100%;
+    padding: 1rem;
+    box-sizing: border-box;
+
+    .quiz_card_text {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        flex: 1;
+
+        h4 {
+            font-size: 1rem;
+            color: map-get($colors, darkerTxt);
+        }
+
+        p {
+            font-size: 0.875rem;
+            color: map-get($colors, darkerShadow);
+        }
+    }
+
+    .quiz_card_actions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        align-items: flex-end;
+
+        p {
+            font-size: 0.75rem;
+            color: map-get($colors, action);
+
+            &.none {
+                color: map-get($colors, darkerShadow);
+            }
+        }
+
+        .quiz_card_actions_list {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+    }
+}

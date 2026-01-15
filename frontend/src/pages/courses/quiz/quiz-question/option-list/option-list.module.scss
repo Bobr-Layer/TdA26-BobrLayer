@@ -1,0 +1,26 @@
+@use "../../../../../index.scss" as *;
+
+.option_list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 25rem;
+
+    h3 {
+        font-size: 1.25rem;
+        color: map-get($colors, darkerShadow);
+        text-align: center;
+    }
+
+    .option_list_options {
+        display: flex;
+        flex-direction: column;
+        gap: 0.625rem;
+    }
+
+    .option_list_buttons {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+}
