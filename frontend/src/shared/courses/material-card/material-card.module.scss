@@ -4,22 +4,34 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border: 2px solid map-get($colors, lighterShadow);
-    background-color: map-get($colors, lighterShadow);
-    padding-block: 0.4rem;
-    padding-inline: 1rem;
+    border: 2px solid map-get($colors, darkerTxt);
+    background-color: map-get($colors, darkerTxt);
+    padding-inline: 1.25rem;
     width: 100%;
     box-sizing: border-box;
+    height: 3.75rem;
+
+    &:hover {
+        border-color: map-get($colors, action2);
+
+        .material_card_actions {
+            button {
+                svg path {
+                    fill: map-get($colors, shadow);
+                }
+            }
+        }
+    }
 
     .material_card_first {
         display: flex;
         align-items: center;
         gap: 1.25rem;
 
-        img {
-            width: 1.25rem;
-            height: 1.25rem;
-        }
+        // img {
+        //     width: 1.25rem;
+        //     height: 1.25rem;
+        // }
     }
 
     .material_card_text {
@@ -28,12 +40,12 @@
 
         h4 {
             font-size: 1rem;
-            color: map-get($colors, darkerTxt);
+            color: map-get($colors, bck);
         }
 
         p {
             font-size: 0.875rem;
-            color: map-get($colors, darkerShadow);
+            color: map-get($colors, darkerBck);
         }
     }
 
@@ -57,6 +69,12 @@
             &:focus {
                 border: 0;
                 outline: 0;
+            }
+
+            &:hover {
+                svg path {
+                    fill: map-get($colors, action2);
+                }
             }
         }
     }

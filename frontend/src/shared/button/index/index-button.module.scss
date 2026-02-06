@@ -3,9 +3,9 @@
 .index_button {
     background-color: map-get($colors, bck);
     color: map-get($colors, txt);
-    padding-block: 0.75rem;
-    padding-inline: 1.75rem;
-    font-size: 1rem;
+    padding-block: 0.875rem;
+    padding-inline: 2rem;
+    font-size: 1.25rem;
 
     &:hover {
         background-color: map-get($colors, darkerBck);

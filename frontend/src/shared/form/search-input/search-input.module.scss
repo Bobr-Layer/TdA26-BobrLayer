@@ -3,15 +3,15 @@
 .search_input {
     display: flex;
     justify-content: space-between;
-    background-color: map-get($colors, shadow);
-    width: 21.188rem;
+    background-color: map-get($colors, darkerTxt);
+    width: 100%;
 
     input {
-        padding-left: 1.75rem;
-        padding-block: 0.625rem;
+        padding-left: 1.25rem;
+        padding-block: 0.75rem;
         border: none;
         outline: none;
-        color: map-get($colors, action);
+        color: map-get($colors, bck);
         background-color: transparent;
         font-size: 1rem;
         width: 100%;
@@ -23,14 +23,14 @@
         }
 
         &::placeholder {
-            color: map-get($colors, darkShadow);
+            color: map-get($colors, shadow);
             font-size: 1rem;
         }
     }
 
     button {
         padding-inline: 1.75rem;
-        padding-block: 0.625rem;
+        padding-block: 0.75rem;
         border: none;
         outline: none;
         background-color: transparent;
@@ -42,7 +42,7 @@
             outline: none;
 
             svg path {
-                fill: map-get($colors, action);
+                fill: map-get($colors, shadow);
             }
         }
     }

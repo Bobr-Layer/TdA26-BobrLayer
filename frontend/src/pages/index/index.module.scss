@@ -1,23 +1,39 @@
 @use "../../index.scss" as *;
 
+@keyframes jump {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-0.5rem);
+    }
+}
+
 .index {
     height: 100dvh;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 3.125rem;
-    background: radial-gradient(73.74% 113.54% at 73.74% 100%, map-get($colors, txt) 0%, map-get($colors, action) 90%);
     padding: 7.5rem;
     box-sizing: border-box;
+    position: relative;
 
     .index_text {
         width: 37.5rem;
         display: flex;
         flex-direction: column;
-        gap: 1.875rem;
+        align-items: flex-start;
+        gap: 3.75rem;
 
         h1 {
-            color: map-get($colors, bck);
+            background: linear-gradient(91.86deg, #0070BB 0.02%, #49B3B4 100.02%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             font-size: 3.75rem;
         }
 
@@ -27,20 +43,140 @@
             font-weight: 600;
         }
 
-        .index_text_buttons {
+        div {
             display: flex;
-            align-items: center;
-            gap: 1.25rem;
+            flex-direction: column;
+            gap: 1.875rem;
         }
     }
 
-    .index_line {
-        width: 0;
-        border: 1px solid map-get($colors, bck);
-        height: 25rem;
+    img {
+        width: 21.875rem;
     }
 
-    img {
-        width: 20rem;
+    .index_scroll {
+        position: absolute;
+        left: 50%;
+        bottom: 3.75rem;
+        transform: translate(-50%);
+        background-color: transparent;
+        border: 0;
+        outline: 0;
+        cursor: pointer;
+        padding: 0;
+        animation: jump 2s ease-in-out infinite;
+        opacity: 1;
+
+        &.hidden {
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(0.5rem);
+        }
+    }
+}
+
+.about {
+    padding-inline: 7.5rem;
+    padding-top: 3.75rem;
+    padding-bottom: 9.938rem;
+    display: flex;
+    flex-direction: column;
+    gap: 19.875rem;
+
+    .about_main_text {
+        font-size: 4rem;
+        color: map-get($colors, darkerBck);
+
+        span {
+            color: map-get($colors, bck);
+        }
+    }
+
+    article {
+        display: flex;
+        flex-direction: column;
+        gap: 4rem;
+        position: relative;
+        width: 100%;
+
+        h2 {
+            font-size: 3rem;
+        }
+
+        .about_list {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 3.75rem;
+
+            div {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1.5rem;
+
+                img {
+                    height: 6.25rem;
+                }
+
+                h3 {
+                    font-size: 2.5rem;
+                }
+
+                p {
+                    font-size: 1.5rem;
+                    color: map-get($colors, darkerBck);
+                }
+            }
+        }
+
+        .about_ball_1 {
+            position: absolute;
+            top: -25dvh;
+            left: -7.5rem;
+            background: radial-gradient(circle at center left, rgba(73, 179, 180, 0.5), map-get($colors, txt) 50%);
+            height: 100dvh;
+            width: 50dvh;
+            z-index: -1;
+            filter: blur(100px);
+        }
+
+        .about_ball_2 {
+            position: absolute;
+            top: -25dvh;
+            right: -7.5rem;
+            background: radial-gradient(circle at center right, rgba(73, 179, 180, 0.5), map-get($colors, txt) 50%);
+            height: 100dvh;
+            width: 50dvh;
+            z-index: -1;
+            filter: blur(100px);
+        }
+    }
+}
+
+.courses {
+    padding-inline: 7.5rem;
+    padding-top: 9.938rem;
+    padding-bottom: 8rem;
+    display: flex;
+    flex-direction: column;
+    gap: 4rem;
+
+    h2 {
+        font-size: 3rem;
+    }
+}
+
+.wrapper {
+    position: relative;
+
+    .index_ball {
+        position: absolute;
+        top: 0;
+        right: 0;
+        background: radial-gradient(circle at center right, rgba(2, 87, 165, 0.5), map-get($colors, txt) 70%);
+        height: 160dvh;
+        width: 80dvh;
+        z-index: -1;
+        filter: blur(100px);
     }
 }

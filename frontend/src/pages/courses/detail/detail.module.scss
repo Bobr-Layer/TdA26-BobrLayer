@@ -1,0 +1,197 @@
+@use "../../../index.scss" as *;
+
+.wrapper {
+    position: relative;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+
+    .detail_ball {
+        position: absolute;
+        top: 0;
+        right: 0;
+        background: radial-gradient(circle at top right, rgba(2, 87, 165, 0.5), map-get($colors, txt) 70%);
+        height: 100dvh;
+        width: 50dvh;
+        z-index: -1;
+        filter: blur(100px);
+    }
+}
+
+.detail {
+    padding-top: 11.25rem;
+    padding-inline: 7.5rem;
+    box-sizing: border-box;
+    padding-bottom: 3.125rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+
+    .detail_header {
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+
+        h1 {
+            font-size: 2rem;
+        }
+
+        a:hover {
+            svg path {
+                fill: map-get($colors, darkerBck);
+            }
+        }
+    }
+
+    .detail_content {
+        display: flex;
+        gap: 3.75rem;
+
+        .detail_content_about {
+            display: flex;
+            flex-direction: column;
+            gap: 3.75rem;
+            flex: 5;
+
+            .detail_content_about_p {
+                font-size: 1.25rem;
+                color: map-get($colors, darkerBck);
+            }
+
+            .detail_content_about_list {
+                display: flex;
+                flex-direction: column;
+                gap: 1.25rem;
+
+                h3 {
+                    font-size: 1.5rem;
+                }
+            }
+        }
+
+        .detail_content_feed {
+            flex: 3;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+
+            h3 {
+                font-size: 1.5rem;
+            }
+
+            .detail_content_feed_button {
+                background-color: map-get($colors, bck);
+                height: 3rem;
+                padding-inline: 2rem;
+                padding-block: 0.875rem;
+                width: 100%;
+                box-sizing: border-box;
+                border: 0;
+                outline: 0;
+                color: map-get($colors, txt);
+                font-size: 1rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+            }
+        }
+    }
+}
+
+.material_list {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1.25rem;
+}
+
+.quiz_list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+}
+
+.feed_list {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 1.25rem;
+    max-height: calc(100dvh - 22rem);
+    overflow-y: scroll;
+    overflow-x: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+.feed_card {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    width: 100%;
+    padding: 1.25rem;
+    background-color: map-get($colors, darkerTxt);
+    box-sizing: border-box;
+
+    .feed_card_header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        div {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+
+            img {
+                width: 1.813rem;
+                height: 2rem;
+            }
+
+            p {
+                font-size: 1rem;
+                color: map-get($colors, bck);
+            }
+        }
+
+        p {
+            font-size: 0.75rem;
+            color: map-get($colors, darkerBck);
+        }
+    }
+
+    .feed_card_content {
+        font-size: 1.25rem;
+    }
+}
+
+.show_more_button {
+    background-color: transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 0;
+    outline: 0;
+    cursor: pointer;
+
+    p {
+        font-size: 0.75rem;
+        color: map-get($colors, shadow);
+    }
+
+    &.true {
+        flex-direction: column-reverse;
+
+        svg {
+            transform: rotate(180deg);
+        }
+    }
+}
+
+.no {
+    font-size: 0.75rem;
+    text-align: center;
+    color: map-get($colors, shadow);
+}

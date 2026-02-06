@@ -27,9 +27,7 @@ function Login({ setUser }) {
 
   return (
     <section className={styles.login}>
-      <article className={styles.login_img}>
-        <img src="/img/w.png" alt="Bílé logo Think Different Academy" />
-      </article>
+      <img src="/img/w.png" alt="Bílé logo Think Different Academy" />
       <article className={styles.login_form}>
         <h1>Přihlásit se</h1>
         <form onSubmit={handleSubmit}>
@@ -49,9 +47,12 @@ function Login({ setUser }) {
             autoComplete="current-password"
           />
           <SubmitButton text={loading ? 'Probíhá přihlášení...' : 'Pokračovat'} type="submit" />
-          {error && <p style={{ color: 'rgba(217, 33, 33, 1)', marginTop: '0.5rem' }}>{error}</p>}
+          {error && <p className={styles.err}>{error}</p>}
         </form>
       </article>
+
+      <div className={styles.login_ball}></div>
+      <div className={styles.login_ball_2}></div>
     </section>
   );
 }

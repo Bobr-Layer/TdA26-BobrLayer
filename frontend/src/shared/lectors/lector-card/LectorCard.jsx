@@ -6,7 +6,7 @@ function LectorCard({ lectorName, lectorMail }) {
             <div className={styles.img}></div>
             <div>
                 <h4>{lectorName}</h4>
-                <p>{lectorMail}</p>
+                <p>{lectorMail ? lectorMail : 'Email lektora'}</p>
             </div>
         </div>
     )

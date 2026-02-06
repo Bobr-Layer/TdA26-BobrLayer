@@ -4,11 +4,12 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: radial-gradient(100% 204.75% at 100% 100%, map-get($colors, darkerAction) 0%, map-get($colors, action) 100%);
+    background-color: transparent;
     height: 6.25rem;
     width: 100%;
     box-sizing: border-box;
-    padding-inline: 3.125rem;
+    padding-top: 3.75rem;
+    padding-inline: 7.5rem;
     position: fixed;
     top: 0;
     left: 0;
@@ -20,24 +21,19 @@
 
     nav {
         display: flex;
-        gap: 1.875rem;
+        gap: 3.75rem;
 
-        a {
+        a, button {
             color: map-get($colors, bck);
             font-size: 1.25rem;
+            background-color: transparent;
+            border: 0;
+            outline: 0;
+            cursor: pointer;
 
             &:hover {
                 text-decoration: underline;
             }
         }
-    }
-
-    &.green {
-        background: radial-gradient(100% 204.75% at 100% 100%, map-get($colors, action2) 0%, map-get($colors, darkerAction2) 100%);
-    }
-
-    &.transparent {
-        background-color: transparent;
-        background: none;
     }
 }

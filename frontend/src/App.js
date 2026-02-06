@@ -7,13 +7,17 @@ import { useState, useEffect } from "react";
 import Course from "./pages/dashboard/pages/Course";
 import NewCourse from "./pages/dashboard/pages/NewCourse";
 import EditCourse from "./pages/dashboard/pages/EditCourse";
-import Feed from "./pages/courses/feed/Feed";
 import Quiz from "./pages/courses/quiz/Quiz";
 import Quizz from './pages/dashboard/pages/Quizz';
 import NewQuizz from "./pages/dashboard/pages/NewQuizz";
 import EditQuiz from "./pages/dashboard/pages/EditQuiz";
 import DashboardFeed from "./pages/dashboard/pages/DashboardFeed";
 import { getCurrentUser } from "./services/AuthService";
+import Detail from "./pages/courses/detail/Detail";
+import About from "./pages/info/About";
+import Contact from "./pages/info/Contact";
+import GDPR from "./pages/info/GDPR";
+import Terms from './pages/info/Terms';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -29,10 +33,13 @@ function App() {
 
   return (
     <Routes>
-      <Route path="/" element={<Index />} />
-      <Route path="/courses" element={<Courses />} />
-      <Route path="/courses/:uuid" element={<Courses />} />
-      <Route path="/courses/:uuid/feed" element={<Feed />} />
+      <Route path="/" element={<Index user={user} setUser={setUser} />} />
+      <Route path="/about" element={<About user={user} setUser={setUser} />} />
+      <Route path="/contact" element={<Contact user={user} setUser={setUser}/>} />
+      <Route path="/gdpr" element={<GDPR user={user} setUser={setUser}/>} />
+      <Route path="/terms" element={<Terms user={user} setUser={setUser}/>} />
+      <Route path="/courses" element={<Courses user={user} setUser={setUser} />} />
+      <Route path="/courses/:uuid" element={<Detail user={user} setUser={setUser} />} />
       <Route path="/courses/:uuid/quizz/:quizzUuid" element={<Quiz />} />
 
       {user ? (

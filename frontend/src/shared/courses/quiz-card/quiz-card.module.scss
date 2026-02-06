@@ -2,27 +2,29 @@
 
 .quiz_card {
     display: flex;
-    gap: 1.875rem;
-    border: 2px solid map-get($colors, lighterShadow);
-    background-color: map-get($colors, lighterShadow);
+    justify-content: space-between;
+    border: 2px solid map-get($colors, darkerTxt);
+    background-color: map-get($colors, darkerTxt);
     width: 100%;
     padding: 1rem;
+    height: 7.5rem;
     box-sizing: border-box;
 
     .quiz_card_text {
         display: flex;
         flex-direction: column;
-        gap: 0.25rem;
+        gap: 0.625;
         flex: 1;
 
         h4 {
             font-size: 1rem;
-            color: map-get($colors, darkerTxt);
+            color: map-get($colors, bck);
         }
 
         p {
-            font-size: 0.875rem;
-            color: map-get($colors, darkerShadow);
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: map-get($colors, darkerBck);
         }
     }
 
@@ -30,21 +32,20 @@
         display: flex;
         flex-direction: column;
         gap: 0.75rem;
+        justify-content: space-between;
         align-items: flex-end;
 
         p {
             font-size: 0.75rem;
-            color: map-get($colors, action);
+            color: map-get($colors, bck);
 
             &.none {
-                color: map-get($colors, darkerShadow);
+                color: map-get($colors, shadow);
             }
         }
+    }
 
-        .quiz_card_actions_list {
-            display: flex;
-            gap: 0.75rem;
-            align-items: center;
-        }
+    &:hover {
+        border-color: map-get($colors, action2);
     }
 }

@@ -4,39 +4,50 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
-    background-color: map-get($colors, lighterShadow);
-    border: 2px solid map-get($colors, lighterShadow);
+    background-color: map-get($colors, darkerTxt);
     padding: 1.25rem;
+    height: 8.75rem;
+    box-sizing: border-box;
+    outline: none;
+    border: 2px solid map-get($colors, darkerTxt);
 
     .course_card_info {
         display: flex;
         flex-direction: column;
+        align-items: flex-start;
+        justify-content: space-between;
         gap: 1.875rem;
+        height: 100%;
 
         .course_card_info_c {
             display: flex;
             flex-direction: column;
 
             h3 {
-                font-size: 1.5rem;
+                font-size: 1.25rem;
             }
 
             p {
-                font-size: 0.875rem;
-                color: map-get($colors, darkerShadow);
+                font-size: 1rem;
+                color: map-get($colors, darkerBck);
             }
         }
     }
 
     &:hover {
         background-color: transparent;
+        border-color: map-get($colors, action2);
 
         .course_card_info .course_card_info_c h3{
-            color: map-get($colors, action);
+            color: map-get($colors, action2);
         }
 
         svg path {
-            fill: map-get($colors, action);
+            fill: map-get($colors, action2);
         }
+    }
+
+    &.lector {
+        height: 11.25rem;
     }
 }

@@ -9,7 +9,7 @@
         width: 3.25rem;
         height: 3.25rem;
         border-radius: 1.625rem;
-        background-color: map-get($colors, darkerShadow);
+        background-color: map-get($colors, shadow);
     }
 
     div {
@@ -18,11 +18,11 @@
 
         h4 {
             font-size: 1rem;
-            color: map-get($colors, darkerShadow);
+            color: map-get($colors, darkerBck);
         }
 
         p {
-            color: map-get($colors, darkerShadow);
+            color: map-get($colors, darkerBck);
             font-size: 0.875rem;
         }
     }
