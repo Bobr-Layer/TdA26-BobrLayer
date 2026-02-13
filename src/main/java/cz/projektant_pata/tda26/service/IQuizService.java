@@ -9,11 +9,11 @@ import java.util.List;
 import java.util.UUID;
 
 public interface IQuizService {
-    List<Quiz> find(UUID courseUuid);
-    Quiz find(UUID courseUuid, UUID quizUuid);
-    Quiz update(UUID courseUuid, UUID quizUuid, QuizRequestDTO dto);
-    Quiz create(UUID courseUuid, QuizRequestDTO dto);
-    void kill(UUID courseUuid, UUID quizUuid);
+    List<Quiz> find(UUID moduleUuid);
+    Quiz find(UUID moduleUuid, UUID quizUuid);
+    Quiz update(UUID moduleUuid, UUID quizUuid, QuizRequestDTO dto);
+    Quiz create(UUID moduleUuid, QuizRequestDTO dto);
+    void kill(UUID moduleUuid, UUID quizUuid);
 
-    SubmitQuizResultDTO submitQuiz(UUID courseUuid, UUID quizUuid, SubmitQuizDTO submission);
+    SubmitQuizResultDTO submitQuiz(UUID moduleUuid, UUID quizUuid, SubmitQuizDTO submission);
 }

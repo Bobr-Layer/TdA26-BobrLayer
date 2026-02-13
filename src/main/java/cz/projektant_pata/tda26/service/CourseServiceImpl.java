@@ -1,14 +1,18 @@
 package cz.projektant_pata.tda26.service;
 
+import cz.projektant_pata.tda26.exception.InvalidResourceStateException;
 import cz.projektant_pata.tda26.exception.ResourceAlreadyExistsException;
 import cz.projektant_pata.tda26.exception.ResourceNotFoundException;
 import cz.projektant_pata.tda26.model.course.Course;
+import cz.projektant_pata.tda26.model.course.StatusEnum;
 import cz.projektant_pata.tda26.model.user.User;
+import cz.projektant_pata.tda26.model.course.module.Module;
 import cz.projektant_pata.tda26.repository.CourseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -18,6 +22,7 @@ import java.util.UUID;
 public class CourseServiceImpl implements ICourseService {
     private final CourseRepository repository;
     private final IUserService userService;
+    private final IModuleService moduleService;
 
     @Override
     public List<Course> find() {
@@ -27,15 +32,25 @@ public class CourseServiceImpl implements ICourseService {
     @Override
     @Transactional(readOnly = true)
     public Course find(UUID uuid) {
-        Course course = this.getCourseOrThrow(uuid);
-        course.getMaterials().size();
-        return course;
+        return this.getCourseOrThrow(uuid);
     }
+
+    @Override
+    public List<Course> findForStudent() {
+        return repository.findForStudents(
+                List.of(StatusEnum.Scheduled, StatusEnum.Live, StatusEnum.Paused)
+        );
+    }
+
 
     @Override
     @Transactional
     public Course update(UUID uuid, Course course) {
         Course existingCourse = this.getCourseOrThrow(uuid);
+
+        if (!existingCourse.getStatus().equals(StatusEnum.Draft))
+            throw new InvalidResourceStateException(
+                    "Kurz s ID " + uuid + " nelze upravovat - není v režimu úprav");
 
         existingCourse.setName(course.getName());
         existingCourse.setDescription(course.getDescription());
@@ -71,6 +86,109 @@ public class CourseServiceImpl implements ICourseService {
         repository.delete(course);
         return course;
     }
+
+    @Override
+    @Transactional
+    public Course backToDraft(UUID uuid) {
+        Course c = this.getCourseOrThrow(uuid);
+        if (!c.getStatus().equals(StatusEnum.Scheduled)) {
+            throw new InvalidResourceStateException(
+                    "Kurz s ID " + uuid + " nelze použít - není ve stavu Scheduled");
+        }
+
+        c.setStatus(StatusEnum.Draft);
+        c.setScheduledAt(null);
+
+        return repository.save(c);
+    }
+
+    @Override
+    @Transactional
+    public Course schedule(UUID uuid, Instant date) {
+        Course c = this.getCourseOrThrow(uuid);
+
+        if (!c.getStatus().equals(StatusEnum.Draft)) {
+            throw new InvalidResourceStateException(
+                    "Kurz s ID " + uuid + " nelze použít - není ve stavu Draft");
+        }
+
+        c.setStatus(StatusEnum.Scheduled);
+        c.setScheduledAt(date);
+
+        return repository.save(c);
+    }
+
+    @Override
+    @Transactional
+    public Course start(UUID uuid) {
+        Course c = this.getCourseOrThrow(uuid);
+
+        if (!c.getStatus().equals(StatusEnum.Draft)&&!c.getStatus().equals(StatusEnum.Scheduled)&&!c.getStatus().equals(StatusEnum.Paused)) {
+            throw new InvalidResourceStateException(
+                    "Kurz s ID " + uuid + " nelze použít - není ve stavu Draft či Scheduled");
+        }
+
+        c.setStatus(StatusEnum.Live);
+
+        return repository.save(c);
+    }
+
+    @Override
+    @Transactional
+    public Course pause(UUID uuid) {
+        Course c = this.getCourseOrThrow(uuid);
+        if (!c.getStatus().equals(StatusEnum.Live)) {
+            throw new InvalidResourceStateException(
+                    "Kurz s ID " + uuid + " nelze použít - není ve stavu Live");
+        }
+
+        c.setStatus(StatusEnum.Paused);
+
+        return repository.save(c);
+    }
+    @Override
+    @Transactional
+    public Course archive(UUID uuid) {
+        Course c = this.getCourseOrThrow(uuid);
+
+        if (!c.getStatus().equals(StatusEnum.Live)) {
+            throw new InvalidResourceStateException(
+                    "Kurz s ID " + uuid + " nelze použít - není ve stavu Live či Paused");
+        }
+
+        c.setStatus(StatusEnum.Archived);
+
+        return repository.save(c);
+    }
+
+    @Override
+    @Transactional
+    public Module activateNextModule(UUID courseUuid) {
+        Course course = getCourseOrThrow(courseUuid);
+
+        if (!course.getStatus().equals(StatusEnum.Live))
+            throw new InvalidResourceStateException("Kurz s ID " + courseUuid + " nelze použít - není ve stavu Live.");
+
+        if (!moduleService.hasNext(courseUuid))
+            throw new InvalidResourceStateException("Kurz s ID " + courseUuid + " nemá žádný další modul k aktivaci.");
+
+        return moduleService.activate(courseUuid);
+    }
+
+    @Override
+    @Transactional
+    public Module deactivatePreviousModule(UUID courseUuid) {
+        Course course = getCourseOrThrow(courseUuid);
+
+        if (!course.getStatus().equals(StatusEnum.Live))
+            throw new InvalidResourceStateException("Kurz s ID " + courseUuid + " nelze použít - není ve stavu Live.");
+
+        if (!moduleService.hasPrevious(courseUuid))
+            throw new InvalidResourceStateException("Kurz s ID " + courseUuid + " nemá žádný aktivní modul k deaktivaci.");
+
+        return moduleService.deactivate(courseUuid);
+    }
+
 
     @Override
     @Transactional()

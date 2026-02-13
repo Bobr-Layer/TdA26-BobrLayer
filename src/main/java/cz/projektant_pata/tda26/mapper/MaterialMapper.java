@@ -70,11 +70,5 @@ public class MaterialMapper {
     private void mapCommonEntityFields(MaterialRequestDTO request, Material entity) {
         entity.setName(request.getName());
         entity.setDescription(request.getDescription());
-
-        if (request.getCourseId() != null) {
-            Course c = new Course();
-            c.setUuid(request.getCourseId());
-            entity.setCourse(c);
-        }
     }
 }

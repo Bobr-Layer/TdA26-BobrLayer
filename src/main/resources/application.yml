@@ -32,8 +32,8 @@ spring:
       name: lecturer
       password: TdA26!
 
-  mvc:
-    throw-exception-if-no-handler-found: true
+#  mvc:
+#    throw-exception-if-no-handler-found: true
 
 server:
   port: 8080

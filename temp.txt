@@ -4,3 +4,6 @@ feed
 
 controller na uživatele
 dashboard
+
+
+DODELAT NEMOZNOST PRIDAT MODUL, KDYZ ARCHIVED

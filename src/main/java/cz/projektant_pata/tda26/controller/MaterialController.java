@@ -17,7 +17,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/courses/{courseUuid}/materials")
+@RequestMapping("/api/courses/{courseUuid}/modules/{moduleUuid}/materials") // ✅ opravena URL
 @RequiredArgsConstructor
 public class MaterialController {
 
@@ -25,8 +25,11 @@ public class MaterialController {
     private final MaterialMapper mapper;
 
     @GetMapping
-    public ResponseEntity<List<MaterialResponseDTO>> find(@PathVariable UUID courseUuid) {
-        List<MaterialResponseDTO> response = service.find(courseUuid).stream()
+    public ResponseEntity<List<MaterialResponseDTO>> find(
+            @PathVariable UUID courseUuid,  // zatím nevyužito, ale v URL být musí
+            @PathVariable UUID moduleUuid   // ✅ bylo: ignorováno
+    ) {
+        List<MaterialResponseDTO> response = service.find(moduleUuid).stream()
                 .map(mapper::toResponse)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(response);
@@ -35,72 +38,72 @@ public class MaterialController {
     @GetMapping("/{materialUuid}")
     public ResponseEntity<MaterialResponseDTO> find(
             @PathVariable UUID courseUuid,
+            @PathVariable UUID moduleUuid,  // ✅ přidáno
             @PathVariable UUID materialUuid
     ) {
-        Material material = service.find(courseUuid, materialUuid);
+        Material material = service.find(moduleUuid, materialUuid); // ✅ bylo: courseUuid
         return ResponseEntity.ok(mapper.toResponse(material));
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<MaterialResponseDTO> create(
             @PathVariable UUID courseUuid,
+            @PathVariable UUID moduleUuid,  // ✅ přidáno
             @Valid @RequestBody MaterialRequestDTO request
     ) {
         Material materialDraft = mapper.toEntity(request);
-        Material savedMaterial = service.create(courseUuid, materialDraft);
-
+        Material saved = service.create(moduleUuid, materialDraft); // ✅ bylo: courseUuid
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(mapper.toResponse(savedMaterial));
+                .body(mapper.toResponse(saved));
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<MaterialResponseDTO> create(
             @PathVariable UUID courseUuid,
+            @PathVariable UUID moduleUuid,  // ✅ přidáno
             @RequestParam("file") MultipartFile file,
             @RequestParam("name") String name,
             @RequestParam(value = "description", required = false) String description
     ) {
-        Material savedMaterial = service.create(courseUuid, file, name, description);
-
+        Material saved = service.create(moduleUuid, file, name, description); // ✅ bylo: courseUuid
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(mapper.toResponse(savedMaterial));
+                .body(mapper.toResponse(saved));
     }
 
-    // 1. UPDATE pro URL a metadata (JSON)
     @PutMapping(path = "/{materialUuid}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<MaterialResponseDTO> update(
             @PathVariable UUID courseUuid,
+            @PathVariable UUID moduleUuid,  // ✅ přidáno
             @PathVariable UUID materialUuid,
             @RequestBody MaterialUpdateRequestDTO request
     ) {
-
-        Material updatedMaterial = service.update(courseUuid, materialUuid, request.getName(), request.getDescription(), request.getUrl());
-
-        return ResponseEntity.ok(mapper.toResponse(updatedMaterial));
+        Material updated = service.update(moduleUuid, materialUuid, // ✅ bylo: courseUuid
+                request.getName(), request.getDescription(), request.getUrl());
+        return ResponseEntity.ok(mapper.toResponse(updated));
     }
-
 
     @PutMapping(path = "/{materialUuid}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<MaterialResponseDTO> update(
             @PathVariable UUID courseUuid,
+            @PathVariable UUID moduleUuid,  // ✅ přidáno
             @PathVariable UUID materialUuid,
             @RequestParam(value = "file", required = false) MultipartFile file,
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "description", required = false) String description
     ) {
-        Material updatedMaterial = service.update(courseUuid, materialUuid, file, name, description);
-        return ResponseEntity.ok(mapper.toResponse(updatedMaterial));
+        Material updated = service.update(moduleUuid, materialUuid, file, name, description); // ✅ bylo: courseUuid
+        return ResponseEntity.ok(mapper.toResponse(updated));
     }
-
 
     @DeleteMapping("/{materialUuid}")
     public ResponseEntity<Void> kill(
             @PathVariable UUID courseUuid,
+            @PathVariable UUID moduleUuid,  // ✅ přidáno
             @PathVariable UUID materialUuid
     ) {
-        service.kill(courseUuid, materialUuid);
+        service.kill(moduleUuid, materialUuid); // ✅ bylo: courseUuid
         return ResponseEntity.noContent().build();
     }
 }

@@ -6,10 +6,12 @@ import cz.projektant_pata.tda26.event.course.material.MaterialUpdatedEvent;
 import cz.projektant_pata.tda26.exception.file.FileStorageException;
 import cz.projektant_pata.tda26.exception.file.FileValidationException;
 import cz.projektant_pata.tda26.exception.ResourceNotFoundException;
-import cz.projektant_pata.tda26.model.course.Course;
+import cz.projektant_pata.tda26.model.course.StatusEnum;
+import cz.projektant_pata.tda26.model.course.module.Module; // ✅ explicitní import přebije java.lang.Module
 import cz.projektant_pata.tda26.model.course.material.FileMaterial;
 import cz.projektant_pata.tda26.model.course.material.Material;
 import cz.projektant_pata.tda26.model.course.material.UrlMaterial;
+import cz.projektant_pata.tda26.repository.ModuleRepository;
 import cz.projektant_pata.tda26.repository.MaterialRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -32,12 +34,13 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class MaterialServiceImpl implements IMaterialService {
 
     private final MaterialRepository materialRepository;
+    private final ModuleRepository moduleRepository;
     private final ApplicationEventPublisher eventPublisher;
 
-    private final ICourseService courseService;
     private static final Logger logger = LoggerFactory.getLogger(MaterialServiceImpl.class);
 
     @Value("${file.upload-dir:/app/uploads}")
@@ -46,15 +49,15 @@ public class MaterialServiceImpl implements IMaterialService {
 
     private static final List<String> ALLOWED_MIME_TYPES = Arrays.asList(
             "application/pdf",
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // .docx
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
             "text/plain",
             "image/png",
             "image/jpeg",
             "image/gif",
             "video/mp4",
-            "audio/mpeg" // .mp3
+            "audio/mpeg"
     );
-    private static final long MAX_FILE_SIZE = 30 * 1024 * 1024; // 30 MB
+    private static final long MAX_FILE_SIZE = 30 * 1024 * 1024;
 
     @PostConstruct
     public void init() {
@@ -67,29 +70,39 @@ public class MaterialServiceImpl implements IMaterialService {
     }
 
     @Override
-    public List<Material> find(UUID courseUuid) {
-        return materialRepository.findByCourseUuidOrderByCreatedAtDesc(courseUuid);
+    public List<Material> find(UUID moduleUuid) {
+        return materialRepository.findByModuleUuidOrderByCreatedAtDesc(moduleUuid);
     }
 
     @Override
-    public Material find(UUID courseUuid, UUID materialUuid) {
-        return getMaterialOrThrow(courseUuid, materialUuid);
-    }
-
-    @Override
-    @Transactional
-    public Material create(UUID courseUuid, Material material) {
-        Course course = courseService.find(courseUuid);
-        material.setCourse(course);
-        eventPublisher.publishEvent(new MaterialCreatedEvent(courseUuid, material.getName(), material.getTypeLabel()));
-        return materialRepository.save(material);
+    public Material find(UUID moduleUuid, UUID materialUuid) {
+        return getMaterialOrThrow(moduleUuid, materialUuid);
     }
 
     @Override
     @Transactional
-    public Material update(UUID courseUuid, UUID materialUuid, String name, String description, String url) {
-        Material existingMaterial = getMaterialOrThrow(courseUuid, materialUuid);
-        String oldName = existingMaterial.getName(); // Uložíme původní jméno
+    public Material create(UUID moduleUuid, Material material) {
+        Module module = getModuleOrThrow(moduleUuid);
+        if (module.getCourse().getStatus().equals(StatusEnum.Draft))
+            throw new IllegalArgumentException("Kurz není v režimu úprav");
+
+        material.setModule(module);
+        Material saved = materialRepository.save(material);
+        if (!module.getCourse().getStatus().equals(StatusEnum.Draft))
+            eventPublisher.publishEvent(new MaterialCreatedEvent(module.getCourse().getUuid(), saved.getName(), saved.getTypeLabel()));
+        return saved;
+    }
+
+
+    @Override
+    @Transactional
+    public Material update(UUID moduleUuid, UUID materialUuid, String name, String description, String url) {
+        Material existingMaterial = getMaterialOrThrow(moduleUuid, materialUuid);
+
+        if (existingMaterial.getModule().getCourse().getStatus().equals(StatusEnum.Draft))
+            throw new IllegalArgumentException("Kurz není v režimu úprav");
+
+        String oldName = existingMaterial.getName();
 
         if (name != null) existingMaterial.setName(name);
         if (description != null) existingMaterial.setDescription(description);
@@ -99,21 +112,23 @@ public class MaterialServiceImpl implements IMaterialService {
 
         Material saved = materialRepository.save(existingMaterial);
 
-        // EVENT: Updated (jen pokud se změnilo jméno, volitelně i jindy)
-        if (!oldName.equals(saved.getName())) {
-            eventPublisher.publishEvent(new MaterialUpdatedEvent(courseUuid, oldName, saved.getName(), saved.getTypeLabel()));
+        if (!existingMaterial.getModule().getCourse().getStatus().equals(StatusEnum.Draft)) {
+            eventPublisher.publishEvent(new MaterialUpdatedEvent(moduleUuid, oldName, saved.getName(), saved.getTypeLabel()));
         }
 
         return saved;
     }
 
+
     @Override
     @Transactional
-    public Material update(UUID courseUuid, UUID materialUuid, MultipartFile file, String name, String description) {
-        Material existingMaterial = getMaterialOrThrow(courseUuid, materialUuid);
-        if (!(existingMaterial instanceof FileMaterial fileMaterial)) {
+    public Material update(UUID moduleUuid, UUID materialUuid, MultipartFile file, String name, String description) {
+        Material existingMaterial = getMaterialOrThrow(moduleUuid, materialUuid);
+        if (existingMaterial.getModule().getCourse().getStatus().equals(StatusEnum.Draft))
+            throw new IllegalArgumentException("Kurz není v režimu úprav");
+        if (!(existingMaterial instanceof FileMaterial fileMaterial))
             throw new IllegalArgumentException("Invalid material type");
-        }
+
 
         String oldName = existingMaterial.getName();
 
@@ -129,37 +144,38 @@ public class MaterialServiceImpl implements IMaterialService {
         }
 
         Material saved = materialRepository.save(fileMaterial);
-
-        eventPublisher.publishEvent(new MaterialUpdatedEvent(courseUuid, oldName, saved.getName(), saved.getTypeLabel()));
-
-
+        eventPublisher.publishEvent(new MaterialUpdatedEvent(moduleUuid, oldName, saved.getName(), saved.getTypeLabel()));
         return saved;
     }
 
     @Override
     @Transactional
-    public Material create(UUID courseUuid, MultipartFile file, String name, String description) {
-        Course course = courseService.find(courseUuid);
-
+    public Material create(UUID moduleUuid, MultipartFile file, String name, String description) {
+        Module module = getModuleOrThrow(moduleUuid);
         String storedFileName = storeFile(file);
-
+        if (module.getCourse().getStatus().equals(StatusEnum.Draft))
+            throw new IllegalArgumentException("Kurz není v režimu úprav");
         FileMaterial material = new FileMaterial();
-        material.setCourse(course);
+        material.setModule(module);
         material.setName(name);
         material.setDescription(description);
         material.setFileUrl("/uploads/" + storedFileName);
         material.setMimeType(getCleanContentType(file.getContentType()));
         material.setSizeBytes((int) file.getSize());
-        eventPublisher.publishEvent(new MaterialCreatedEvent(courseUuid, material.getName(), material.getTypeLabel()));
 
-        return materialRepository.save(material);
+        Material saved = materialRepository.save(material);
+        eventPublisher.publishEvent(new MaterialCreatedEvent(moduleUuid, saved.getName(), saved.getTypeLabel()));
+        return saved;
     }
-
 
     @Override
     @Transactional
-    public Material kill(UUID courseUuid, UUID materialUuid) {
-        Material material = getMaterialOrThrow(courseUuid, materialUuid);
+    public Material kill(UUID moduleUuid, UUID materialUuid) {
+        Material material = getMaterialOrThrow(moduleUuid, materialUuid);
+
+        if (material.getModule().getCourse().getStatus().equals(StatusEnum.Draft))
+            throw new IllegalArgumentException("Kurz je není v režimu úprav.");
+
         String materialName = material.getName();
         String type = material.getTypeLabel();
 
@@ -168,35 +184,37 @@ public class MaterialServiceImpl implements IMaterialService {
         }
 
         materialRepository.delete(material);
-
-        // EVENT: Deleted
-        eventPublisher.publishEvent(new MaterialKilledEvent(courseUuid, materialName, type));
-
+        eventPublisher.publishEvent(new MaterialKilledEvent(moduleUuid, materialName, type));
         return material;
     }
 
-    private Material getMaterialOrThrow(UUID courseUuid, UUID materialUuid) {
+
+    // ── private helpers ───────────────────────────────────────────────────────
+
+    private Module getModuleOrThrow(UUID moduleUuid) {
+        return moduleRepository.findById(moduleUuid)
+                .orElseThrow(() -> new ResourceNotFoundException("Modul nebyl nalezen"));
+    }
+
+    private Material getMaterialOrThrow(UUID moduleUuid, UUID materialUuid) {
         Material material = materialRepository.findById(materialUuid)
                 .orElseThrow(() -> new ResourceNotFoundException("Materiál s ID " + materialUuid + " nebyl nalezen"));
 
-        if (!material.getCourse().getUuid().equals(courseUuid))
-            throw new IllegalArgumentException("Materiál nepatří k danému kurzu.");
+        if (!material.getModule().getUuid().equals(moduleUuid))
+            throw new IllegalArgumentException("Materiál nepatří k danému modulu.");
 
         return material;
     }
 
     private String storeFile(MultipartFile file) {
-        if (file == null || file.isEmpty()) {
+        if (file == null || file.isEmpty())
             throw new FileValidationException("Soubor nesmí být prázdný.");
-        }
-        if (file.getSize() > MAX_FILE_SIZE) {
+        if (file.getSize() > MAX_FILE_SIZE)
             throw new FileValidationException("Soubor je příliš velký (limit 30 MB).");
-        }
 
         String contentType = getCleanContentType(file.getContentType());
-        if (contentType == null || !ALLOWED_MIME_TYPES.contains(contentType)) {
+        if (contentType == null || !ALLOWED_MIME_TYPES.contains(contentType))
             throw new FileValidationException("Nepodporovaný formát souboru: " + file.getContentType());
-        }
 
         try {
             String originalFilename = file.getOriginalFilename();
@@ -207,7 +225,6 @@ public class MaterialServiceImpl implements IMaterialService {
             Path targetLocation = this.uploadPath.resolve(storedFileName);
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
             return storedFileName;
-
         } catch (IOException e) {
             throw new FileStorageException("Nepodařilo se uložit soubor " + file.getOriginalFilename(), e);
         }
@@ -227,9 +244,8 @@ public class MaterialServiceImpl implements IMaterialService {
     }
 
     private String getCleanContentType(String fullContentType) {
-        if (fullContentType != null && fullContentType.contains(";")) {
+        if (fullContentType != null && fullContentType.contains(";"))
             return fullContentType.split(";")[0].trim();
-        }
         return fullContentType;
     }
 }

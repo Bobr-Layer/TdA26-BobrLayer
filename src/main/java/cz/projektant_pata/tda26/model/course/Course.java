@@ -2,9 +2,8 @@ package cz.projektant_pata.tda26.model.course;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import cz.projektant_pata.tda26.model.course.feed.FeedItem;
-import cz.projektant_pata.tda26.model.course.quiz.Quiz;
+import cz.projektant_pata.tda26.model.course.module.Module;
 import cz.projektant_pata.tda26.model.user.User;
-import cz.projektant_pata.tda26.model.course.material.Material;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -32,10 +31,8 @@ public class Course {
     private String description;
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Material> materials = new ArrayList<>();
+    private List<Module> modules = new ArrayList<>();
 
-    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Quiz> quizzes = new ArrayList<>();
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FeedItem> feed = new ArrayList<>();
@@ -49,9 +46,17 @@ public class Course {
     @Column(nullable = false)
     private Instant updatedAt;
 
-    @ManyToOne(fetch = FetchType.LAZY) // Doporučuji LAZY pro lektora
-    @JoinColumn(name = "lector_id", nullable = false)
-    @JsonIgnore // Aby se nenačítal celý lektor, pokud to není nutné (záleží na vašem DTO)
+    @Column(nullable = true)
+    private StatusEnum status = StatusEnum.Draft;
+
+    @Column(nullable = true)
+    private Instant scheduledAt;
+
+
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "lector_id")
+    @JsonIgnore
     private User lector;
 
 

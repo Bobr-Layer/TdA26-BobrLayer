@@ -34,7 +34,7 @@ public class MaterialViewController {
     @PostMapping("/link")
     public String addUrlMaterial(@PathVariable UUID courseUuid, @RequestParam String name, @RequestParam String url, @RequestParam(required = false) String description) {
         UrlMaterialRequestDTO request = new UrlMaterialRequestDTO();
-        request.setCourseId(courseUuid);
+//        request.setCourseId(courseUuid);
         request.setName(name);
         request.setDescription(description);
         request.setUrl(url);

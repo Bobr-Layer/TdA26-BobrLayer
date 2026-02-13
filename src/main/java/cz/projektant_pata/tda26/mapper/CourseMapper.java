@@ -3,8 +3,7 @@ package cz.projektant_pata.tda26.mapper;
 import cz.projektant_pata.tda26.dto.course.CourseRequestDTO;
 import cz.projektant_pata.tda26.dto.course.CourseResponseDTO;
 import cz.projektant_pata.tda26.dto.course.feed.FeedResponseDTO;
-import cz.projektant_pata.tda26.dto.course.material.MaterialResponseDTO;
-import cz.projektant_pata.tda26.dto.course.quiz.QuizResponseDTO;
+import cz.projektant_pata.tda26.dto.course.module.ModuleResponseDTO;
 import cz.projektant_pata.tda26.model.course.Course;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -17,8 +16,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CourseMapper {
 
-    private final MaterialMapper materialMapper;
-    private final QuizMapper quizMapper;
+    private final ModuleMapper moduleMapper;  // ✅ materialMapper + quizMapper odstraněny
     private final FeedMapper feedMapper;
 
     public Course toEntity(CourseRequestDTO dto) {
@@ -33,37 +31,28 @@ public class CourseMapper {
         response.setUuid(entity.getUuid());
         response.setName(entity.getName());
         response.setDescription(entity.getDescription());
-        response.setLectorId(entity.getLector().getUuid());
-        response.setLectorName(entity.getLector().getUsername());
+        response.setStatus(entity.getStatus());
+        response.setScheduledAt(entity.getScheduledAt());
+        response.setCreatedAt(entity.getCreatedAt());
+        response.setUpdatedAt(entity.getUpdatedAt());
 
-        if (entity.getMaterials() != null) {
-            List<MaterialResponseDTO> materials = entity.getMaterials().stream()
-                    .map(materialMapper::toResponse)
-                    .collect(Collectors.toList());
-            response.setMaterials(materials);
-        } else {
-            response.setMaterials(Collections.emptyList());
+        if (entity.getLector() != null) {
+            response.setLectorId(entity.getLector().getUuid());
+            response.setLectorName(entity.getLector().getUsername());
         }
 
-        if (entity.getQuizzes() != null) {
-            List<QuizResponseDTO> quizzes = entity.getQuizzes().stream()
-                    .map(quizMapper::toResponse)
-                    .collect(Collectors.toList());
-            response.setQuizzes(quizzes);
-        } else {
-            response.setQuizzes(Collections.emptyList());
-        }
+        response.setModules(entity.getModules() != null
+                ? entity.getModules().stream()
+                .map(moduleMapper::toResponse)
+                .collect(Collectors.toList())
+                : Collections.emptyList());
 
-        if (entity.getFeed() != null) {
-            List<FeedResponseDTO> feed = entity.getFeed().stream()
-                    .map(feedMapper::toDto) // Použije metodu z FeedMapperu
-                    .collect(Collectors.toList());
-            response.setFeed(feed);
-        } else {
-            response.setFeed(Collections.emptyList());
-        }
+        response.setFeed(entity.getFeed() != null
+                ? entity.getFeed().stream()
+                .map(feedMapper::toDto)
+                .collect(Collectors.toList())
+                : Collections.emptyList());
 
         return response;
-
     }
 }

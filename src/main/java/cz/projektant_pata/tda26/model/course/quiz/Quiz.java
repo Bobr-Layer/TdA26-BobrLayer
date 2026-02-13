@@ -1,6 +1,7 @@
 package cz.projektant_pata.tda26.model.course.quiz;
 
-import cz.projektant_pata.tda26.model.course.Course;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import cz.projektant_pata.tda26.model.course.module.Module;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,9 +28,11 @@ public class Quiz {
     @Column(nullable = false)
     private Integer attemptsCount = 0;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "course_uuid", nullable = false)
-    private Course course;
+    @ManyToOne
+    @JoinColumn(name = "module_id")
+    @JsonIgnore
+    private Module module;
+
 
     @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderColumn(name = "question_index")

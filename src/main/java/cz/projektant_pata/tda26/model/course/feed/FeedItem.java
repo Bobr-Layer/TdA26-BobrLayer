@@ -28,7 +28,7 @@ public class FeedItem {
     private Course course;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "author_id")
+    @JoinColumn(name = "author_id", nullable = true)
     private User author;
 
     @Enumerated(EnumType.STRING)

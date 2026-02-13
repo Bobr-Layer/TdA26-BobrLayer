@@ -1,6 +1,7 @@
 package cz.projektant_pata.tda26.service;
 
 import cz.projektant_pata.tda26.model.course.Course;
+import cz.projektant_pata.tda26.model.course.StatusEnum;
 import cz.projektant_pata.tda26.model.course.feed.FeedItem;
 import cz.projektant_pata.tda26.model.course.feed.FeedType;
 import cz.projektant_pata.tda26.model.user.User;
@@ -47,6 +48,8 @@ public class FeedItemServiceImpl implements IFeedItemService {
     @Transactional
     public FeedItem create(UUID courseUuid, FeedType type, String message) {
         Course course = getCourse(courseUuid);
+        if (type == FeedType.SYSTEM && course.getStatus().equals(StatusEnum.Draft))
+            return null;
         return saveFeedItem(course, null, type, message);
     }
 

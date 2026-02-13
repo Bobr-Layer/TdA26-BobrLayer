@@ -1,6 +1,7 @@
 package cz.projektant_pata.tda26.repository;
 
 import cz.projektant_pata.tda26.model.course.material.Material;
+import org.springframework.data.domain.Limit;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -9,4 +10,5 @@ import java.util.UUID;
 
 @Repository
 public interface MaterialRepository extends JpaRepository<Material, UUID> {
-    List<Material> findByCourseUuidOrderByCreatedAtDesc(UUID courseUuid);}
+    List<Material> findByModuleUuidOrderByCreatedAtDesc(UUID moduleUuid);
+}

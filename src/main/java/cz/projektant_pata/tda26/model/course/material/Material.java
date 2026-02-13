@@ -3,14 +3,13 @@ package cz.projektant_pata.tda26.model.course.material;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import cz.projektant_pata.tda26.model.course.Course;
+import cz.projektant_pata.tda26.model.course.module.Module;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp; // Důležité pro automatický čas
 
 import java.time.Instant;
-import java.time.LocalDateTime; // Nový import
 import java.util.UUID;
 
 @Entity
@@ -34,15 +33,16 @@ public abstract class Material {
 
     private String name;
     private String description;
+    private int count;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private Instant createdAt;
 
     @ManyToOne
-    @JoinColumn(name = "course_id")
+    @JoinColumn(name = "module_id")
     @JsonIgnore
-    private Course course;
+    private Module module;
 
     public abstract String getTypeLabel();
 }
