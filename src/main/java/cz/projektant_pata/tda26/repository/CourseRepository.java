@@ -14,10 +14,10 @@ import java.util.UUID;
 
 @Repository
 public interface CourseRepository extends JpaRepository<Course, UUID> {
-    @EntityGraph(attributePaths = {"modules", "feed"})
+//    @EntityGraph(attributePaths = {"modules", "feed"})
     List<Course> findAll();
 
-    @EntityGraph(attributePaths = {"modules", "feed"})
+//    @EntityGraph(attributePaths = {"modules", "feed"})
     @Query("SELECT c FROM Course c WHERE c.status IN :visibleStatuses")
     List<Course> findForStudents(@Param("visibleStatuses") List<StatusEnum> visibleStatuses);
 }

@@ -10,16 +10,21 @@ import cz.projektant_pata.tda26.model.course.Course;
 import cz.projektant_pata.tda26.model.course.module.Module;
 import cz.projektant_pata.tda26.model.user.User;
 import cz.projektant_pata.tda26.service.ICourseService;
+import cz.projektant_pata.tda26.service.SseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+
 
 @RestController
 @RequestMapping("/api/courses")
@@ -28,6 +33,7 @@ public class CourseController {
     private final ICourseService service;
     private final CourseMapper mapper;
     private final ModuleMapper moduleMapper;
+    private final SseService sseService;
 
 
     @GetMapping
@@ -104,6 +110,12 @@ public class CourseController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping(value = "/{uuid}/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter stream(@PathVariable UUID uuid) {
+        return sseService.subscribe(uuid);
+    }
+
+
 //zmeny statusu
 
     @PutMapping("/{uuid}/schedule")
@@ -152,7 +164,7 @@ public class CourseController {
     }
 
 
-    @PostMapping("/{courseUuid}/modules/activate")
+    @PutMapping("/{courseUuid}/modules/activate")
     public ResponseEntity<ModuleResponseDTO> activateNext(
             @PathVariable UUID courseUuid
     ) {
@@ -160,7 +172,7 @@ public class CourseController {
         return ResponseEntity.ok(moduleMapper.toResponse(module));
     }
 
-    @PostMapping("/{courseUuid}/modules/deactivate")
+    @PutMapping("/{courseUuid}/modules/deactivate")
     public ResponseEntity<ModuleResponseDTO> deactivatePrevious(
             @PathVariable UUID courseUuid
     ) {

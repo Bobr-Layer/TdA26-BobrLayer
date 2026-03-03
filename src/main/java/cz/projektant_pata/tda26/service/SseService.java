@@ -1,7 +1,6 @@
 package cz.projektant_pata.tda26.service;
 
-import cz.projektant_pata.tda26.dto.course.feed.FeedResponseDTO;
-import cz.projektant_pata.tda26.dto.course.feed.IFeedEventPayload;
+import cz.projektant_pata.tda26.dto.sse.SseEventDTO;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -21,8 +20,9 @@ public class SseService {
         emitters.computeIfAbsent(courseId, k -> new CopyOnWriteArrayList<>()).add(emitter);
 
         Runnable cleanup = () -> {
-            if (emitters.containsKey(courseId)) {
-                emitters.get(courseId).remove(emitter);
+            List<SseEmitter> courseEmitters = emitters.get(courseId);
+            if (courseEmitters != null) {
+                courseEmitters.remove(emitter);
             }
         };
 
@@ -30,8 +30,10 @@ public class SseService {
         emitter.onTimeout(cleanup);
 
         try {
-            emitter.send(SseEmitter.event().comment("connected"));
-
+            // Úvodní spojovací event (typ i název je "CONNECTED")
+            emitter.send(SseEmitter.event()
+                    .name("CONNECTED")
+                    .data(new SseEventDTO<>("CONNECTED", "connected")));
         } catch (IOException e) {
             emitter.completeWithError(e);
             cleanup.run();
@@ -40,31 +42,20 @@ public class SseService {
         return emitter;
     }
 
-    private void broadcast(UUID courseId, String eventName, IFeedEventPayload payload) {
+    public void send(UUID courseId, SseEventDTO<?> event) {
         List<SseEmitter> courseEmitters = emitters.get(courseId);
-        if (courseEmitters != null) {
-            courseEmitters.forEach(emitter -> {
-                try {
-                    emitter.send(SseEmitter.event()
-                            .name(eventName)
-                            .data(payload));
-                } catch (IOException e) {
-                }
-            });
-        }
-    }
+        if (courseEmitters == null) return;
 
-    public void update(UUID courseId, IFeedEventPayload feedItemDto) {
-        broadcast(courseId, "feed-message", feedItemDto);
-    }
-
-    public void kill(UUID courseId, UUID deletedItemId) {
-        broadcast(courseId, "feed-message", new DeleteEventDto(deletedItemId));
-    }
-
-    public record DeleteEventDto(UUID deletedId, String type) implements IFeedEventPayload {
-        public DeleteEventDto(UUID deletedId) {
-            this(deletedId, "DELETE_EVENT");
-        }
+        courseEmitters.forEach(emitter -> {
+            try {
+                // Event získá název z DTO (např. MODULE_ACTIVATED) a payload je celé DTO
+                emitter.send(SseEmitter.event()
+                        .name(event.type())
+                        .data(event));
+            } catch (IOException e) {
+                courseEmitters.remove(emitter);
+                emitter.completeWithError(e);
+            }
+        });
     }
 }

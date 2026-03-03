@@ -1,5 +1,7 @@
 package cz.projektant_pata.tda26.service;
 
+import cz.projektant_pata.tda26.event.course.module.ModuleActivatedEvent;
+import cz.projektant_pata.tda26.event.course.module.ModuleDeactivatedEvent;
 import cz.projektant_pata.tda26.exception.InvalidResourceStateException;
 import cz.projektant_pata.tda26.exception.ResourceAlreadyExistsException;
 import cz.projektant_pata.tda26.exception.ResourceNotFoundException;
@@ -9,6 +11,8 @@ import cz.projektant_pata.tda26.model.user.User;
 import cz.projektant_pata.tda26.model.course.module.Module;
 import cz.projektant_pata.tda26.repository.CourseRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +28,9 @@ public class CourseServiceImpl implements ICourseService {
     private final IUserService userService;
     private final IModuleService moduleService;
 
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
+
     @Override
     public List<Course> find() {
         return repository.findAll();
@@ -36,6 +43,7 @@ public class CourseServiceImpl implements ICourseService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Course> findForStudent() {
         return repository.findForStudents(
                 List.of(StatusEnum.Scheduled, StatusEnum.Live, StatusEnum.Paused)
@@ -123,7 +131,7 @@ public class CourseServiceImpl implements ICourseService {
     public Course start(UUID uuid) {
         Course c = this.getCourseOrThrow(uuid);
 
-        if (!c.getStatus().equals(StatusEnum.Draft)&&!c.getStatus().equals(StatusEnum.Scheduled)&&!c.getStatus().equals(StatusEnum.Paused)) {
+        if (!c.getStatus().equals(StatusEnum.Draft) && !c.getStatus().equals(StatusEnum.Scheduled) && !c.getStatus().equals(StatusEnum.Paused)) {
             throw new InvalidResourceStateException(
                     "Kurz s ID " + uuid + " nelze použít - není ve stavu Draft či Scheduled");
         }
@@ -146,6 +154,7 @@ public class CourseServiceImpl implements ICourseService {
 
         return repository.save(c);
     }
+
     @Override
     @Transactional
     public Course archive(UUID uuid) {
@@ -172,7 +181,11 @@ public class CourseServiceImpl implements ICourseService {
         if (!moduleService.hasNext(courseUuid))
             throw new InvalidResourceStateException("Kurz s ID " + courseUuid + " nemá žádný další modul k aktivaci.");
 
-        return moduleService.activate(courseUuid);
+        Module activated = moduleService.activate(courseUuid);
+
+        eventPublisher.publishEvent(new ModuleActivatedEvent(course, activated));
+
+        return activated;
     }
 
     @Override
@@ -186,7 +199,11 @@ public class CourseServiceImpl implements ICourseService {
         if (!moduleService.hasPrevious(courseUuid))
             throw new InvalidResourceStateException("Kurz s ID " + courseUuid + " nemá žádný aktivní modul k deaktivaci.");
 
-        return moduleService.deactivate(courseUuid);
+        Module deactivated = moduleService.deactivate(courseUuid);
+
+        eventPublisher.publishEvent(new ModuleDeactivatedEvent(course, deactivated));
+
+        return deactivated;
     }
 
 

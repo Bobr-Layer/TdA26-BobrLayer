@@ -33,7 +33,9 @@ public abstract class Material {
 
     private String name;
     private String description;
-    private int count;
+
+    @Column(nullable = false)
+    private int count = 0;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

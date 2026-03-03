@@ -1,8 +1,5 @@
 package cz.projektant_pata.tda26.service;
 
-import cz.projektant_pata.tda26.event.course.material.MaterialCreatedEvent;
-import cz.projektant_pata.tda26.event.course.material.MaterialKilledEvent;
-import cz.projektant_pata.tda26.event.course.material.MaterialUpdatedEvent;
 import cz.projektant_pata.tda26.exception.file.FileStorageException;
 import cz.projektant_pata.tda26.exception.file.FileValidationException;
 import cz.projektant_pata.tda26.exception.ResourceNotFoundException;
@@ -39,7 +36,6 @@ public class MaterialServiceImpl implements IMaterialService {
 
     private final MaterialRepository materialRepository;
     private final ModuleRepository moduleRepository;
-    private final ApplicationEventPublisher eventPublisher;
 
     private static final Logger logger = LoggerFactory.getLogger(MaterialServiceImpl.class);
 
@@ -87,10 +83,7 @@ public class MaterialServiceImpl implements IMaterialService {
             throw new IllegalArgumentException("Kurz není v režimu úprav");
 
         material.setModule(module);
-        Material saved = materialRepository.save(material);
-        if (!module.getCourse().getStatus().equals(StatusEnum.Draft))
-            eventPublisher.publishEvent(new MaterialCreatedEvent(module.getCourse().getUuid(), saved.getName(), saved.getTypeLabel()));
-        return saved;
+        return materialRepository.save(material);
     }
 
 
@@ -110,13 +103,7 @@ public class MaterialServiceImpl implements IMaterialService {
             urlMaterial.setUrl(url);
         }
 
-        Material saved = materialRepository.save(existingMaterial);
-
-        if (!existingMaterial.getModule().getCourse().getStatus().equals(StatusEnum.Draft)) {
-            eventPublisher.publishEvent(new MaterialUpdatedEvent(moduleUuid, oldName, saved.getName(), saved.getTypeLabel()));
-        }
-
-        return saved;
+        return materialRepository.save(existingMaterial);
     }
 
 
@@ -143,9 +130,7 @@ public class MaterialServiceImpl implements IMaterialService {
             fileMaterial.setSizeBytes((int) file.getSize());
         }
 
-        Material saved = materialRepository.save(fileMaterial);
-        eventPublisher.publishEvent(new MaterialUpdatedEvent(moduleUuid, oldName, saved.getName(), saved.getTypeLabel()));
-        return saved;
+        return materialRepository.save(fileMaterial);
     }
 
     @Override
@@ -163,9 +148,7 @@ public class MaterialServiceImpl implements IMaterialService {
         material.setMimeType(getCleanContentType(file.getContentType()));
         material.setSizeBytes((int) file.getSize());
 
-        Material saved = materialRepository.save(material);
-        eventPublisher.publishEvent(new MaterialCreatedEvent(moduleUuid, saved.getName(), saved.getTypeLabel()));
-        return saved;
+        return materialRepository.save(material);
     }
 
     @Override
@@ -184,7 +167,6 @@ public class MaterialServiceImpl implements IMaterialService {
         }
 
         materialRepository.delete(material);
-        eventPublisher.publishEvent(new MaterialKilledEvent(moduleUuid, materialName, type));
         return material;
     }
 

@@ -2,9 +2,6 @@ package cz.projektant_pata.tda26.service;
 
 import cz.projektant_pata.tda26.dto.course.quiz.QuizRequestDTO;
 import cz.projektant_pata.tda26.dto.course.quiz.question.*;
-import cz.projektant_pata.tda26.event.course.quiz.QuizCreatedEvent;
-import cz.projektant_pata.tda26.event.course.quiz.QuizKilledEvent;
-import cz.projektant_pata.tda26.event.course.quiz.QuizUpdatedEvent;
 import cz.projektant_pata.tda26.exception.ResourceNotFoundException;
 import cz.projektant_pata.tda26.model.course.StatusEnum;
 import cz.projektant_pata.tda26.model.course.module.Module;
@@ -29,7 +26,6 @@ public class QuizServiceImpl implements IQuizService {
 
     private final QuizRepository quizRepository;
     private final ModuleRepository moduleRepository; // ✅ odstraněn CourseRepository (nepoužíval se)
-    private final ApplicationEventPublisher eventPublisher;
 
 
     @Override
@@ -92,15 +88,12 @@ public class QuizServiceImpl implements IQuizService {
             }
         }
 
-        Quiz saved = quizRepository.save(quiz);
-        if (module.getCourse().getStatus().equals(StatusEnum.Draft))
-            eventPublisher.publishEvent(new QuizCreatedEvent(moduleUuid, saved.getTitle()));
-        return saved;
+        return quizRepository.save(quiz);
     }
 
     @Override
     @Transactional
-    public void kill(UUID moduleUuid, UUID quizUuid) { // ✅ přejmenován parametr courseUuid → moduleUuid
+    public void kill(UUID moduleUuid, UUID quizUuid) {
 
         Quiz quiz = getQuizOrThrow(moduleUuid, quizUuid);
         if (!quiz.getModule().getCourse().getStatus().equals(StatusEnum.Draft))
@@ -108,7 +101,6 @@ public class QuizServiceImpl implements IQuizService {
         String quizTitle = quiz.getTitle();
 
         quizRepository.delete(quiz);
-        eventPublisher.publishEvent(new QuizKilledEvent(moduleUuid, quizTitle));
     }
 
     @Override

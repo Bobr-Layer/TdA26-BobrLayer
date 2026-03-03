@@ -10,12 +10,19 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     show-sql: true
     properties:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
+        # PŘIDÁNO: Oprava pro Hibernate 6 dědičnost JOINED a agregace
+        query:
+          in_clause_parameter_padding: true
+          sqm:
+            mutation_strategy: inline
+        criteria:
+          copy_tree: true
 
   servlet:
     multipart:

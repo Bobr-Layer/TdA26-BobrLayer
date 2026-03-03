@@ -122,6 +122,8 @@ public class ModuleServiceImpl implements IModuleService {
                 .orElseThrow(() -> new IllegalStateException("Žádný další modul k aktivaci."));
 
         toActivate.setActivated(true);
+
+
         return moduleRepository.save(toActivate);
     }
 

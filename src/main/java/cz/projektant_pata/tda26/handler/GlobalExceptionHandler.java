@@ -1,10 +1,11 @@
 package cz.projektant_pata.tda26.handler;
 
 import cz.projektant_pata.tda26.dto.server.ErrorResponseDTO;
+import cz.projektant_pata.tda26.exception.InvalidResourceStateException;
 import cz.projektant_pata.tda26.exception.ResourceAlreadyExistsException;
+import cz.projektant_pata.tda26.exception.ResourceNotFoundException;
 import cz.projektant_pata.tda26.exception.file.FileStorageException;
 import cz.projektant_pata.tda26.exception.file.FileValidationException;
-import cz.projektant_pata.tda26.exception.ResourceNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
-public class GlobalExceptionHandler implements IGlobalExceptionHandler{
+public class GlobalExceptionHandler implements IGlobalExceptionHandler {
 
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<ErrorResponseDTO> handleNoHandlerFound(
@@ -51,7 +52,6 @@ public class GlobalExceptionHandler implements IGlobalExceptionHandler{
         );
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
-
 
     @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<ErrorResponseDTO> handleNoResourceFound(
@@ -104,6 +104,21 @@ public class GlobalExceptionHandler implements IGlobalExceptionHandler{
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
     }
 
+    // NOVĚ PŘIDANÁ METODA PRO InvalidResourceStateException
+    @ExceptionHandler(InvalidResourceStateException.class)
+    public ResponseEntity<ErrorResponseDTO> handleInvalidResourceState(
+            InvalidResourceStateException ex, HttpServletRequest request) {
+
+        ErrorResponseDTO error = new ErrorResponseDTO(
+                LocalDateTime.now(),
+                HttpStatus.CONFLICT.value(), // 409 Conflict - stav zdroje neumožňuje operaci
+                "Invalid Resource State",
+                ex.getMessage(),
+                request.getRequestURI(),
+                null
+        );
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponseDTO> handleIllegalArgument(
@@ -201,5 +216,4 @@ public class GlobalExceptionHandler implements IGlobalExceptionHandler{
         );
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
 }

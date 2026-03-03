@@ -1,12 +1,10 @@
 package cz.projektant_pata.tda26.listener;
 
 import cz.projektant_pata.tda26.dto.course.feed.FeedResponseDTO;
-import cz.projektant_pata.tda26.event.course.material.MaterialCreatedEvent;
-import cz.projektant_pata.tda26.event.course.material.MaterialKilledEvent;
-import cz.projektant_pata.tda26.event.course.material.MaterialUpdatedEvent;
-import cz.projektant_pata.tda26.event.course.quiz.QuizCreatedEvent;
-import cz.projektant_pata.tda26.event.course.quiz.QuizKilledEvent;
-import cz.projektant_pata.tda26.event.course.quiz.QuizUpdatedEvent;
+import cz.projektant_pata.tda26.dto.sse.ModuleEventPayload;
+import cz.projektant_pata.tda26.dto.sse.SseEventDTO;
+import cz.projektant_pata.tda26.event.course.module.ModuleActivatedEvent;
+import cz.projektant_pata.tda26.event.course.module.ModuleDeactivatedEvent;
 import cz.projektant_pata.tda26.mapper.FeedMapper;
 import cz.projektant_pata.tda26.model.course.feed.FeedItem;
 import cz.projektant_pata.tda26.model.course.feed.FeedType;
@@ -18,6 +16,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
+import java.util.UUID;
+
 @Component
 @RequiredArgsConstructor
 public class FeedEventListener {
@@ -25,85 +25,49 @@ public class FeedEventListener {
     private final SseService sseService;
     private final FeedMapper feedMapper;
 
-    // --- MATERIALS ---
+    // --- MODULES ---
 
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void handleMaterialCreated(MaterialCreatedEvent event) {
+    public void handleModuleActivated(ModuleActivatedEvent event) {
         createAndBroadcast(
-                event.courseUuid(),
-                "Do kurzu byl přidán nový studijní materiál: " + event.materialName()
+                event.course().getUuid(),
+                "Byl aktivován modul č. " + event.module().getIndex() + ": " + event.module().getName()
+        );
+        sseService.send(
+                event.course().getUuid(),
+                new SseEventDTO<>("MODULE_ACTIVATED", new ModuleEventPayload(
+                        event.module().getUuid(),
+                        event.module().getName(),
+                        event.module().getIndex()
+                ))
         );
     }
 
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void handleMaterialUpdated(MaterialUpdatedEvent event) {
-        if (event.oldName().equals(event.newName())) {
-            createAndBroadcast(
-                    event.courseUuid(),
-                    "Materiál '" + event.oldName() + "' byl aktualizován."
-            );
-        } else {
-            createAndBroadcast(
-                    event.courseUuid(),
-                    "Materiál '" + event.oldName() + "' byl aktualizován na '" + event.newName() + "'."
-            );
-        }
-    }
-
-    @Async
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void handleMaterialKilled(MaterialKilledEvent event) {
+    public void handleModuleDeactivated(ModuleDeactivatedEvent event) {
         createAndBroadcast(
-                event.courseUuid(),
-                "Materiál '" + event.name() + "' byl z kurzu odebrán."
+                event.course().getUuid(),
+                "Modul č. " + event.module().getIndex() + " '" + event.module().getName() + "' byl deaktivován."
         );
-    }
-
-    // --- QUIZZES ---
-
-    @Async
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void handleQuizCreated(QuizCreatedEvent event) {
-        createAndBroadcast(
-                event.courseUuid(),
-                "Do kurzu byl přidán nový kvíz: " + event.quizTitle()
-        );
-    }
-
-    @Async
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void handleQuizUpdated(QuizUpdatedEvent event) {
-        if (event.oldTitle().equals(event.newTitle())) {
-            createAndBroadcast(
-                    event.courseUuid(),
-                    "Kvíz '" + event.oldTitle() + "' byl aktualizován."
-            );
-        } else {
-            createAndBroadcast(
-                    event.courseUuid(),
-                    "Kvíz '" + event.oldTitle() + "' byl přejmenován na '" + event.newTitle() + "'."
-            );
-        }
-    }
-
-    @Async
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void handleQuizKilled(QuizKilledEvent event) {
-        createAndBroadcast(
-                event.courseUuid(),
-                "Kvíz '" + event.quizTitle() + "' byl z kurzu odebrán."
+        sseService.send(
+                event.course().getUuid(),
+                new SseEventDTO<>("MODULE_DEACTIVATED", new ModuleEventPayload(
+                        event.module().getUuid(),
+                        event.module().getName(),
+                        event.module().getIndex()
+                ))
         );
     }
 
     // --- HELPER ---
 
-    private void createAndBroadcast(java.util.UUID courseId, String message) {
+    private void createAndBroadcast(UUID courseId, String message) {
         try {
-            FeedItem item = feedService.create(courseId, FeedType.SYSTEM ,message);
+            FeedItem item = feedService.create(courseId, FeedType.SYSTEM, message);
             FeedResponseDTO dto = feedMapper.toDto(item);
-            sseService.update(courseId, dto);
+            sseService.send(courseId, new SseEventDTO<>("FEED_CREATED", dto));
         } catch (Exception e) {
             System.err.println("Chyba při vytváření feed itemu v listeneru: " + e.getMessage());
             e.printStackTrace();
