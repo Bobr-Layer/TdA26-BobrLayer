@@ -2,6 +2,7 @@ package cz.projektant_pata.tda26.service;
 
 import cz.projektant_pata.tda26.dto.course.quiz.QuizRequestDTO;
 import cz.projektant_pata.tda26.dto.course.quiz.question.*;
+import cz.projektant_pata.tda26.event.course.quiz.QuizSubmittedEvent;
 import cz.projektant_pata.tda26.exception.ResourceNotFoundException;
 import cz.projektant_pata.tda26.model.course.StatusEnum;
 import cz.projektant_pata.tda26.model.course.module.Module;
@@ -25,8 +26,8 @@ import java.util.stream.Collectors;
 public class QuizServiceImpl implements IQuizService {
 
     private final QuizRepository quizRepository;
-    private final ModuleRepository moduleRepository; // ✅ odstraněn CourseRepository (nepoužíval se)
-
+    private final ModuleRepository moduleRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Override
     public List<Quiz> find(UUID moduleUuid) { // ✅ přejmenován parametr m → moduleUuid
@@ -50,10 +51,8 @@ public class QuizServiceImpl implements IQuizService {
         if (dto.getQuestions() == null || dto.getQuestions().isEmpty()) {
             existingQuiz.getQuestions().clear();
         } else {
-            existingQuiz.getQuestions().removeIf(existingQ ->
-                    dto.getQuestions().stream()
-                            .noneMatch(newQ -> newQ.getUuid() != null && newQ.getUuid().equals(existingQ.getUuid()))
-            );
+            existingQuiz.getQuestions().removeIf(existingQ -> dto.getQuestions().stream()
+                    .noneMatch(newQ -> newQ.getUuid() != null && newQ.getUuid().equals(existingQ.getUuid())));
 
             for (QuestionRequestDTO qDto : dto.getQuestions()) {
                 if (qDto.getUuid() == null) {
@@ -105,7 +104,8 @@ public class QuizServiceImpl implements IQuizService {
 
     @Override
     @Transactional
-    public SubmitQuizResultDTO submitQuiz(UUID moduleUuid, UUID quizUuid, SubmitQuizDTO submission) { // ✅ přejmenován parametr
+    public SubmitQuizResultDTO submitQuiz(UUID moduleUuid, UUID quizUuid, SubmitQuizDTO submission) { // ✅ přejmenován
+                                                                                                      // parametr
         Quiz quiz = getQuizOrThrow(moduleUuid, quizUuid);
         if (!quiz.getModule().getCourse().getStatus().equals(StatusEnum.Draft))
             throw new IllegalArgumentException("Kurz není v režimu úprav");
@@ -115,7 +115,7 @@ public class QuizServiceImpl implements IQuizService {
         Map<UUID, SubmitAnswerDTO> userAnswersMap = (submission == null || submission.answers() == null)
                 ? Collections.emptyMap()
                 : submission.answers().stream()
-                .collect(Collectors.toMap(SubmitAnswerDTO::uuid, dto -> dto));
+                        .collect(Collectors.toMap(SubmitAnswerDTO::uuid, dto -> dto));
 
         int totalQuestions = quiz.getQuestions().size();
         int correctCount = 0;
@@ -142,15 +142,18 @@ public class QuizServiceImpl implements IQuizService {
 
         quizRepository.save(quiz);
 
+        eventPublisher.publishEvent(new QuizSubmittedEvent(
+                quiz.getModule().getCourse(), quiz,
+                (double) correctCount, (double) totalQuestions,
+                correctPerQuestion));
+
         return new SubmitQuizResultDTO(
                 quiz.getUuid(),
                 (double) correctCount,
                 (double) totalQuestions,
                 correctPerQuestion,
-                java.time.LocalDateTime.now()
-        );
+                java.time.LocalDateTime.now());
     }
-
 
     // ── private helpers ───────────────────────────────────────────────────────
 
@@ -195,7 +198,8 @@ public class QuizServiceImpl implements IQuizService {
 
         if (existing instanceof SingleChoiceQuestion sq && dto instanceof SingleChoiceQuestionRequestDTO sDto) {
             sq.setCorrectIndex(sDto.getCorrectIndex());
-        } else if (existing instanceof MultipleChoiceQuestion mq && dto instanceof MultipleChoiceQuestionRequestDTO mDto) {
+        } else if (existing instanceof MultipleChoiceQuestion mq
+                && dto instanceof MultipleChoiceQuestionRequestDTO mDto) {
             mq.setCorrectIndices(mDto.getCorrectIndices());
         }
     }

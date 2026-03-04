@@ -44,7 +44,7 @@ public class FeedController {
         FeedItem createdItem = feedService.create(courseId, FeedType.MANUAL, request.message());
         FeedResponseDTO dto = feedMapper.toDto(createdItem);
 
-        sseService.send(courseId, new SseEventDTO<>("FEED_CREATED", dto));
+        sseService.sendToAll(courseId, new SseEventDTO<>("FEED_CREATED", dto));
 
         return ResponseEntity.ok(dto);
     }
@@ -58,7 +58,7 @@ public class FeedController {
         FeedItem updatedItem = feedService.update(itemId, request.message());
         FeedResponseDTO dto = feedMapper.toDto(updatedItem);
 
-        sseService.send(courseId, new SseEventDTO<>("FEED_UPDATED", dto));
+        sseService.sendToAll(courseId, new SseEventDTO<>("FEED_UPDATED", dto));
 
         return ResponseEntity.ok(dto);
     }
@@ -70,7 +70,7 @@ public class FeedController {
     ) {
         feedService.delete(itemId);
 
-        sseService.send(courseId, new SseEventDTO<>("FEED_DELETED", Map.of("deletedId", itemId)));
+        sseService.sendToAll(courseId, new SseEventDTO<>("FEED_DELETED", Map.of("deletedId", itemId)));
 
         return ResponseEntity.noContent().build();
     }

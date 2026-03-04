@@ -21,4 +21,5 @@ public abstract class MaterialRequestDTO {
     private UUID uuid;
     private String name;
     private String description;
+    private int count;
 }

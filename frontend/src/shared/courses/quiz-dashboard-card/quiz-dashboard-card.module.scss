@@ -3,33 +3,34 @@
 .quiz_dashboard_card {
     display: flex;
     flex-direction: column;
-    width: 15rem;
+    width: 100%;
     height: 10rem;
     justify-content: space-between;
-    padding: 1rem;
+    padding: 1.25rem;
     box-sizing: border-box;
-    border: 2px solid map-get($colors, lighterShadow);
-    background-color: map-get($colors, lighterShadow);
+    border: 2px solid map-get($colors, darkerTxt);
+    background-color: map-get($colors, darkerTxt);
+    cursor: pointer;
 
     .quiz_dashboard_card_header {
         display: flex;
         flex-direction: column;
+        gap: 0.5rem;
 
         h4 {
             font-size: 1rem;
-            color: map-get($colors, darkerTxt);
         }
 
         p {
             font-size: 0.875rem;
-            color: map-get($colors, darkerShadow);
+            color: map-get($colors, darkerBck);
         }
     }
 
     .quiz_dashboard_card_content {
-        width: 100%;
         display: flex;
-        justify-content: space-between;
+        gap: 1.25rem;
+        justify-content: flex-end;
         align-items: center;
 
         button {
@@ -49,11 +50,11 @@
     }
 
     &:hover {
-        background-color: transparent;
+        border-color: map-get($colors, action2);
 
         .quiz_dashboard_card_content a {
             svg path {
-                fill: map-get($colors, action);
+                fill: map-get($colors, action2);
             }
         }
 

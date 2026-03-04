@@ -11,14 +11,14 @@
     position: relative;
     z-index: 2;
 
-    .courses_nav {
-        display: flex;
-        flex-direction: column;
-        gap: 2.5rem;
+    h1 {
+        font-size: 2rem;
+    }
 
-        h1 {
-            font-size: 2rem;
-        }
+    .courses_nav {
+        display: grid;
+        grid-template-columns: 3fr 1fr;
+        gap: 1.25rem;
     }
 }
 

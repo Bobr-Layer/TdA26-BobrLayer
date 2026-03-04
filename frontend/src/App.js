@@ -18,6 +18,10 @@ import About from "./pages/info/About";
 import Contact from "./pages/info/Contact";
 import GDPR from "./pages/info/GDPR";
 import Terms from './pages/info/Terms';
+import Module from "./pages/courses/module/Module";
+import DashboardModule from "./pages/dashboard/pages/DashboardModule";
+import NewModule from "./pages/dashboard/pages/NewModule";
+import EditModule from "./pages/dashboard/pages/EditModule";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -35,12 +39,13 @@ function App() {
     <Routes>
       <Route path="/" element={<Index user={user} setUser={setUser} />} />
       <Route path="/about" element={<About user={user} setUser={setUser} />} />
-      <Route path="/contact" element={<Contact user={user} setUser={setUser}/>} />
-      <Route path="/gdpr" element={<GDPR user={user} setUser={setUser}/>} />
-      <Route path="/terms" element={<Terms user={user} setUser={setUser}/>} />
+      <Route path="/contact" element={<Contact user={user} setUser={setUser} />} />
+      <Route path="/gdpr" element={<GDPR user={user} setUser={setUser} />} />
+      <Route path="/terms" element={<Terms user={user} setUser={setUser} />} />
       <Route path="/courses" element={<Courses user={user} setUser={setUser} />} />
       <Route path="/courses/:uuid" element={<Detail user={user} setUser={setUser} />} />
-      <Route path="/courses/:uuid/quizz/:quizzUuid" element={<Quiz />} />
+      <Route path="/courses/:uuid/modules/:moduleUuid" element={<Module user={user} setUser={setUser} />} />
+      <Route path="/courses/:uuid/modules/:moduleUuid/quizzes/:quizzUuid" element={<Quiz />} />
 
       {user ? (
         <>
@@ -51,11 +56,15 @@ function App() {
           <Route path="/dashboard/:uuid" element={<Course user={user} setUser={setUser} />} />
           <Route path="/dashboard/:uuid/edit" element={<EditCourse user={user} setUser={setUser} />} />
 
-          <Route path="/dashboard/:uuid/quizzes/:quizzUuid" element={<Quizz user={user} setUser={setUser} />} />
-          <Route path="/dashboard/:uuid/quizzes/new" element={<NewQuizz user={user} setUser={setUser} />} />
-          <Route path="/dashboard/:uuid/quizzes/:quizzUuid/edit" element={<EditQuiz user={user} setUser={setUser} />} />
-
           <Route path="/dashboard/:uuid/feed" element={<DashboardFeed user={user} setUser={setUser} />} />
+
+          <Route path="/dashboard/:uuid/modules/:moduleUuid" element={<DashboardModule user={user} setUser={setUser} />} />
+          <Route path="/dashboard/:uuid/modules/:moduleUuid/edit" element={<EditModule user={user} setUser={setUser}/>} />
+          <Route path="/dashboard/:uuid/modules/new" element={<NewModule user={user} setUser={setUser} />} />
+
+          <Route path="/dashboard/:uuid/modules/:moduleUuid/quizzes/:quizzUuid" element={<Quizz user={user} setUser={setUser} />} />
+          <Route path="/dashboard/:uuid/modules/:moduleUuid/quizzes/new" element={<NewQuizz user={user} setUser={setUser} />} />
+          <Route path="/dashboard/:uuid/modules/:moduleUuid/quizzes/:quizzUuid/edit" element={<EditQuiz user={user} setUser={setUser} />} />
         </>
       ) : (
         <>

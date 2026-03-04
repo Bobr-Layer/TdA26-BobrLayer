@@ -1,89 +1,16 @@
-import { useState, useEffect } from 'react';
 import styles from './course-form.module.scss';
 import Input from '../../../../shared/form/input/Input';
 import Textarea from '../../../../shared/form/textarea/Textarea';
-import NewButton from '../../../../shared/button/new/NewButton';
-import { UrlInput, FileInput } from '../../../../shared/form/material-input/MaterialInput';
+import SmallMessage from '../../../../shared/message/small-message/SmallMessage';
 
 export default function CourseForm({
     courseData,
     handleCourseChange,
-    onSubmit,
-    onUrlsChange,
-    onFilesChange,
-    initialUrls,
-    initialFiles
+    showMessages
 }) {
-    const [fileData, setFileData] = useState(initialFiles || []);
-    const [urlData, setUrlData] = useState(initialUrls || []);
-
-    useEffect(() => {
-        if (initialUrls) {
-            setUrlData(initialUrls);
-        }
-    }, [initialUrls]);
-
-    useEffect(() => {
-        if (initialFiles) {
-            setFileData(initialFiles);
-        }
-    }, [initialFiles]);
-
-    const handleFileChange = (index, data) => {
-        console.log('handleFileChange called:', index, data);
-        const newData = [...fileData];
-        newData[index] = data;
-        console.log('New fileData:', newData);
-        setFileData(newData);
-        if (onFilesChange) {
-            onFilesChange(newData);
-        }
-    };
-
-    const addFile = () => {
-        const newData = [...fileData, {}];
-        setFileData(newData);
-        if (onFilesChange) {
-            onFilesChange(newData);
-        }
-    };
-
-    const removeFile = (index) => {
-        const newData = fileData.filter((_, i) => i !== index);
-        setFileData(newData);
-        if (onFilesChange) {
-            onFilesChange(newData);
-        }
-    };
-
-    const handleUrlChange = (index, data) => {
-        const newData = [...urlData];
-        newData[index] = data;
-        setUrlData(newData);
-        if (onUrlsChange) {
-            onUrlsChange(newData);
-        }
-    };
-
-    const addUrl = () => {
-        const newData = [...urlData, {}];
-        setUrlData(newData);
-        if (onUrlsChange) {
-            onUrlsChange(newData);
-        }
-    };
-
-    const removeUrl = (index) => {
-        const newData = urlData.filter((_, i) => i !== index);
-        setUrlData(newData);
-        if (onUrlsChange) {
-            onUrlsChange(newData);
-        }
-    };
-
     return (
         <article className={styles.course_form}>
-            <form className={styles.course_form_inputs} onSubmit={onSubmit}>
+            <div className={styles.course_form_inputs}>
                 <Input
                     name="name"
                     placeholder="Název kurzu"
@@ -98,8 +25,9 @@ export default function CourseForm({
                     onChange={handleCourseChange}
                     bigger={true}
                 />
-            </form>
+            </div>
 
+            {/* 
             <div className={styles.course_form_materials}>
                 <div className={styles.course_form_content}>
                     <div className={styles.course_form_content_header}>
@@ -136,7 +64,15 @@ export default function CourseForm({
                         <NewButton onClick={addUrl} />
                     </div>
                 </div>
-            </div>
+            </div> 
+            */}
+
+            {showMessages && (
+                <div className={styles.course_form_messages}>
+                    <SmallMessage text={<>Nový kurz bude vytvořen jako <span>draft</span> - pro zveřejnění změňte jeho viditelnost po vytvoření.</>} />
+                    <SmallMessage text={<>Vytvořit moduly pro tento kurz budete moct po vytvoření kurzu.</>} />
+                </div>
+            )}
         </article>
     );
 }

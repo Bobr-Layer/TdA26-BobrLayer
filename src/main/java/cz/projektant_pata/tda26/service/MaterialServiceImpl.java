@@ -3,6 +3,7 @@ package cz.projektant_pata.tda26.service;
 import cz.projektant_pata.tda26.exception.file.FileStorageException;
 import cz.projektant_pata.tda26.exception.file.FileValidationException;
 import cz.projektant_pata.tda26.exception.ResourceNotFoundException;
+import cz.projektant_pata.tda26.event.course.material.MaterialAccessedEvent;
 import cz.projektant_pata.tda26.model.course.StatusEnum;
 import cz.projektant_pata.tda26.model.course.module.Module; // ✅ explicitní import přebije java.lang.Module
 import cz.projektant_pata.tda26.model.course.material.FileMaterial;
@@ -36,6 +37,8 @@ public class MaterialServiceImpl implements IMaterialService {
 
     private final MaterialRepository materialRepository;
     private final ModuleRepository moduleRepository;
+    private final ICourseService courseService;
+    private final ApplicationEventPublisher eventPublisher;
 
     private static final Logger logger = LoggerFactory.getLogger(MaterialServiceImpl.class);
 
@@ -51,8 +54,7 @@ public class MaterialServiceImpl implements IMaterialService {
             "image/jpeg",
             "image/gif",
             "video/mp4",
-            "audio/mpeg"
-    );
+            "audio/mpeg");
     private static final long MAX_FILE_SIZE = 30 * 1024 * 1024;
 
     @PostConstruct
@@ -79,26 +81,27 @@ public class MaterialServiceImpl implements IMaterialService {
     @Transactional
     public Material create(UUID moduleUuid, Material material) {
         Module module = getModuleOrThrow(moduleUuid);
-        if (module.getCourse().getStatus().equals(StatusEnum.Draft))
+        if (!module.getCourse().getStatus().equals(StatusEnum.Draft))
             throw new IllegalArgumentException("Kurz není v režimu úprav");
 
         material.setModule(module);
         return materialRepository.save(material);
     }
 
-
     @Override
     @Transactional
     public Material update(UUID moduleUuid, UUID materialUuid, String name, String description, String url) {
         Material existingMaterial = getMaterialOrThrow(moduleUuid, materialUuid);
 
-        if (existingMaterial.getModule().getCourse().getStatus().equals(StatusEnum.Draft))
+        if (!existingMaterial.getModule().getCourse().getStatus().equals(StatusEnum.Draft))
             throw new IllegalArgumentException("Kurz není v režimu úprav");
 
         String oldName = existingMaterial.getName();
 
-        if (name != null) existingMaterial.setName(name);
-        if (description != null) existingMaterial.setDescription(description);
+        if (name != null)
+            existingMaterial.setName(name);
+        if (description != null)
+            existingMaterial.setDescription(description);
         if (existingMaterial instanceof UrlMaterial urlMaterial && url != null) {
             urlMaterial.setUrl(url);
         }
@@ -106,21 +109,21 @@ public class MaterialServiceImpl implements IMaterialService {
         return materialRepository.save(existingMaterial);
     }
 
-
     @Override
     @Transactional
     public Material update(UUID moduleUuid, UUID materialUuid, MultipartFile file, String name, String description) {
         Material existingMaterial = getMaterialOrThrow(moduleUuid, materialUuid);
-        if (existingMaterial.getModule().getCourse().getStatus().equals(StatusEnum.Draft))
+        if (!existingMaterial.getModule().getCourse().getStatus().equals(StatusEnum.Draft))
             throw new IllegalArgumentException("Kurz není v režimu úprav");
         if (!(existingMaterial instanceof FileMaterial fileMaterial))
             throw new IllegalArgumentException("Invalid material type");
 
-
         String oldName = existingMaterial.getName();
 
-        if (name != null && !name.isBlank()) fileMaterial.setName(name);
-        if (description != null) fileMaterial.setDescription(description);
+        if (name != null && !name.isBlank())
+            fileMaterial.setName(name);
+        if (description != null)
+            fileMaterial.setDescription(description);
 
         if (file != null && !file.isEmpty()) {
             deletePhysicalFile(fileMaterial.getFileUrl());
@@ -138,7 +141,7 @@ public class MaterialServiceImpl implements IMaterialService {
     public Material create(UUID moduleUuid, MultipartFile file, String name, String description) {
         Module module = getModuleOrThrow(moduleUuid);
         String storedFileName = storeFile(file);
-        if (module.getCourse().getStatus().equals(StatusEnum.Draft))
+        if (!module.getCourse().getStatus().equals(StatusEnum.Draft))
             throw new IllegalArgumentException("Kurz není v režimu úprav");
         FileMaterial material = new FileMaterial();
         material.setModule(module);
@@ -156,7 +159,7 @@ public class MaterialServiceImpl implements IMaterialService {
     public Material kill(UUID moduleUuid, UUID materialUuid) {
         Material material = getMaterialOrThrow(moduleUuid, materialUuid);
 
-        if (material.getModule().getCourse().getStatus().equals(StatusEnum.Draft))
+        if (!material.getModule().getCourse().getStatus().equals(StatusEnum.Draft))
             throw new IllegalArgumentException("Kurz je není v režimu úprav.");
 
         String materialName = material.getName();
@@ -170,6 +173,16 @@ public class MaterialServiceImpl implements IMaterialService {
         return material;
     }
 
+    @Override
+    @Transactional
+    public void trackAccess(UUID courseUuid, UUID moduleUuid, UUID materialUuid) {
+        Material material = getMaterialOrThrow(moduleUuid, materialUuid);
+        material.setCount(material.getCount() + 1);
+        materialRepository.save(material);
+
+        var course = courseService.find(courseUuid);
+        eventPublisher.publishEvent(new MaterialAccessedEvent(course, material));
+    }
 
     // ── private helpers ───────────────────────────────────────────────────────
 
@@ -201,7 +214,8 @@ public class MaterialServiceImpl implements IMaterialService {
         try {
             String originalFilename = file.getOriginalFilename();
             String extension = (originalFilename != null && originalFilename.contains("."))
-                    ? originalFilename.substring(originalFilename.lastIndexOf(".")) : "";
+                    ? originalFilename.substring(originalFilename.lastIndexOf("."))
+                    : "";
 
             String storedFileName = UUID.randomUUID() + extension;
             Path targetLocation = this.uploadPath.resolve(storedFileName);
@@ -213,7 +227,8 @@ public class MaterialServiceImpl implements IMaterialService {
     }
 
     private void deletePhysicalFile(String fileUrl) {
-        if (fileUrl == null || fileUrl.isBlank()) return;
+        if (fileUrl == null || fileUrl.isBlank())
+            return;
         try {
             String filename = fileUrl.replace("/uploads/", "");
             if (!filename.contains("..")) {

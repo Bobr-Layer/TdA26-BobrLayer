@@ -6,6 +6,26 @@
     padding: 3.125rem;
     box-sizing: border-box;
     display: flex;
-    justify-content: center;
-    align-items: center;
+    flex-direction: column;
+    gap: 3.125rem;
+    position: relative;
+
+    .quiz_header {
+        display: flex;
+        align-items: center;
+        gap: 0.625rem;
+        font-size: 1.25rem;
+        font-weight: 700;
+    }
+
+    .quiz_ball {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        background: radial-gradient(circle at bottom right, rgba(2, 87, 165, 0.5), map-get($colors, txt) 70%);
+        height: 100dvh;
+        width: 50dvh;
+        z-index: -1;
+        filter: blur(100px);
+    }
 }

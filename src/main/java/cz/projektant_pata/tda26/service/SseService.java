@@ -1,6 +1,9 @@
 package cz.projektant_pata.tda26.service;
 
+import cz.projektant_pata.tda26.dto.sse.AuthenticatedSseEmitter;
 import cz.projektant_pata.tda26.dto.sse.SseEventDTO;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -13,16 +16,26 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 @Service
 public class SseService {
-    private final Map<UUID, List<SseEmitter>> emitters = new ConcurrentHashMap<>();
+    // Mapa uchovává náš nový wrapper
+    private final Map<UUID, List<AuthenticatedSseEmitter>> emitters = new ConcurrentHashMap<>();
 
     public SseEmitter subscribe(UUID courseId) {
         SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
-        emitters.computeIfAbsent(courseId, k -> new CopyOnWriteArrayList<>()).add(emitter);
+
+        // Zjištění stavu přihlášení BĚHEM HTTP REQUESTU (zde ThreadLocal funguje)
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        boolean isAuthenticated = auth != null && auth.isAuthenticated() &&
+                !"anonymousUser".equals(auth.getPrincipal());
+        String username = isAuthenticated ? auth.getName() : null;
+
+        // Obalíme emiter a uložíme ho
+        AuthenticatedSseEmitter authEmitter = new AuthenticatedSseEmitter(emitter, isAuthenticated);
+        emitters.computeIfAbsent(courseId, k -> new CopyOnWriteArrayList<>()).add(authEmitter);
 
         Runnable cleanup = () -> {
-            List<SseEmitter> courseEmitters = emitters.get(courseId);
+            List<AuthenticatedSseEmitter> courseEmitters = emitters.get(courseId);
             if (courseEmitters != null) {
-                courseEmitters.remove(emitter);
+                courseEmitters.remove(authEmitter);
             }
         };
 
@@ -30,7 +43,6 @@ public class SseService {
         emitter.onTimeout(cleanup);
 
         try {
-            // Úvodní spojovací event (typ i název je "CONNECTED")
             emitter.send(SseEmitter.event()
                     .name("CONNECTED")
                     .data(new SseEventDTO<>("CONNECTED", "connected")));
@@ -42,19 +54,39 @@ public class SseService {
         return emitter;
     }
 
-    public void send(UUID courseId, SseEventDTO<?> event) {
-        List<SseEmitter> courseEmitters = emitters.get(courseId);
+    // Metoda pro odeslání POUZE přihlášeným uživatelům
+    public void sendToAuthenticated(UUID courseId, SseEventDTO<?> event) {
+        List<AuthenticatedSseEmitter> courseEmitters = emitters.get(courseId);
         if (courseEmitters == null) return;
 
-        courseEmitters.forEach(emitter -> {
+        courseEmitters.forEach(authEmitter -> {
+            // Kontrola uloženého stavu - posíláme jen přihlášeným
+            if (authEmitter.isAuthenticated()) {
+                try {
+                    authEmitter.emitter().send(SseEmitter.event()
+                            .name(event.type())
+                            .data(event));
+                } catch (IOException e) {
+                    courseEmitters.remove(authEmitter);
+                    authEmitter.emitter().completeWithError(e);
+                }
+            }
+        });
+    }
+
+    // Zachovaná původní metoda pro odeslání úplně všem (i anonymům)
+    public void sendToAll(UUID courseId, SseEventDTO<?> event) {
+        List<AuthenticatedSseEmitter> courseEmitters = emitters.get(courseId);
+        if (courseEmitters == null) return;
+
+        courseEmitters.forEach(authEmitter -> {
             try {
-                // Event získá název z DTO (např. MODULE_ACTIVATED) a payload je celé DTO
-                emitter.send(SseEmitter.event()
+                authEmitter.emitter().send(SseEmitter.event()
                         .name(event.type())
                         .data(event));
             } catch (IOException e) {
-                courseEmitters.remove(emitter);
-                emitter.completeWithError(e);
+                courseEmitters.remove(authEmitter);
+                authEmitter.emitter().completeWithError(e);
             }
         });
     }

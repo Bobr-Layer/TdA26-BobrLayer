@@ -5,7 +5,9 @@
     flex-direction: column;
     align-items: center;
     gap: 3.75rem;
-    width: 37.5rem;
+    width: 100%;
+    height: 100%;
+    justify-content: center;
 
     .quiz_results_header {
         display: flex;
@@ -19,7 +21,7 @@
 
         h1 {
             font-size: 2.75rem;
-            color: map-get($colors, action2);
+            font-weight: 700;
         }
     }
 
@@ -31,7 +33,6 @@
 
         h3 {
             font-size: 1.5rem;
-            color: map-get($colors, darkerTxt);
         }
 
         .quiz_results_content_list {
@@ -40,6 +41,7 @@
             flex-wrap: wrap;
             justify-content: center;
             align-items: center;
+            max-width: 50rem;
         }
     }
 }

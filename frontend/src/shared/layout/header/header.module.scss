@@ -23,7 +23,8 @@
         display: flex;
         gap: 3.75rem;
 
-        a, button {
+        a,
+        button {
             color: map-get($colors, bck);
             font-size: 1.25rem;
             background-color: transparent;
@@ -36,4 +37,15 @@
             }
         }
     }
+}
+
+.grad {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: linear-gradient(0deg, rgba(26, 26, 26, 0) 0%, rgba(26, 26, 26, 0.8) 100%);
+    filter: blur(8px);
+    z-index: 98;
+    height: 12.5rem;
 }

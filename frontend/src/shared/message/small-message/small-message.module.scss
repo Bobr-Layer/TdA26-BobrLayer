@@ -1,0 +1,20 @@
+@use "../../../index.scss" as *;
+
+.small_message {
+    padding: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: 2px solid map-get($colors, darkerTxt);
+
+    p {
+        font-size: 1rem;
+        font-weight: 600;
+        color: map-get($colors, shadow);
+
+        span {
+            color: map-get($colors, darkerBck);
+            font-weight: 600;
+        }
+    }
+}

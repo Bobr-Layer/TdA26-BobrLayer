@@ -1,7 +1,7 @@
 import Api from './Api';
 
-export async function getMaterials(courseId) {
-  const res = await fetch(`${Api}/courses/${courseId}/materials`);
+export async function getMaterials(courseId, moduleUuid) {
+  const res = await fetch(`${Api}/courses/${courseId}/modules/${moduleUuid}/materials`);
 
   if (!res.ok) {
     throw new Error('Nepodařilo se načíst materiály kurzu');
@@ -20,14 +20,14 @@ export async function getUrlMaterials(courseId) {
   return materials.filter(m => m.type === 'url');
 }
 
-export async function createFileMaterial(courseId, data) {
+export async function createFileMaterial(courseId, moduleUuid, data) {
   const formData = new FormData();
   formData.append('type', 'file');
   formData.append('name', data.name);
   formData.append('description', data.description || '');
   formData.append('file', data.file);
 
-  const res = await fetch(`${Api}/courses/${courseId}/materials`, {
+  const res = await fetch(`${Api}/courses/${courseId}/modules/${moduleUuid}/materials`, {
     method: 'POST',
     body: formData,
   });
@@ -41,8 +41,8 @@ export async function createFileMaterial(courseId, data) {
   return await res.json();
 }
 
-export async function createUrlMaterial(courseId, data) {
-  const res = await fetch(`${Api}/courses/${courseId}/materials`, {
+export async function createUrlMaterial(courseId, moduleUuid, data) {
+  const res = await fetch(`${Api}/courses/${courseId}/modules/${moduleUuid}/materials`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -60,13 +60,13 @@ export async function createUrlMaterial(courseId, data) {
   return await res.json();
 }
 
-export async function updateFileMaterial(courseId, materialId, data) {
+export async function updateFileMaterial(courseId, moduleUuid, materialId, data) {
   const formData = new FormData();
   if (data.name) formData.append('name', data.name);
   if (data.description) formData.append('description', data.description);
   if (data.file) formData.append('file', data.file);
 
-  const res = await fetch(`${Api}/courses/${courseId}/materials/${materialId}`, {
+  const res = await fetch(`${Api}/courses/${courseId}/modules/${moduleUuid}/materials/${materialId}`, {
     method: 'PUT',
     body: formData,
   });
@@ -78,8 +78,8 @@ export async function updateFileMaterial(courseId, materialId, data) {
   return await res.json();
 }
 
-export async function updateUrlMaterial(courseId, materialId, data) {
-  const res = await fetch(`${Api}/courses/${courseId}/materials/${materialId}`, {
+export async function updateUrlMaterial(courseId, moduleUuid, materialId, data) {
+  const res = await fetch(`${Api}/courses/${courseId}/modules/${moduleUuid}/materials/${materialId}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -96,8 +96,8 @@ export async function updateUrlMaterial(courseId, materialId, data) {
   return await res.json();
 }
 
-export async function deleteMaterial(courseId, materialId) {
-  const res = await fetch(`${Api}/courses/${courseId}/materials/${materialId}`, {
+export async function deleteMaterial(courseId, moduleUuid, materialId) {
+  const res = await fetch(`${Api}/courses/${courseId}/modules/${moduleUuid}/materials/${materialId}`, {
     method: 'DELETE',
   });
 

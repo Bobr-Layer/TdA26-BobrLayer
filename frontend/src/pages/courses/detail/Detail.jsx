@@ -3,15 +3,11 @@ import Header from '../../../shared/layout/header/Header';
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import LectorCard from '../../../shared/lectors/lector-card/LectorCard';
-import SearchInput from '../../../shared/form/search-input/SearchInput'
-import MaterialCard from '../../../shared/courses/material-card/MaterialCard';
-import QuizCard from '../../../shared/courses/quiz-card/QuizCard';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getCourseByUuid } from '../../../services/CourseService'
-import { getQuizzes } from '../../../services/QuizzService';
-import { getMaterials } from '../../../services/MaterialService'
 import { useRef, useCallback } from 'react';
 import { getCourseFeed } from '../../../services/FeedService'
+import ModuleCard from '../../../shared/courses/module-card/ModuleCard';
 
 export default function Detail({ user, setUser }) {
     const { uuid } = useParams();
@@ -20,10 +16,7 @@ export default function Detail({ user, setUser }) {
     const feedListRef = useRef(null);
 
     const [course, setCourse] = useState();
-    const [materials, setMaterials] = useState([]);
-    const [quizzes, setQuizzes] = useState([]);
     const [feeds, setFeeds] = useState([]);
-    const [loadFeed, setLoadFeed] = useState(false);
 
     const [loading, setLoading] = useState(false);
 
@@ -34,12 +27,6 @@ export default function Detail({ user, setUser }) {
             try {
                 const courseData = await getCourseByUuid(uuid);
                 setCourse(courseData);
-
-                const quizzesData = await getQuizzes(uuid);
-                setQuizzes(quizzesData);
-
-                const materialData = await getMaterials(uuid);
-                setMaterials(materialData);
             } catch (err) {
                 console.error('Chyba při načítání dat:', err);
                 navigate('/courses');
@@ -73,7 +60,7 @@ export default function Detail({ user, setUser }) {
     }, []);
 
     useEffect(() => {
-        if (!course || !loadFeed) return;
+        if (!course) return;
 
         loadFeeds(course.uuid);
 
@@ -87,7 +74,7 @@ export default function Detail({ user, setUser }) {
                 pollingIntervalRef.current = null;
             }
         };
-    }, [course, loadFeed, loadFeeds]);
+    }, [course, loadFeeds]);
 
     if (!course) {
         return null;
@@ -110,27 +97,15 @@ export default function Detail({ user, setUser }) {
                         <LectorCard lectorName={course.lectorName} lectorMail={course.lectorMail} />
                         <p className={styles.detail_content_about_p}>{course.description}</p>
                         <div className={styles.detail_content_about_list}>
-                            <h3>Přílohy</h3>
-                            <SearchInput text={'Hledejte přílohu'} data={materials} setData={setMaterials} />
-                            <MaterialList materials={materials} />
-                        </div>
-                        <div className={styles.detail_content_about_list}>
-                            <h3>Kvízy</h3>
-                            <QuizList quizzes={quizzes} />
+                            <h3>Moduly</h3>
+                            {course.modules?.map((m) => (
+                                <ModuleCard module={m} key={m.uuid} />
+                            ))}
                         </div>
                     </div>
                     <div className={styles.detail_content_feed}>
                         <h3>Feed kurzu</h3>
-                        {loadFeed ? (
-                            <FeedList posts={feeds} feedListRef={feedListRef} />
-                        ) : (
-                            <button
-                                onClick={() => setLoadFeed(true)}
-                                className={styles.detail_content_feed_button}
-                            >
-                                Načíst feed
-                            </button>
-                        )}
+                        <FeedList posts={feeds} feedListRef={feedListRef} />
                     </div>
                 </article>
             </section>
@@ -140,70 +115,7 @@ export default function Detail({ user, setUser }) {
     )
 }
 
-function MaterialList({ materials }) {
-    const [showMore, setShowMore] = useState(false);
-
-    const visibleMaterials = showMore
-        ? materials
-        : materials.slice(0, 6);
-
-    if (materials.length === 0) {
-        return (
-            <p className={styles.no}>Žádné dostupné přílohy</p>
-        )
-    }
-
-    return (
-        <>
-            <div className={styles.material_list}>
-                {visibleMaterials.map((m) => (
-                    <MaterialCard key={m.uuid} material={m} file={m.type === 'file' ? true : false} />
-                ))}
-            </div>
-
-            {materials.length > 2 && (
-                <ShowMoreButton
-                    showMore={showMore}
-                    setShowMore={setShowMore}
-                />
-            )}
-        </>
-    )
-}
-
-function QuizList({ quizzes }) {
-    const [showMore, setShowMore] = useState(false);
-
-    const visibleQuizzes = showMore
-        ? quizzes
-        : quizzes.slice(0, 2);
-
-    if (quizzes.length === 0) {
-        return (
-            <p className={styles.no}>Žádné dostupné kvízy</p>
-        )
-    }
-
-    return (
-        <>
-            <div className={styles.quiz_list}>
-                {visibleQuizzes.map((q) => (
-                    <QuizCard key={q.uuid} quiz={q} />
-                ))}
-            </div>
-
-            {quizzes.length > 2 && (
-                <ShowMoreButton
-                    showMore={showMore}
-                    setShowMore={setShowMore}
-                />
-            )}
-        </>
-    );
-}
-
 function FeedList({ posts, feedListRef }) {
-
     useEffect(() => {
         if (!feedListRef.current) return;
 
@@ -254,16 +166,5 @@ function FeedCard({ feed }) {
             </div>
             <p className={styles.feed_card_content}>{feed.message}</p>
         </div>
-    )
-}
-
-function ShowMoreButton({ showMore, setShowMore }) {
-    return (
-        <button onClick={() => setShowMore(!showMore)} className={`${styles.show_more_button} ${showMore ? styles.true : ''}`}>
-            <p>{showMore ? 'Sbalit' : 'Rozbalit'}</p>
-            <svg width="1.5rem" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M20.0306 9.53055L12.5306 17.0306C12.4609 17.1003 12.3782 17.1556 12.2871 17.1933C12.1961 17.2311 12.0985 17.2505 11.9999 17.2505C11.9014 17.2505 11.8038 17.2311 11.7127 17.1933C11.6217 17.1556 11.539 17.1003 11.4693 17.0306L3.9693 9.53055C3.82857 9.38982 3.74951 9.19895 3.74951 8.99993C3.74951 8.80091 3.82857 8.61003 3.9693 8.4693C4.11003 8.32857 4.30091 8.24951 4.49993 8.24951C4.69895 8.24951 4.88982 8.32857 5.03055 8.4693L11.9999 15.4396L18.9693 8.4693C19.039 8.39962 19.1217 8.34435 19.2128 8.30663C19.3038 8.26892 19.4014 8.24951 19.4999 8.24951C19.5985 8.24951 19.6961 8.26892 19.7871 8.30663C19.8781 8.34435 19.9609 8.39962 20.0306 8.4693C20.1002 8.53899 20.1555 8.62171 20.1932 8.71276C20.2309 8.8038 20.2503 8.90138 20.2503 8.99993C20.2503 9.09847 20.2309 9.19606 20.1932 9.2871C20.1555 9.37815 20.1002 9.46087 20.0306 9.53055Z" fill="#838383" />
-            </svg>
-        </button>
     )
 }

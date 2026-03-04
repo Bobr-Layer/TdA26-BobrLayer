@@ -35,14 +35,23 @@
 
     &.title {
         width: 100%;
-        padding: 1rem;
-        color: map-get($colors, darkerBck);
+        padding: 0.75rem;
+        color: map-get($colors, bck);
         font-size: 2rem;
 
         &::placeholder {
-            color: map-get($colors, darkerBck);
+            color: map-get($colors, bck);
             font-size: 2rem;
         }
+    }
+
+    &.transparent {
+        background-color: transparent;
+    }
+
+    &.small {
+        padding-block: 0;
+        height: auto;
     }
 }
 

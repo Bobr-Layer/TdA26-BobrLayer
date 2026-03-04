@@ -1,8 +1,7 @@
 import styles from './quiz-results.module.scss';
-import BackToButton from '../../../../shared/button/back-to/BackToButton';
 import ResultCard from './result-card/ResultCard';
 
-export default function QuizResults({ name, uuid, result }) {
+export default function QuizResults({ name, result, setShowResults }) {
     if (!result) {
         return (
             <section className={styles.quiz_results}>
@@ -24,8 +23,7 @@ export default function QuizResults({ name, uuid, result }) {
                 <h1>{name}</h1>
             </article>
             <article className={styles.quiz_results_content}>
-                <h3>Váš výsledek</h3>
-                <div className={styles.quiz_results_content_list}>
+                <div className={styles.quiz_results_content_list} onClick={() => setShowResults(true)}>
                     {result.correctPerQuestion.map((isCorrect, index) => (
                         <ResultCard 
                             key={index}
@@ -35,7 +33,6 @@ export default function QuizResults({ name, uuid, result }) {
                     ))}
                 </div>
             </article>
-            <BackToButton text={'Vrátit se zpět na detail kurzu'} link={'/courses/' + uuid} cyan={true} />
         </section>
     )
 }

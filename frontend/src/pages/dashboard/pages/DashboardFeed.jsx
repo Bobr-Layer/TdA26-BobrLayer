@@ -1,5 +1,4 @@
 import Sidenav from '../../../shared/layout/sidenav/Sidenav';
-import DashboardNav from '../../../shared/layout/dashboard-nav/DashboardNav';
 import styles from '../dashboard.module.scss';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -7,6 +6,7 @@ import { getCourseByUuid } from '../../../services/CourseService';
 import FeedForm from '../../../shared/form/feed-form/FeedForm';
 import FeedCard from '../../../shared/courses/feed-card/FeedCard';
 import { getCourseFeed } from '../../../services/FeedService';
+import { Link } from 'react-router-dom';
 
 export default function DashboardFeed({ user, setUser }) {
     const navigate = useNavigate();
@@ -19,16 +19,16 @@ export default function DashboardFeed({ user, setUser }) {
 
     const loadFeed = useCallback(async (courseUuid) => {
         if (!courseUuid) return;
-        
+
         try {
             const feedData = await getCourseFeed(courseUuid);
             const sortedFeed = [...feedData].sort(
                 (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
             );
-            
+
             setFeed(prevFeed => {
-                if (prevFeed.length === sortedFeed.length && 
-                    prevFeed.length > 0 && 
+                if (prevFeed.length === sortedFeed.length &&
+                    prevFeed.length > 0 &&
                     prevFeed[prevFeed.length - 1].uuid === sortedFeed[sortedFeed.length - 1].uuid) {
                     return prevFeed;
                 }
@@ -60,7 +60,7 @@ export default function DashboardFeed({ user, setUser }) {
 
         const startPolling = () => {
             if (pollingIntervalRef.current) clearInterval(pollingIntervalRef.current);
-            
+
             pollingIntervalRef.current = setInterval(() => {
                 loadFeed(uuid);
             }, 3000);
@@ -82,21 +82,20 @@ export default function DashboardFeed({ user, setUser }) {
         }
     }, [isLoadingFeed, feed]);
 
-    const actions = [{
-        text: 'Zpět do kurzu',
-        icon: <svg width="1.75rem" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M25.1196 8.49406L11.1195 22.4941C11.0383 22.5754 10.9418 22.64 10.8356 22.684C10.7293 22.728 10.6155 22.7507 10.5005 22.7507C10.3855 22.7507 10.2716 22.728 10.1654 22.684C10.0592 22.64 9.96269 22.5754 9.88142 22.4941L3.75642 16.3691C3.59224 16.2049 3.5 15.9822 3.5 15.75C3.5 15.5178 3.59224 15.2951 3.75642 15.1309C3.92061 14.9667 4.14329 14.8745 4.37549 14.8745C4.60768 14.8745 4.83036 14.9667 4.99455 15.1309L10.5005 20.638L23.8814 7.25594C24.0456 7.09175 24.2683 6.99951 24.5005 6.99951C24.7327 6.99951 24.9554 7.09175 25.1196 7.25594C25.2837 7.42012 25.376 7.6428 25.376 7.875C25.376 8.10719 25.2837 8.32988 25.1196 8.49406Z" fill="white" />
-        </svg>,
-        onClick: () => navigate(`/dashboard/${uuid}`),
-        red: false
-    }];
-
     return (
         <div>
-            <Sidenav user={user} setUser={setUser} />
+            <Sidenav user={user} setUser={setUser} showMore={true} current={'courseFeed'} uuid={uuid} modules={course?.modules}/>
             {course && (
                 <section className={styles.dashboard}>
-                    <DashboardNav heading={'Feed kurzu ' + course.name} actions={actions} />
+                    <div className={styles.feed_header}>
+                        <Link to={'/dashboard/' + uuid} className={styles.feed_header_back}>
+                            <svg width="2.5rem" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M35 20C35 20.3315 34.8683 20.6494 34.6339 20.8838C34.3995 21.1183 34.0815 21.25 33.75 21.25H9.26719L18.3844 30.3656C18.5005 30.4817 18.5926 30.6196 18.6555 30.7713C18.7184 30.9231 18.7507 31.0857 18.7507 31.25C18.7507 31.4142 18.7184 31.5768 18.6555 31.7286C18.5926 31.8803 18.5005 32.0182 18.3844 32.1343C18.2682 32.2505 18.1304 32.3426 17.9786 32.4055C17.8269 32.4683 17.6643 32.5007 17.5 32.5007C17.3358 32.5007 17.1731 32.4683 17.0214 32.4055C16.8696 32.3426 16.7318 32.2505 16.6156 32.1343L5.36563 20.8843C5.24941 20.7682 5.15721 20.6304 5.09431 20.4786C5.0314 20.3269 4.99902 20.1642 4.99902 20C4.99902 19.8357 5.0314 19.673 5.09431 19.5213C5.15721 19.3695 5.24941 19.2317 5.36563 19.1156L16.6156 7.86559C16.8502 7.63104 17.1683 7.49927 17.5 7.49927C17.8317 7.49927 18.1498 7.63104 18.3844 7.86559C18.6189 8.10014 18.7507 8.41826 18.7507 8.74996C18.7507 9.08167 18.6189 9.39979 18.3844 9.63434L9.26719 18.75H33.75C34.0815 18.75 34.3995 18.8817 34.6339 19.1161C34.8683 19.3505 35 19.6684 35 20Z" fill="white" />
+                            </svg>
+                            Vrátit se zpět na kurz
+                        </Link>
+                        <h1>Feed kurzu</h1>
+                    </div>
                     <article className={styles.feed_list}>
                         {isLoadingFeed ? (
                             <p>Načítání feedu...</p>

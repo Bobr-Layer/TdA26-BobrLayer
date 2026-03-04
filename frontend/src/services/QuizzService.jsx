@@ -10,8 +10,8 @@ export async function getQuizzes(courseUuid) {
   return await res.json();
 }
 
-export async function createQuiz(courseUuid, data) {
-  const res = await fetch(`${Api}/courses/${courseUuid}/quizzes`, {
+export async function createQuiz(courseUuid, moduleUuid, data) {
+  const res = await fetch(`${Api}/courses/${courseUuid}/modules/${moduleUuid}/quizzes`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -26,9 +26,9 @@ export async function createQuiz(courseUuid, data) {
   return await res.json();
 }
 
-export async function getQuizByUuid(courseUuid, quizUuid) {
+export async function getQuizByUuid(courseUuid, moduleUuid, quizUuid) {
   const res = await fetch(
-    `${Api}/courses/${courseUuid}/quizzes/${quizUuid}`
+    `${Api}/courses/${courseUuid}/modules/${moduleUuid}/quizzes/${quizUuid}`
   );
 
   if (!res.ok) {
@@ -38,9 +38,9 @@ export async function getQuizByUuid(courseUuid, quizUuid) {
   return await res.json();
 }
 
-export async function updateQuiz(courseUuid, quizUuid, data) {
+export async function updateQuiz(courseUuid, moduleUuid, quizUuid, data) {
   const res = await fetch(
-    `${Api}/courses/${courseUuid}/quizzes/${quizUuid}`,
+    `${Api}/courses/${courseUuid}/modules/${moduleUuid}/quizzes/${quizUuid}`,
     {
       method: 'PUT',
       headers: {
@@ -57,9 +57,9 @@ export async function updateQuiz(courseUuid, quizUuid, data) {
   return await res.json();
 }
 
-export async function deleteQuiz(courseUuid, quizUuid) {
+export async function deleteQuiz(courseUuid, moduleUuid, quizUuid) {
   const res = await fetch(
-    `${Api}/courses/${courseUuid}/quizzes/${quizUuid}`,
+    `${Api}/courses/${courseUuid}/modules/${moduleUuid}/quizzes/${quizUuid}`,
     { method: 'DELETE' }
   );
 
@@ -74,9 +74,9 @@ export async function deleteQuiz(courseUuid, quizUuid) {
   return;
 }
 
-export async function submitQuiz(courseUuid, quizUuid, data) {
+export async function submitQuiz(courseUuid, moduleUuid, quizUuid, data) {
   const res = await fetch(
-    `${Api}/courses/${courseUuid}/quizzes/${quizUuid}/submit`,
+    `${Api}/courses/${courseUuid}/modules/${moduleUuid}/quizzes/${quizUuid}/submit`,
     {
       method: 'POST',
       headers: {

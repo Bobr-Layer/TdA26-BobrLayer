@@ -2,70 +2,51 @@
 
 .question_input {
     display: flex;
-    position: relative;
-    background-color: map-get($colors, shadow);
+    flex-direction: column;
+    gap: 1.25rem;
+    background-color: map-get($colors, darkerTxt);
+    padding-right: 1.25rem;
+
+    button {
+        background-color: transparent;
+        border: 0;
+        outline: 0;
+        cursor: pointer;
+    }
+
+    .question_input_header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
 
     .question_input_content {
         display: flex;
         flex-direction: column;
-        gap: 1rem;
-        width: 100%;
+        gap: 0.75rem;
+        padding-left: 1.25rem;
 
-        .question_input_content_multi {
+        .question_input_content_card {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 0.75rem;
-            padding-left: 0.938rem;
 
-            p {
-                font-size: 1rem;
-                color: map-get($colors, darkerShadow);
-            }
-
-            input[type="checkbox"] {
-                width: 1.25rem;
-                height: 1.25rem;
-                accent-color: map-get($colors, darkerShadow);
-                cursor: pointer;
-            }
-        }
-
-        .question_input_content_answers {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-            padding-left: 0.938rem;
-            padding-bottom: 0.938rem;
-
-            p {
-                font-size: 1rem;
-                color: map-get($colors, darkerShadow);
-            }
-
-            .question_input_content_answers_list {
+            div {
                 display: flex;
                 align-items: center;
-                flex-wrap: wrap;
-                gap: 0.75rem;
             }
         }
     }
 
-    .question_input_delete {
-        outline: none;
-        border: none;
-        background-color: transparent;
-        cursor: pointer;
-        border-radius: 0;
-        padding: 0;
-        position: absolute;
-        right: 0.938rem;
-        top: 0.938rem;
+    .question_input_add {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1rem;
+        padding: 1.25rem;
+    }
 
-        &:hover,
-        &:focus {
-            outline: none;
-            border: none;
-        }
+    .current svg path {
+        fill: map-get($colors, success);
     }
 }

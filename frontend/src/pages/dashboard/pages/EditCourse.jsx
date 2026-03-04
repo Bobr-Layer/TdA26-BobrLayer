@@ -17,23 +17,9 @@ export default function EditCourse({ user, setUser }) {
         description: '',
     });
 
-    const [urlMaterials, setUrlMaterials] = useState([]);
-    const [initialUrlMaterials, setInitialUrlMaterials] = useState([]);
-
-    const [fileMaterials, setFileMaterials] = useState([]);
-    const [initialFileMaterials, setInitialFileMaterials] = useState([]);
-
     const handleCourseChange = (e) => {
         const { name, value } = e.target;
         setCourseData(prev => ({ ...prev, [name]: value }));
-    };
-
-    const handleUrlsChange = (urls) => {
-        setUrlMaterials(urls);
-    };
-
-    const handleFilesChange = (files) => {
-        setFileMaterials(files);
     };
 
     useEffect(() => {
@@ -46,13 +32,6 @@ export default function EditCourse({ user, setUser }) {
                     description: foundCourse.description
                 });
 
-                const existingUrls = await getUrlMaterials(uuid);
-                setInitialUrlMaterials(existingUrls);
-                setUrlMaterials(existingUrls);
-
-                const existingFiles = await getFileMaterials(uuid);
-                setInitialFileMaterials(existingFiles);
-                setFileMaterials(existingFiles);
             } catch (err) {
                 console.error(err);
                 navigate('/dashboard', { replace: true });
@@ -68,9 +47,6 @@ export default function EditCourse({ user, setUser }) {
         try {
             await updateCourse(course?.uuid, courseData);
 
-            await processUrlMaterials();
-            await processFileMaterials();
-
             navigate(`/dashboard/${course.uuid}`, { replace: true });
         } catch (err) {
             console.error('Chyba při ukládání:', err);
@@ -78,117 +54,27 @@ export default function EditCourse({ user, setUser }) {
         }
     };
 
-    const processUrlMaterials = async () => {
-        const validUrls = urlMaterials.filter(url =>
-            url.name && url.name.trim() !== '' &&
-            url.url && url.url.trim() !== ''
-        );
-
-        const existingUuids = new Set(initialUrlMaterials.map(m => m.uuid));
-        const currentUuids = new Set(validUrls.filter(m => m.uuid).map(m => m.uuid));
-
-        const toDelete = initialUrlMaterials.filter(m => !currentUuids.has(m.uuid));
-        for (const material of toDelete) {
-            await deleteMaterial(course.uuid, material.uuid);
-        }
-
-        for (const urlData of validUrls) {
-            const data = {
-                name: urlData.name.trim(),
-                description: urlData.description?.trim() || '',
-                url: urlData.url.trim()
-            };
-
-            if (urlData.uuid && existingUuids.has(urlData.uuid)) {
-                await updateUrlMaterial(course.uuid, urlData.uuid, data);
-            } else {
-                await createUrlMaterial(course.uuid, data);
-            }
-        }
-    };
-
-    const processFileMaterials = async () => {
-        const validFiles = fileMaterials.filter(fileItem => {
-            const hasName = fileItem.name && fileItem.name.trim() !== '';
-            const hasFile = fileItem.file !== null && fileItem.file !== undefined;
-            const isExisting = fileItem.uuid && fileItem.fileName;
-
-            if (fileItem.uuid) {
-                return hasName;
-            } else {
-                return hasName && hasFile;
-            }
-        });
-
-        const existingUuids = new Set(initialFileMaterials.map(m => m.uuid));
-        const currentUuids = new Set(validFiles.filter(m => m.uuid).map(m => m.uuid));
-
-        const toDelete = initialFileMaterials.filter(m => !currentUuids.has(m.uuid));
-        for (const material of toDelete) {
-            await deleteMaterial(course.uuid, material.uuid);
-        }
-
-        for (const fileData of validFiles) {
-            if (fileData.uuid && existingUuids.has(fileData.uuid)) {
-                if (fileData.file) {
-                    await updateFileMaterial(course.uuid, fileData.uuid, {
-                        name: fileData.name.trim(),
-                        description: fileData.description?.trim() || '',
-                        file: fileData.file
-                    });
-                } else {
-                    await updateFileMaterial(course.uuid, fileData.uuid, {
-                        name: fileData.name.trim(),
-                        description: fileData.description?.trim() || ''
-                    });
-                }
-            } else {
-                if (fileData.file) {
-                    await createFileMaterial(course.uuid, {
-                        name: fileData.name.trim(),
-                        description: fileData.description?.trim() || '',
-                        file: fileData.file
-                    });
-                }
-            }
-        }
-    };
-
-    const actions = [
-        {
-            text: 'Uložit změny',
-            icon: <svg width="1.75rem" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M25.1191 8.49406L11.1191 22.4941C11.0378 22.5754 10.9413 22.64 10.8351 22.684C10.7288 22.728 10.615 22.7507 10.5 22.7507C10.385 22.7507 10.2711 22.728 10.1649 22.684C10.0587 22.64 9.9622 22.5754 9.88094 22.4941L3.75594 16.3691C3.59175 16.2049 3.49951 15.9822 3.49951 15.75C3.49951 15.5178 3.59175 15.2951 3.75594 15.1309C3.92012 14.9667 4.1428 14.8745 4.375 14.8745C4.60719 14.8745 4.82988 14.9667 4.99406 15.1309L10.5 20.638L23.8809 7.25594C24.0451 7.09175 24.2678 6.99951 24.5 6.99951C24.7322 6.99951 24.9549 7.09175 25.1191 7.25594C25.2832 7.42012 25.3755 7.6428 25.3755 7.875C25.3755 8.10719 25.2832 8.32988 25.1191 8.49406Z" fill="white" />
-            </svg>,
-            onClick: (e) => onSubmit(e),
-            red: false,
-            submit: true
-        },
-        {
-            text: 'Zrušit změny',
-            icon: <svg width="1.75rem" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M22.4941 21.2559C22.5754 21.3372 22.6398 21.4337 22.6838 21.54C22.7278 21.6462 22.7505 21.76 22.7505 21.875C22.7505 21.99 22.7278 22.1038 22.6838 22.21C22.6398 22.3163 22.5754 22.4128 22.4941 22.4941C22.4128 22.5754 22.3163 22.6398 22.21 22.6838C22.1038 22.7278 21.99 22.7505 21.875 22.7505C21.76 22.7505 21.6462 22.7278 21.54 22.6838C21.4337 22.6398 21.3372 22.5754 21.2559 22.4941L14 15.237L6.74406 22.4941C6.57988 22.6582 6.35719 22.7505 6.125 22.7505C5.8928 22.7505 5.67012 22.6582 5.50594 22.4941C5.34175 22.3299 5.24951 22.1072 5.24951 21.875C5.24951 21.6428 5.34175 21.4201 5.50594 21.2559L12.763 14L5.50594 6.74406C5.34175 6.57988 5.24951 6.35719 5.24951 6.125C5.24951 5.8928 5.34175 5.67012 5.50594 5.50594C5.67012 5.34175 5.8928 5.24951 6.125 5.24951C6.35719 5.24951 6.57988 5.34175 6.74406 5.50594L14 12.763L21.2559 5.50594C21.4201 5.34175 21.6428 5.24951 21.875 5.24951C22.1072 5.24951 22.3299 5.34175 22.4941 5.50594C22.6582 5.67012 22.7505 5.8928 22.7505 6.125C22.7505 6.35719 22.6582 6.57988 22.4941 6.74406L15.237 14L22.4941 21.2559Z" fill="white" />
-            </svg>,
-            onClick: () => course && navigate(`/dashboard/${course.uuid}`),
-            red: true
-        }
-    ];
-
     return (
         <div>
-            <Sidenav user={user} setUser={setUser} />
-            <section className={styles.dashboard}>
-                <DashboardNav heading={'Upravit kurz'} actions={actions} />
+            <Sidenav user={user} setUser={setUser} current={'courseDetail'} uuid={uuid} showMore={true} modules={course?.modules}/>
+            <form className={styles.dashboard} onSubmit={onSubmit}>
+                <DashboardNav
+                    link={'/dashboard/' + uuid}
+                    textLink={'Vrátit se zpět a zahodit změny'}
+                    buttonText={'Uložit změny'}
+                    buttonSubmit={true}
+                    buttonIcon={
+                        <svg width="1.75rem" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M25.1196 8.49406L11.1195 22.4941C11.0383 22.5754 10.9418 22.64 10.8356 22.684C10.7293 22.728 10.6155 22.7507 10.5005 22.7507C10.3855 22.7507 10.2716 22.728 10.1654 22.684C10.0592 22.64 9.96269 22.5754 9.88142 22.4941L3.75642 16.3691C3.59224 16.2049 3.5 15.9822 3.5 15.75C3.5 15.5178 3.59224 15.2951 3.75642 15.1309C3.92061 14.9667 4.14329 14.8745 4.37549 14.8745C4.60768 14.8745 4.83036 14.9667 4.99455 15.1309L10.5005 20.638L23.8814 7.25594C24.0456 7.09175 24.2683 6.99951 24.5005 6.99951C24.7327 6.99951 24.9554 7.09175 25.1196 7.25594C25.2837 7.42012 25.376 7.6428 25.376 7.875C25.376 8.10719 25.2837 8.32988 25.1196 8.49406Z" fill="#1A1A1A" />
+                        </svg>
+                    }
+                    showButton={true}
+                />
                 <CourseForm
                     courseData={courseData}
                     handleCourseChange={handleCourseChange}
-                    onSubmit={onSubmit}
-                    onUrlsChange={handleUrlsChange}
-                    onFilesChange={handleFilesChange}
-                    initialUrls={initialUrlMaterials}
-                    initialFiles={initialFileMaterials}
                 />
-            </section>
+            </form>
         </div>
     );
 }

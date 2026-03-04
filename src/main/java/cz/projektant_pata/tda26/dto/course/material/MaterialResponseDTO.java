@@ -20,4 +20,5 @@ public abstract class MaterialResponseDTO {
     private UUID uuid;
     private String name;
     private String description;
+    private int count;
 }

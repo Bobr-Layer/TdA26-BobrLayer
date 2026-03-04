@@ -5,6 +5,7 @@ import CourseList from '../../shared/courses/course-list/CourseList';
 import { useState, useEffect } from 'react';
 import { getCourses } from '../../services/CourseService';
 import Footer from '../../shared/layout/footer/Footer'
+import CourseSelect from '../../shared/form/course-select/CourseSelect'
 
 function Courses({ user, setUser }) {
   const [courses, setCourses] = useState([]);
@@ -30,8 +31,11 @@ function Courses({ user, setUser }) {
         <Header user={user} setUser={setUser} />
         <section className={styles.courses}>
           <h1>Dostupné kurzy</h1>
-          <SearchInput text={'Hledejte kurz'} data={coursesData} setData={setCoursesData} />
-          <CourseList courses={coursesData} lector={true}/>
+          <div className={styles.courses_nav}>
+            <SearchInput text={'Hledejte kurz'} data={coursesData} setData={setCoursesData} />
+            <CourseSelect courseData={courses} setCourseData={setCoursesData}/>
+          </div>
+          <CourseList courses={coursesData} lector={true} />
         </section>
       </div>
 

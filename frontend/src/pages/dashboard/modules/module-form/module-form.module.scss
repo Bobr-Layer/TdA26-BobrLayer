@@ -1,0 +1,23 @@
+@use "../../../../index.scss" as *;
+
+.module_form {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+
+    .module_form_content {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+
+        h3 {
+            font-size: 1.5rem;
+        }
+
+        .module_form_content_list {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1.25rem;
+        }
+    }
+}

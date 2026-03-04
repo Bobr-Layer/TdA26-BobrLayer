@@ -4,14 +4,15 @@
     display: flex;
     flex-direction: column;
     gap: 1.25rem;
-    border: 2px solid map-get($colors, lighterShadow);
-    background-color: map-get($colors, lighterShadow);
+    border: 2px solid map-get($colors, darkerTxt);
+    background-color: map-get($colors, darkerTxt);
     padding: 1.25rem;
     width: 100%;
     box-sizing: border-box;
 
     .feed_card_header {
         display: flex;
+        align-items: center;
         justify-content: space-between;
 
         .feed_card_header_author {
@@ -32,45 +33,18 @@
 
             p {
                 font-size: 1rem;
-                color: map-get($colors, darkerTxt);
+                color: map-get($colors, bck);
             }
         }
 
         .feed_card_header_date {
             display: flex;
-            flex-direction: column;
-            align-items: flex-end;
+            align-items: center;
             gap: 0.75rem;
 
             p {
                 font-size: 1rem;
-                color: map-get($colors, darkerShadow);
-            }
-
-            .feed_card_header_date_edit {
-                font-size: 1rem;
-                color: map-get($colors, action);
-            }
-
-            div {
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
-
-                button {
-                    padding: 0;
-                    border-radius: 0;
-                    outline: none;
-                    cursor: pointer;
-                    border: 0;
-                    background-color: transparent;
-
-                    &:hover,
-                    &:focus {
-                        border: 0;
-                        outline: none;
-                    }
-                }
+                color: map-get($colors, darkerBck);
             }
         }
     }

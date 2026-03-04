@@ -2,50 +2,63 @@
 
 .quiz_question {
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
     gap: 3.75rem;
 
-    h1 {
-        font-size: 2.75rem;
-        color: map-get($colors, action2);
+    .quiz_question_header {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.25rem;
     }
 
-    .quiz_question_header {
+    .quiz_question_content {
         display: flex;
-        justify-content: space-between;
-        align-items: center;
-        width: 67.25rem;
+        flex-direction: column;
+        flex: 1;
+        gap: 3.75rem;
 
-        div {
-            width: 2.5rem;
-            height: 2.5rem;
+        .quiz_question_content_top {
             display: flex;
-            align-items: center;
-            justify-content: center;
+            flex-direction: column;
+            gap: 1.25rem;
 
-            button {
-                padding: 0;
-                margin: 0;
-                background-color: transparent;
-                border: 0;
-                outline: 0;
-                border-radius: 0;
-                cursor: pointer;
+            img {
+                width: 3.75rem;
+            }
 
-                &:hover,
-                &:focus {
-                    border: 0;
-                    outline: 0;
-                }
+            h1 {
+                font-size: 1.5rem;
             }
         }
 
-        p {
-            width: 50rem;
-            font-size: 2rem;
-            text-align: center;
-            color: map-get($colors, darkerTxt);
+        .quiz_question_content_nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            button {
+                background-color: transparent;
+                border: 0;
+                outline: 0;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                gap: 0.625rem;
+
+                span {
+                    font-size: 1.25rem;
+                }
+
+                &:hover {
+                    span {
+                        color: map-get($colors, action2);
+                    }
+
+                    svg path {
+                        fill: map-get($colors, action2);
+                    }
+                }
+            }
         }
     }
 }

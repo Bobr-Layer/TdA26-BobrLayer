@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom';
 import styles from './quiz-card.module.scss';
 
-export default function QuizCard({ quiz }) {
+export default function QuizCard({ quiz, moduleUuid, uuid }) {
     return (
-        <Link className={styles.quiz_card} to={'quizz/' + quiz.uuid}>
+        <Link className={styles.quiz_card} to={'/courses/' + uuid + '/modules/' + moduleUuid + '/quizzes/' + quiz.uuid}>
             <div className={styles.quiz_card_text}>
                 <h4>{quiz.title}</h4>
                 <p>{quiz.questions.length} otázek</p>

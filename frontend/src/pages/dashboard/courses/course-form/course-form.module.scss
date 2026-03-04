@@ -3,46 +3,19 @@
 .course_form {
     display: flex;
     gap: 2.5rem;
+    flex-direction: column;
 
     .course_form_inputs {
         flex: 1;
         display: flex;
         flex-direction: column;
-        gap: 1.25rem;
+        gap: 2.5rem;
     }
 
-    .course_form_materials {
+    .course_form_messages {
         display: flex;
         flex-direction: column;
-        gap: 2rem;
-        width: 21.25rem;
-    }
-
-    .course_form_content {
-        display: flex;
-        flex-direction: column;
-        gap: 1.25rem;
-
-        .course_form_content_header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-
-            p {
-                font-size: 1rem;
-                color: map-get($colors, darkerShadow);
-            }
-        }
-
-        h3 {
-            font-size: 1.5rem;
-            color: map-get($colors, darkerTxt);
-        }
-
-        .course_form_content_material {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
+        align-items: flex-start;
+        gap: 0.75rem;
     }
 }

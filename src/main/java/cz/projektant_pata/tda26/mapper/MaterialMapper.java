@@ -32,6 +32,7 @@ public class MaterialMapper {
         mapCommonFields(entity, dto);
         dto.setUrl(entity.getUrl());
         dto.setFaviconUrl(entity.getFaviconUrl());
+
         return dto;
     }
 
@@ -39,6 +40,7 @@ public class MaterialMapper {
         dto.setUuid(entity.getUuid());
         dto.setName(entity.getName());
         dto.setDescription(entity.getDescription());
+        dto.setCount(entity.getCount());
     }
 
     public Material toEntity(MaterialRequestDTO request) {
@@ -70,5 +72,6 @@ public class MaterialMapper {
     private void mapCommonEntityFields(MaterialRequestDTO request, Material entity) {
         entity.setName(request.getName());
         entity.setDescription(request.getDescription());
+        entity.setCount(request.getCount());
     }
 }

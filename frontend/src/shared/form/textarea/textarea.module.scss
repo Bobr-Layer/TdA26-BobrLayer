@@ -1,8 +1,8 @@
 @use "../../../index.scss" as *;
 
 .textarea {
-    color: map-get($colors, darkerShadow);
-    background-color: map-get($colors, shadow);
+    color: map-get($colors, darkerBck);
+    background-color: map-get($colors, darkerTxt);
     font-size: 1rem;
     padding-inline: 1.5rem;
     padding-block: 0.75rem;
@@ -19,24 +19,24 @@
     }
 
     &::placeholder {
-        color: map-get($colors, darkerShadow);
+        color: map-get($colors, darkerBck);
         font-size: 1rem;
     }
 
     &.longer {
         width: 100%;
-        color: map-get($colors, txt);
+        color: map-get($colors, darkerBck);
         padding: 0.938rem;
 
         &::placeholder {
-            color: map-get($colors, txt);
+            color: map-get($colors, darkerBck);
         }
     }
 
     &.bigger {
         width: 100%;
         font-size: 1.25rem;
-        padding: 1rem;
+        padding: 0.75rem;
     }
 }
 
@@ -45,7 +45,7 @@
 .textarea:-webkit-autofill:focus,
 .textarea:-webkit-autofill:active {
     box-shadow: 0 0 0 1000px transparent inset !important;
-    -webkit-text-fill-color: map-get($colors, darkerShadow) !important;
+    -webkit-text-fill-color: map-get($colors, darkerTxt) !important;
     background-color: transparent !important;
     transition: background-color 9999s ease-in-out 0s;
 }

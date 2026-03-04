@@ -1,0 +1,64 @@
+@use "../../../index.scss" as *;
+
+.course_select {
+    background-color: map-get($colors, darkerTxt);
+    border: 0;
+    outline: 0;
+    padding-inline: 1.25rem;
+    padding-block: 0.75rem;
+    height: 2.75rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: map-get($colors, shadow);
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 100%;
+    min-width: 16rem;
+
+    option {
+        background-color: map-get($colors, darkerTxt);
+        border: 0;
+        outline: 0;
+        padding-inline: 1.25rem;
+        padding-block: 0.75rem;
+        height: 2.75rem;
+        box-sizing: border-box;
+        font-size: 1rem;
+        font-weight: 600;
+        color: map-get($colors, bck);
+    }
+}
+
+.wrapper {
+    position: relative;
+    height: 2.75rem;
+
+    svg {
+        position: absolute;
+        top: 50%;
+        right: 1.25rem;
+        transform: translate(-50%, -50%);
+    }
+
+    input {
+        width: 100%;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        box-sizing: border-box;
+        background-color: transparent;
+        border: 0;
+        outline: 0;
+        color: map-get($colors, bck);
+        font-size: 1rem;
+        font-weight: 600;
+        padding-inline: 1.25rem;
+        padding-block: 0.75rem;
+    }
+
+    input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+        filter: invert(1);
+        cursor: pointer;
+    }
+}

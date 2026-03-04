@@ -1,0 +1,107 @@
+@use "../../../index.scss" as *;
+
+.wrapper {
+    position: relative;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+
+    .module_ball {
+        position: absolute;
+        top: 0;
+        right: 0;
+        background: radial-gradient(circle at top right, rgba(2, 87, 165, 0.5), map-get($colors, txt) 70%);
+        height: 100dvh;
+        width: 50dvh;
+        z-index: -1;
+        filter: blur(100px);
+    }
+}
+
+.module {
+    padding-top: 11.25rem;
+    padding-inline: 7.5rem;
+    box-sizing: border-box;
+    padding-bottom: 3.125rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+
+    .module_header {
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+
+        h1 {
+            font-size: 2rem;
+        }
+
+        a:hover {
+            svg path {
+                fill: map-get($colors, darkerBck);
+            }
+        }
+    }
+
+    .module_content {
+        display: flex;
+        gap: 3.75rem;
+        flex-direction: column;
+
+        .module_content_p {
+            font-size: 1.25rem;
+            color: map-get($colors, darkerBck);
+        }
+
+        .module_content_list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+
+            h3 {
+                font-size: 1.5rem;
+            }
+        }
+    }
+}
+
+.material_list {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    gap: 1.25rem;
+}
+
+.quiz_list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+}
+
+.show_more_button {
+    background-color: transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 0;
+    outline: 0;
+    cursor: pointer;
+
+    p {
+        font-size: 0.75rem;
+        color: map-get($colors, shadow);
+    }
+
+    &.true {
+        flex-direction: column-reverse;
+
+        svg {
+            transform: rotate(180deg);
+        }
+    }
+}
+
+.no {
+    font-size: 0.75rem;
+    text-align: center;
+    color: map-get($colors, shadow);
+}

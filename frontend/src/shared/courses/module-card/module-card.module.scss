@@ -1,0 +1,40 @@
+@use "../../../index.scss" as *;
+
+.module_card {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem;
+    height: 7.5rem;
+    box-sizing: border-box;
+    width: 100%;
+    align-items: flex-end;
+    background-color: map-get($colors, darkerTxt);
+    border: 1px solid map-get($colors, darkerTxt);
+
+    div {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        height: 100%;
+        gap: 0.625rem;
+
+        h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: map-get($colors, bck);
+        }
+
+        p {
+            font-size: 0.75rem;
+            color: map-get($colors, darkerBck);
+        }
+    }
+
+    &:hover {
+        border-color: map-get($colors, action2);
+
+        svg path {
+            fill: map-get($colors, action2);
+        }
+    }
+}

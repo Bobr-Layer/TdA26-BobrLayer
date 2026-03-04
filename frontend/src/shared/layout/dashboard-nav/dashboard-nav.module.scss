@@ -3,33 +3,26 @@
 .dashboard_nav {
     display: flex;
     justify-content: space-between;
-    align-items: flex-end;
-    border-bottom: 2px solid map-get($colors, action);
-    position: sticky;
-    top: 0;
-    left: 0;
-    padding-top: 3.75rem;
-    background-color: map-get($colors, bck);
+    align-items: center;
 
-    .dashboard_nav_heading {
+    .dashboard_nav_back {
         display: flex;
-        flex-direction: column;
+        align-items: center;
         gap: 0.625rem;
-        padding-bottom: 1.875rem;
+        font-size: 1.25rem;
 
-        h1 {
-            font-size: 2.75rem;
-            color: map-get($colors, action);
-        }
+        &:hover {
+            color: map-get($colors, darkerBck);
 
-        p {
-            font-size: 1.25rem;
-            color: map-get($colors, darkerShadow);
+            svg path {
+                fill: map-get($colors, darkerBck);
+            }
         }
     }
 
     .dashboard_nav_actions {
         display: flex;
         align-items: center;
+        gap: 1.25rem;
     }
 }

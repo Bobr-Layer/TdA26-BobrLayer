@@ -9,12 +9,14 @@ function Input(
         placeholder,
         longer,
         required,
-        title
+        title,
+        transparent,
+        small
     }
 ) {
     return (
         <input
-            className={`${styles.input} ${longer ? styles.bigger : ''} ${title ? styles.title : ''}`}
+            className={`${styles.input} ${longer ? styles.bigger : ''} ${title ? styles.title : ''} ${transparent ? styles.transparent : ''} ${small ? styles.small : ''}`}
             id={name}
             name={name}
             type={type}
