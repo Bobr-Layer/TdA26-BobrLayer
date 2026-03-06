@@ -10,6 +10,20 @@
     gap: 1.25rem;
     border: 2px solid map-get($colors, darkerTxt);
 
+    .module_dashboard_card_status {
+        display: flex;
+        align-items: center;
+    }
+
+    .eye_icon path {
+        fill: map-get($colors, action2);
+    }
+
+    .eye_icon_off path {
+        fill: map-get($colors, warning);
+        opacity: 0.6;
+    }
+
     .module_dashboard_card_num {
         font-size: 1.5rem;
         color: map-get($colors, darkerBck);
@@ -40,9 +54,57 @@
 
     &:hover {
         border-color: map-get($colors, action2);
-        
+
         .module_dashboard_card_star svg path {
             fill: map-get($colors, action2);
+        }
+    }
+
+    &.inactive {
+        opacity: 0.6;
+
+        &:hover {
+            border-color: map-get($colors, darkerBck);
+
+            .module_dashboard_card_star svg path {
+                fill: map-get($colors, darkerBck);
+            }
+        }
+    }
+
+    .module_dashboard_card_reorder {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        justify-content: center;
+    }
+
+    .reorder_btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 1.75rem;
+        height: 1.75rem;
+        background: transparent;
+        border: 1px solid map-get($colors, darkerBck);
+        cursor: pointer;
+        padding: 0;
+
+        svg path {
+            fill: map-get($colors, darkerBck);
+        }
+
+        &:hover:not(:disabled) {
+            border-color: map-get($colors, action2);
+
+            svg path {
+                fill: map-get($colors, action2);
+            }
+        }
+
+        &:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
         }
     }
 }

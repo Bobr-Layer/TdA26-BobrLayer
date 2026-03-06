@@ -41,7 +41,6 @@ public class ModuleServiceImpl implements IModuleService {
         if (!course.getStatus().equals(StatusEnum.Draft))
             throw new IllegalArgumentException("Kurz je není v režimu úprav.");
 
-
         Module module = new Module();
         module.setCourse(course);
         module.setName(dto.getName());
@@ -60,13 +59,14 @@ public class ModuleServiceImpl implements IModuleService {
         if (!module.getCourse().getStatus().equals(StatusEnum.Draft))
             throw new IllegalArgumentException("Kurz je není v režimu úprav.");
 
-        if (dto.getName() != null) module.setName(dto.getName());
-        if (dto.getDescription() != null) module.setDescription(dto.getDescription());
+        if (dto.getName() != null)
+            module.setName(dto.getName());
+        if (dto.getDescription() != null)
+            module.setDescription(dto.getDescription());
         module.setIndex(dto.getIndex());
 
         return moduleRepository.save(module);
     }
-
 
     @Override
     @Transactional
@@ -104,25 +104,17 @@ public class ModuleServiceImpl implements IModuleService {
         return activeCount > 0;
     }
 
-
     @Override
     @Transactional
     public Module activate(UUID courseUuid) {
         List<Module> modules = moduleRepository.findByCourseUuidOrderByIndexAsc(courseUuid);
 
-        int nextIndex = modules.stream()
-                .filter(Module::isActivated)
-                .mapToInt(Module::getIndex)
-                .max()
-                .orElse(-1) + 1; // pokud žádný není aktivní, začni od 0
-
         Module toActivate = modules.stream()
-                .filter(m -> m.getIndex() == nextIndex)
+                .filter(m -> !m.isActivated())
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException("Žádný další modul k aktivaci."));
 
         toActivate.setActivated(true);
-
 
         return moduleRepository.save(toActivate);
     }
@@ -141,7 +133,28 @@ public class ModuleServiceImpl implements IModuleService {
         return moduleRepository.save(toDeactivate);
     }
 
+    @Override
+    @Transactional
+    public void reorder(UUID courseUuid, List<UUID> orderedModuleUuids) {
+        Course course = courseRepository.findById(courseUuid)
+                .orElseThrow(() -> new ResourceNotFoundException("Kurz nebyl nalezen"));
 
+        if (!course.getStatus().equals(StatusEnum.Draft))
+            throw new IllegalArgumentException("Kurz není v režimu úprav.");
+
+        List<Module> modules = moduleRepository.findByCourseUuidOrderByIndexAsc(courseUuid);
+
+        for (int i = 0; i < orderedModuleUuids.size(); i++) {
+            UUID targetUuid = orderedModuleUuids.get(i);
+            Module module = modules.stream()
+                    .filter(m -> m.getUuid().equals(targetUuid))
+                    .findFirst()
+                    .orElseThrow(() -> new ResourceNotFoundException("Modul nebyl nalezen: " + targetUuid));
+            module.setIndex(i);
+        }
+
+        moduleRepository.saveAll(modules);
+    }
 
     // ── private helpers ───────────────────────────────────────────────────────
 

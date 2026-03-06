@@ -57,7 +57,7 @@ export default function FeedCard({ feed, admin, courseId }) {
                         </>
                     ) : (
                         <>
-                            <img src="/img/duck-blue.png" alt="" />
+                            <img src="/img/person.png" alt="" />
                             <p>Lektor</p>
                         </>
                     )}

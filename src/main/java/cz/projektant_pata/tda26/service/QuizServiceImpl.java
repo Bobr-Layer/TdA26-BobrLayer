@@ -107,8 +107,6 @@ public class QuizServiceImpl implements IQuizService {
     public SubmitQuizResultDTO submitQuiz(UUID moduleUuid, UUID quizUuid, SubmitQuizDTO submission) { // ✅ přejmenován
                                                                                                       // parametr
         Quiz quiz = getQuizOrThrow(moduleUuid, quizUuid);
-        if (!quiz.getModule().getCourse().getStatus().equals(StatusEnum.Draft))
-            throw new IllegalArgumentException("Kurz není v režimu úprav");
 
         quiz.incrementAttempts();
 

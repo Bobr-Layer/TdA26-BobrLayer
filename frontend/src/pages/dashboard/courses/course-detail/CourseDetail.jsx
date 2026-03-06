@@ -1,14 +1,57 @@
 import { useState } from 'react';
-import CourseSelect from '../../../../shared/form/course-select/CourseSelect';
 import SearchInput from '../../../../shared/form/search-input/SearchInput';
 import styles from './course-detail.module.scss';
 import DashboardButton from '../../../../shared/button/dashboard/DashboardButton';
 import ModuleDashboardCard from '../../../../shared/courses/module-dashboard-card/ModuleDashboardCard';
 import ModuleSelect from '../../../../shared/form/course-select/ModuleSelect';
+import { activateNextModule, deactivatePreviousModule } from '../../../../services/CourseService';
+import { getModules, reorderModules } from '../../../../services/ModuleService';
 
-export default function CourseDetail({ course }) {
+export default function CourseDetail({ course, onRefresh }) {
     const modules = course.modules;
     const [moduleData, setModuleData] = useState(modules);
+
+    const canActivate = moduleData?.some(m => !m.activated);
+    const canDeactivate = moduleData?.some(m => m.activated);
+
+    const handleActivate = async () => {
+        try {
+            await activateNextModule(course.uuid);
+            const updated = await getModules(course.uuid);
+            setModuleData(updated);
+            if (onRefresh) onRefresh();
+        } catch (err) {
+            console.error(err);
+            alert(err.message);
+        }
+    };
+
+    const handleDeactivate = async () => {
+        try {
+            await deactivatePreviousModule(course.uuid);
+            const updated = await getModules(course.uuid);
+            setModuleData(updated);
+            if (onRefresh) onRefresh();
+        } catch (err) {
+            console.error(err);
+            alert(err.message);
+        }
+    };
+
+    const handleMove = async (fromIndex, toIndex) => {
+        const newData = [...moduleData];
+        const [moved] = newData.splice(fromIndex, 1);
+        newData.splice(toIndex, 0, moved);
+        setModuleData(newData);
+
+        try {
+            await reorderModules(course.uuid, newData.map(m => m.uuid));
+        } catch (err) {
+            console.error(err);
+            setModuleData(moduleData);
+            alert(err.message);
+        }
+    };
 
     return (
         <article className={styles.course_detail}>
@@ -35,6 +78,34 @@ export default function CourseDetail({ course }) {
                 <div className={styles.course_detail_modules_header}>
                     <SearchInput text={'Hledejte modul podle názvu'} data={moduleData} setData={setModuleData} />
                     <ModuleSelect setModuleData={setModuleData} moduleData={modules} />
+                    {course.status === 'Live' && (
+                        <div className={styles.course_detail_modules_actions}>
+                            {canActivate && (
+                                <button
+                                    className={styles.activate_btn}
+                                    onClick={handleActivate}
+                                >
+                                    <svg width="1.25rem" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M12 4.5C7.30608 4.5 3.20771 7.61029 1.18164 12C3.20771 16.3897 7.30608 19.5 12 19.5C16.6939 19.5 20.7923 16.3897 22.8184 12C20.7923 7.61029 16.6939 4.5 12 4.5ZM12 17C9.23858 17 7 14.7614 7 12C7 9.23858 9.23858 7 12 7C14.7614 7 17 9.23858 17 12C17 14.7614 14.7614 17 12 17ZM12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9Z" fill="white" />
+                                    </svg>
+                                    Aktivovat další
+                                </button>
+                            )}
+                            {canDeactivate && (
+                                <button
+                                    className={styles.deactivate_btn}
+                                    onClick={handleDeactivate}
+                                >
+                                    <svg width="1.25rem" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M3.53033 2.46967C3.23744 2.17678 2.76256 2.17678 2.46967 2.46967C2.17678 2.76256 2.17678 3.23744 2.46967 3.53033L20.4697 21.5303C20.7626 21.8232 21.2374 21.8232 21.5303 21.5303C21.8232 21.2374 21.8232 20.7626 21.5303 20.4697L3.53033 2.46967Z" fill="white" />
+                                        <path d="M22.8184 12C21.7586 9.74646 20.0923 7.84498 18.0152 6.49528L15.8517 8.65883C16.5614 9.55014 17 10.7235 17 12C17 14.7614 14.7614 17 12 17C10.7235 17 9.55014 16.5614 8.65883 15.8517L6.49528 18.0152C8.07988 19.139 9.96019 19.7904 12 19.5C16.6939 19.5 20.7923 16.3897 22.8184 12Z" fill="white" />
+                                        <path d="M1.18164 12C2.24143 14.2535 3.90771 16.155 5.98477 17.5047L8.14832 15.3412C7.43857 14.4499 7 13.2765 7 12C7 9.23858 9.23858 7 12 7C13.2765 7 14.4499 7.43857 15.3412 8.14832L17.5047 5.98477C15.9201 4.86102 14.0398 4.20964 12 4.5C7.30608 4.5 3.20771 7.61029 1.18164 12Z" fill="white" />
+                                    </svg>
+                                    Deaktivovat další
+                                </button>
+                            )}
+                        </div>
+                    )}
                     {course.status === 'Draft' && (
                         <DashboardButton
                             text={'Nový modul'}
@@ -54,6 +125,12 @@ export default function CourseDetail({ course }) {
                             key={m.uuid}
                             module={m}
                             num={index + 1}
+                            isDraft={course.status === 'Draft'}
+                            isFirst={index === 0}
+                            isLast={index === moduleData.length - 1}
+                            onMoveUp={() => handleMove(index, index - 1)}
+                            onMoveDown={() => handleMove(index, index + 1)}
+                            courseStatus={course.status}
                         />
                     ))}
                 </div>

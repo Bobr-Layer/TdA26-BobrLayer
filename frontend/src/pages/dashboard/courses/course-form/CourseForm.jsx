@@ -13,7 +13,7 @@ export default function CourseForm({
             <div className={styles.course_form_inputs}>
                 <Input
                     name="name"
-                    placeholder="Název kurzu"
+                    placeholder="Zadejte název kurzu"
                     value={courseData.name}
                     onChange={handleCourseChange}
                     title={true}

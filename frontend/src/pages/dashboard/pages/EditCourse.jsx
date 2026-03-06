@@ -6,6 +6,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { updateCourse, getCourseByUuid } from '../../../services/CourseService';
 import { getUrlMaterials, getFileMaterials, createUrlMaterial, updateUrlMaterial, createFileMaterial, updateFileMaterial, deleteMaterial } from '../../../services/MaterialService';
 import CourseForm from '../courses/course-form/CourseForm';
+import Header from '../../../shared/layout/header/Header';
 
 export default function EditCourse({ user, setUser }) {
     const [course, setCourse] = useState();
@@ -56,6 +57,7 @@ export default function EditCourse({ user, setUser }) {
 
     return (
         <div>
+            <Header user={user} setUser={setUser} onlyMobile={true}/>
             <Sidenav user={user} setUser={setUser} current={'courseDetail'} uuid={uuid} showMore={true} modules={course?.modules}/>
             <form className={styles.dashboard} onSubmit={onSubmit}>
                 <DashboardNav

@@ -52,11 +52,11 @@ export default function Module({ user, setUser }) {
                     <p className={styles.module_content_p}>{module.description}</p>
                     <div className={styles.module_content_list}>
                         <h3>Přílohy</h3>
-                        <MaterialList materials={materials} />
+                        <MaterialList materials={materials} courseUuid={uuid} moduleUuid={moduleUuid} />
                     </div>
                     <div className={styles.module_content_list}>
                         <h3>Kvízy</h3>
-                        <QuizList quizzes={module.quizzes} uuid={uuid} moduleUuid={moduleUuid}/>
+                        <QuizList quizzes={module.quizzes} uuid={uuid} moduleUuid={moduleUuid} />
                     </div>
                 </article>
             </section>
@@ -66,7 +66,7 @@ export default function Module({ user, setUser }) {
     )
 }
 
-function MaterialList({ materials }) {
+function MaterialList({ materials, courseUuid, moduleUuid }) {
     const [showMore, setShowMore] = useState(false);
 
     const visibleMaterials = showMore
@@ -83,7 +83,7 @@ function MaterialList({ materials }) {
         <>
             <div className={styles.material_list}>
                 {visibleMaterials.map((m) => (
-                    <MaterialCard key={m.uuid} material={m} file={m.type === 'file' ? true : false} />
+                    <MaterialCard key={m.uuid} material={m} file={m.type === 'file' ? true : false} courseUuid={courseUuid} moduleUuid={moduleUuid} />
                 ))}
             </div>
 
@@ -114,7 +114,7 @@ function QuizList({ quizzes, uuid, moduleUuid }) {
         <>
             <div className={styles.quiz_list}>
                 {visibleQuizzes.map((q) => (
-                    <QuizCard key={q.uuid} quiz={q} uuid={uuid} moduleUuid={moduleUuid}/>
+                    <QuizCard key={q.uuid} quiz={q} uuid={uuid} moduleUuid={moduleUuid} />
                 ))}
             </div>
 

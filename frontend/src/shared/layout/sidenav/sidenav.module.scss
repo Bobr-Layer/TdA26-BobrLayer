@@ -16,6 +16,10 @@
     align-items: flex-start;
     box-shadow: 10px 0px 15px 5px map-get($colors, txt);
 
+    @media (max-width: 900px) {
+        display: none;
+    }
+
     .sidenav_top {
         display: flex;
         flex-direction: column;
@@ -106,7 +110,8 @@
 
             img {
                 width: 2.625rem;
-                border-radius: calc(2.625 / 2);
+                border-radius: calc(2.625rem / 2);
+                aspect-ratio: 1/1;
                 background-color: map-get($colors, bck);
             }
 

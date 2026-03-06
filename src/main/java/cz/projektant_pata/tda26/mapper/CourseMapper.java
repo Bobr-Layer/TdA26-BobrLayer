@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CourseMapper {
 
-    private final ModuleMapper moduleMapper;  // ✅ materialMapper + quizMapper odstraněny
+    private final ModuleMapper moduleMapper; // ✅ materialMapper + quizMapper odstraněny
     private final FeedMapper feedMapper;
 
     public Course toEntity(CourseRequestDTO dto) {
@@ -43,14 +43,15 @@ public class CourseMapper {
 
         response.setModules(entity.getModules() != null
                 ? entity.getModules().stream()
-                .map(moduleMapper::toResponse)
-                .collect(Collectors.toList())
+                        .sorted(java.util.Comparator.comparingInt(m -> m.getIndex()))
+                        .map(moduleMapper::toResponse)
+                        .collect(Collectors.toList())
                 : Collections.emptyList());
 
         response.setFeed(entity.getFeed() != null
                 ? entity.getFeed().stream()
-                .map(feedMapper::toDto)
-                .collect(Collectors.toList())
+                        .map(feedMapper::toDto)
+                        .collect(Collectors.toList())
                 : Collections.emptyList());
 
         return response;

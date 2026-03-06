@@ -7,6 +7,7 @@ import { getCourses } from '../../services/CourseService';
 import DashboardButton from "../../shared/button/dashboard/DashboardButton";
 import SearchInput from "../../shared/form/search-input/SearchInput";
 import CourseSelect from "../../shared/form/course-select/CourseSelect";
+import Header from "../../shared/layout/header/Header";
 
 function Dashboard({ user, setUser }) {
   const navigate = useNavigate();
@@ -30,6 +31,7 @@ function Dashboard({ user, setUser }) {
 
   return (
     <div>
+      <Header user={user} setUser={setUser} onlyMobile={true}/>
       <Sidenav user={user} setUser={setUser} current={'courses'}/>
       <section className={styles.dashboard}>
         <article className={styles.dashboard_header}>

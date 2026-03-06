@@ -22,6 +22,17 @@
     box-sizing: border-box;
     position: relative;
 
+    @media (max-width: 1200px) {
+        padding-inline: 3rem;
+    }
+
+    @media (max-width: 900px) {
+        flex-direction: column;
+        justify-content: center;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
     .index_text {
         width: 37.5rem;
         display: flex;
@@ -29,18 +40,33 @@
         align-items: flex-start;
         gap: 3.75rem;
 
+        @media (max-width: 900px) {
+            width: 100%;
+            gap: 3rem;
+        }
+
         h1 {
             background: linear-gradient(91.86deg, #0070BB 0.02%, #49B3B4 100.02%);
             background-clip: text;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             font-size: 3.75rem;
+
+            @media (max-width: 900px) {
+                text-align: center;
+                font-size: 4rem;
+            }
         }
 
         p {
             color: map-get($colors, darkerBck);
             font-size: 1.5rem;
             font-weight: 600;
+
+            @media (max-width: 900px) {
+                font-size: 2rem;
+                text-align: center;
+            }
         }
 
         div {
@@ -52,6 +78,10 @@
 
     img {
         width: 21.875rem;
+
+        @media (max-width: 900px) {
+            display: none;
+        }
     }
 
     .index_scroll {
@@ -72,6 +102,10 @@
             pointer-events: none;
             transform: translateY(0.5rem);
         }
+
+        @media (max-width: 900px) {
+            bottom: 3rem;
+        }
     }
 }
 
@@ -83,12 +117,26 @@
     flex-direction: column;
     gap: 19.875rem;
 
+    @media (max-width: 1200px) {
+        padding-inline: 3rem;
+    }
+
+    @media (max-width: 900px) {
+        gap: 12rem;
+        padding-top: 0;
+        padding-bottom: 6rem;
+    }
+
     .about_main_text {
         font-size: 4rem;
         color: map-get($colors, darkerBck);
 
         span {
             color: map-get($colors, bck);
+        }
+
+        @media (max-width: 900px) {
+            font-size: 3.2rem;
         }
     }
 
@@ -99,8 +147,16 @@
         position: relative;
         width: 100%;
 
+        @media (max-width: 900px) {
+            gap: 6.4rem;
+        }
+
         h2 {
             font-size: 3rem;
+
+            @media (max-width: 900px) {
+                font-size: 2rem;
+            }
         }
 
         .about_list {
@@ -108,23 +164,45 @@
             grid-template-columns: 1fr 1fr 1fr;
             gap: 3.75rem;
 
+            @media (max-width: 900px) {
+                display: flex;
+                flex-direction: column;
+                gap: 6rem;
+            }
+
             div {
                 display: flex;
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 1.5rem;
 
+                @media (max-width: 900px) {
+                    gap: 2.4rem;
+                }
+
                 img {
                     height: 6.25rem;
+
+                    @media (max-width: 900px) {
+                        height: 6rem;
+                    }
                 }
 
                 h3 {
                     font-size: 2.5rem;
+
+                    @media (max-width: 900px) {
+                        font-size: 2.8rem;
+                    }
                 }
 
                 p {
                     font-size: 1.5rem;
                     color: map-get($colors, darkerBck);
+
+                    @media (max-width: 900px) {
+                        font-size: 2rem;
+                    }
                 }
             }
         }
@@ -138,6 +216,10 @@
             width: 50dvh;
             z-index: -1;
             filter: blur(100px);
+
+            @media (max-width: 900px) {
+                display: none;
+            }
         }
 
         .about_ball_2 {
@@ -149,6 +231,10 @@
             width: 50dvh;
             z-index: -1;
             filter: blur(100px);
+
+            @media (max-width: 900px) {
+                display: none;
+            }
         }
     }
 }
@@ -161,8 +247,20 @@
     flex-direction: column;
     gap: 4rem;
 
+    @media (max-width: 1200px) {
+        padding-inline: 3rem;
+    }
+
+    @media (max-width: 900px) {
+        padding-top: 6rem;
+    }
+
     h2 {
         font-size: 3rem;
+
+        @media (max-width: 900px) {
+            font-size: 3.2rem;
+        }
     }
 }
 
@@ -178,5 +276,9 @@
         width: 80dvh;
         z-index: -1;
         filter: blur(100px);
+
+        @media (max-width: 900px) {
+            display: none;
+        }
     }
 }

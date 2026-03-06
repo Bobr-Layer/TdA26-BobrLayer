@@ -27,10 +27,24 @@
     flex-direction: column;
     gap: 2.5rem;
 
+    @media (max-width: 1200px) {
+        padding-inline: 3rem;
+    }
+
+    @media (max-width: 900px) {
+        padding-top: 12rem;
+        padding-bottom: 3rem;
+    }
+
     .module_header {
         display: flex;
         align-items: center;
         gap: 1.25rem;
+
+        @media (max-width: 900px) {
+            flex-direction: column;
+            align-items: flex-start;
+        }
 
         h1 {
             font-size: 2rem;
@@ -67,7 +81,7 @@
 
 .material_list {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
     gap: 1.25rem;
 }
 
@@ -75,6 +89,10 @@
     display: grid;
     grid-template-columns: 1fr;
     gap: 1.25rem;
+
+    @media (max-width: 900px) {
+        grid-template-columns: 1fr;
+    }
 }
 
 .show_more_button {

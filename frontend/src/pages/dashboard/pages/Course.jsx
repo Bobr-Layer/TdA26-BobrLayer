@@ -3,14 +3,17 @@ import DashboardNav from '../../../shared/layout/dashboard-nav/DashboardNav';
 import styles from '../dashboard.module.scss';
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getCourseByUuid, deleteCourse } from '../../../services/CourseService';
+import { getCourseByUuid, deleteCourse, createCourse } from '../../../services/CourseService';
+import { createModule } from '../../../services/ModuleService';
 import CourseDetail from '../courses/course-detail/CourseDetail';
 import StatusSetterSelect from '../../../shared/form/course-select/StatusSetterSelect';
+import Header from '../../../shared/layout/header/Header';
 
 export default function Course({ user, setUser }) {
     const navigate = useNavigate();
     const { uuid } = useParams();
     const [course, setCourse] = useState(null);
+    const [duplicating, setDuplicating] = useState(false);
 
     const loadCourse = useCallback(async () => {
         try {
@@ -38,9 +41,42 @@ export default function Course({ user, setUser }) {
         }
     };
 
+    const handleDuplicate = async () => {
+        if (!course || duplicating) return;
+
+        try {
+            setDuplicating(true);
+            const { uuid: _, ...courseData } = course;
+            const newCourse = await createCourse({
+                ...courseData,
+                name: `${course.name} (kopie)`,
+                status: 'Draft',
+            });
+
+            // Copy all modules from original course
+            if (course.modules && course.modules.length > 0) {
+                for (const m of course.modules) {
+                    await createModule(newCourse.uuid, {
+                        name: m.name,
+                        description: m.description,
+                        index: m.index,
+                    });
+                }
+            }
+
+            navigate(`/dashboard/${newCourse.uuid}`);
+        } catch (err) {
+            console.error(err);
+            alert(err.message);
+        } finally {
+            setDuplicating(false);
+        }
+    };
+
     return (
         <div>
-            <Sidenav user={user} setUser={setUser} showMore={true} current={'courseDetail'} uuid={uuid} modules={course?.modules}/>
+            <Header user={user} setUser={setUser} onlyMobile={true} />
+            <Sidenav user={user} setUser={setUser} showMore={true} current={'courseDetail'} uuid={uuid} modules={course?.modules} />
             {course && (
                 <section className={styles.dashboard}>
                     <DashboardNav
@@ -55,12 +91,34 @@ export default function Course({ user, setUser }) {
                         }
                         showButton={course.status === 'Draft'}
                         otherComponent={
-                            <StatusSetterSelect
-                                course={course}
-                                setCourse={setCourse}
-                                handleDelete={handleDelete}
-                                onRefresh={loadCourse}
-                            />
+                            <>
+                                <StatusSetterSelect
+                                    course={course}
+                                    setCourse={setCourse}
+                                    onRefresh={loadCourse}
+                                />
+                                <button
+                                    className={styles.course_button}
+                                    onClick={handleDuplicate}
+                                    disabled={duplicating}
+                                >
+                                    <svg width="1.75rem" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M16.875 2.5H6.875C6.70924 2.5 6.55027 2.56585 6.43306 2.68306C6.31585 2.80027 6.25 2.95924 6.25 3.125V6.25H3.125C2.95924 6.25 2.80027 6.31585 2.68306 6.43306C2.56585 6.55027 2.5 6.70924 2.5 6.875V16.875C2.5 17.0408 2.56585 17.1997 2.68306 17.3169C2.80027 17.4342 2.95924 17.5 3.125 17.5H13.125C13.2908 17.5 13.4497 17.4342 13.5669 17.3169C13.6842 17.1997 13.75 17.0408 13.75 16.875V13.75H16.875C17.0408 13.75 17.1997 13.6842 17.3169 13.5669C17.4342 13.4497 17.5 13.2908 17.5 13.125V3.125C17.5 2.95924 17.4342 2.80027 17.3169 2.68306C17.1997 2.56585 17.0408 2.5 16.875 2.5ZM12.5 16.25H3.75V7.5H12.5V16.25ZM16.25 12.5H13.75V6.875C13.75 6.70924 13.6842 6.55027 13.5669 6.43306C13.4497 6.31585 13.2908 6.25 13.125 6.25H7.5V3.75H16.25V12.5Z" fill="rgba(255, 255, 255, 1)" />
+                                    </svg>
+                                    {duplicating ? 'Duplikuji...' : 'Duplikovat kurz'}
+                                </button>
+                                {course.status === 'Draft' && (
+                                    <button
+                                        className={`${styles.course_button} ${styles.course_button_delete}`}
+                                        onClick={handleDelete}
+                                    >
+                                        <svg width="1.75rem" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M20.25 4.5H16.5V3.75C16.5 3.15326 16.2629 2.58097 15.841 2.15901C15.419 1.73705 14.8467 1.5 14.25 1.5H9.75C9.15326 1.5 8.58097 1.73705 8.15901 2.15901C7.73705 2.58097 7.5 3.15326 7.5 3.75V4.5H3.75C3.55109 4.5 3.36032 4.57902 3.21967 4.71967C3.07902 4.86032 3 5.05109 3 5.25C3 5.44891 3.07902 5.63968 3.21967 5.78033C3.36032 5.92098 3.55109 6 3.75 6H4.5V19.5C4.5 19.8978 4.65804 20.2794 4.93934 20.5607C5.22064 20.842 5.60218 21 6 21H18C18.3978 21 18.7794 20.842 19.0607 20.5607C19.342 20.2794 19.5 19.8978 19.5 19.5V6H20.25C20.4489 6 20.6397 5.92098 20.7803 5.78033C20.921 5.63968 21 5.44891 21 5.25C21 5.05109 20.921 4.86032 20.7803 4.71967C20.6397 4.57902 20.4489 4.5 20.25 4.5ZM9 3.75C9 3.55109 9.07902 3.36032 9.21967 3.21967C9.36032 3.07902 9.55109 3 9.75 3H14.25C14.4489 3 14.6397 3.07902 14.7803 3.21967C14.921 3.36032 15 3.55109 15 3.75V4.5H9V3.75ZM18 19.5H6V6H18V19.5Z" fill="white" />
+                                        </svg>
+                                        Smazat kurz
+                                    </button>
+                                )}
+                            </>
                         } />
                     <CourseDetail course={course} />
                 </section>

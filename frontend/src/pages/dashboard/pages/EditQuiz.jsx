@@ -6,6 +6,7 @@ import DashboardNav from '../../../shared/layout/dashboard-nav/DashboardNav';
 import QuizzForm from '../quizzes/quizz-form/QuizzForm';
 import { updateQuiz, getQuizByUuid } from '../../../services/QuizzService';
 import { getCourseByUuid } from '../../../services/CourseService';
+import Header from '../../../shared/layout/header/Header';
 
 export default function EditQuiz({ user, setUser }) {
     const navigate = useNavigate();
@@ -242,6 +243,7 @@ export default function EditQuiz({ user, setUser }) {
 
     return (
         <div>
+            <Header user={user} setUser={setUser} onlyMobile={true}/>
             <Sidenav user={user} setUser={setUser} showMore={true} current={'courseModule_{uuid}'} modules={course?.modules}/>
             <form className={styles.dashboard} onSubmit={onSubmit}>
                 <DashboardNav

@@ -4,6 +4,10 @@
     display: flex;
     gap: 2.5rem;
 
+    @media (max-width: 900px) {
+        flex-direction: column;
+    }
+
     .module_detail_main {
         display: flex;
         flex-direction: column;

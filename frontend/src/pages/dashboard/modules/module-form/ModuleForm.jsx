@@ -42,7 +42,7 @@ export default function ModuleForm({ moduleData, handleModuleDataChange, initial
         <div className={styles.module_form}>
             <Input
                 name="name"
-                placeholder="Název modulu"
+                placeholder="Zadejte název modulu"
                 value={moduleData.name}
                 onChange={handleModuleDataChange}
                 title={true}
@@ -72,7 +72,7 @@ export default function ModuleForm({ moduleData, handleModuleDataChange, initial
 
                             const newItem = {
                                 ...data,
-                                name: data.fileName || data.file?.name || '',
+                                name: data.name || data.fileName || data.file?.name || '',
                                 tempId: crypto.randomUUID()
                             };
 

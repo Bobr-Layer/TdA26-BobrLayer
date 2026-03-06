@@ -1,7 +1,7 @@
 @use "../../../index.scss" as *;
 
 .input {
-    color: map-get($colors, darkerBck);
+    color: map-get($colors, bck);
     background-color: map-get($colors, darkerTxt);
     font-size: 1rem;
     padding-inline: 1.25rem;
@@ -25,22 +25,15 @@
 
     &.bigger {
         width: 100%;
-        color: map-get($colors, darkerBck);
         padding: 0.938rem;
-
-        &::placeholder {
-            color: map-get($colors, darkerBck);
-        }
     }
 
     &.title {
         width: 100%;
         padding: 0.75rem;
-        color: map-get($colors, bck);
         font-size: 2rem;
 
         &::placeholder {
-            color: map-get($colors, bck);
             font-size: 2rem;
         }
     }

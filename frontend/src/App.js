@@ -45,7 +45,7 @@ function App() {
       <Route path="/courses" element={<Courses user={user} setUser={setUser} />} />
       <Route path="/courses/:uuid" element={<Detail user={user} setUser={setUser} />} />
       <Route path="/courses/:uuid/modules/:moduleUuid" element={<Module user={user} setUser={setUser} />} />
-      <Route path="/courses/:uuid/modules/:moduleUuid/quizzes/:quizzUuid" element={<Quiz />} />
+      <Route path="/courses/:uuid/modules/:moduleUuid/quizzes/:quizzUuid" element={<Quiz user={user} setUser={setUser} />} />
 
       {user ? (
         <>

@@ -13,12 +13,31 @@
 
     h1 {
         font-size: 2rem;
+
+        @media (max-width: 900px) {
+            font-size: 3.5rem;
+        }
     }
 
     .courses_nav {
         display: grid;
         grid-template-columns: 3fr 1fr;
         gap: 1.25rem;
+
+        @media (max-width: 900px) {
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+    }
+
+    @media (max-width: 1200px) {
+        padding-inline: 3rem;
+    }
+
+    @media (max-width: 900px) {
+        padding-top: 12rem;
+        padding-bottom: 6rem;
+        gap: 4rem;
     }
 }
 

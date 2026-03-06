@@ -8,11 +8,11 @@ import { getCourseByUuid } from '../../../services/CourseService'
 import { useRef, useCallback } from 'react';
 import { getCourseFeed } from '../../../services/FeedService'
 import ModuleCard from '../../../shared/courses/module-card/ModuleCard';
+import Api from '../../../services/Api';
 
 export default function Detail({ user, setUser }) {
     const { uuid } = useParams();
     const navigate = useNavigate();
-    const pollingIntervalRef = useRef(null);
     const feedListRef = useRef(null);
 
     const [course, setCourse] = useState();
@@ -64,15 +64,38 @@ export default function Detail({ user, setUser }) {
 
         loadFeeds(course.uuid);
 
-        pollingIntervalRef.current = setInterval(() => {
-            loadFeeds(course.uuid);
-        }, 3000);
+        // SSE: listen for module activation/deactivation and feed events
+        const eventSource = new EventSource(`${Api}/courses/${course.uuid}/stream`);
+
+        eventSource.addEventListener('MODULE_ACTIVATED', () => {
+            // Refetch course to update visible modules
+            getCourseByUuid(uuid).then(setCourse).catch(console.error);
+        });
+
+        eventSource.addEventListener('MODULE_DEACTIVATED', () => {
+            getCourseByUuid(uuid).then(setCourse).catch(console.error);
+        });
+
+        eventSource.addEventListener('FEED_CREATED', (event) => {
+            try {
+                const data = JSON.parse(event.data);
+                const payload = data.payload;
+                if (!payload || !payload.uuid) return;
+                setFeeds(prev => {
+                    if (prev.some(f => f.uuid === payload.uuid)) return prev;
+                    return [...prev, payload];
+                });
+            } catch (err) {
+                console.error('Error parsing SSE feed:', err);
+            }
+        });
+
+        eventSource.onerror = () => {
+            // SSE will auto-reconnect
+        };
 
         return () => {
-            if (pollingIntervalRef.current) {
-                clearInterval(pollingIntervalRef.current);
-                pollingIntervalRef.current = null;
-            }
+            eventSource.close();
         };
     }, [course, loadFeeds]);
 
@@ -98,7 +121,7 @@ export default function Detail({ user, setUser }) {
                         <p className={styles.detail_content_about_p}>{course.description}</p>
                         <div className={styles.detail_content_about_list}>
                             <h3>Moduly</h3>
-                            {course.modules?.map((m) => (
+                            {course.modules?.filter(m => m.activated).map((m) => (
                                 <ModuleCard module={m} key={m.uuid} />
                             ))}
                         </div>
@@ -157,7 +180,7 @@ function FeedCard({ feed }) {
                         </>
                     ) : (
                         <>
-                            <img src="" alt="" />
+                            <img src="/img/person.png" alt="" className={styles.p} />
                             <p>Lektor</p>
                         </>
                     )}

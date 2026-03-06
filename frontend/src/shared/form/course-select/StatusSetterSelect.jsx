@@ -6,21 +6,19 @@ import {
     archiveCourse,
     backToDraft,
     scheduleCourse,
-    activateNextModule,
-    deactivatePreviousModule
 } from '../../../services/CourseService';
 
-export default function StatusSetterSelect({ course, setCourse, handleDelete, onRefresh }) {
+export default function StatusSetterSelect({ course, setCourse, onRefresh }) {
     const [loading, setLoading] = useState(false);
     const [showScheduler, setShowScheduler] = useState(false);
     const [scheduledAt, setScheduledAt] = useState("");
 
     const allowedTransitions = {
-        Draft: ["Scheduled", "Live", "Delete"],
-        Scheduled: ["Draft", "Live", "Delete"],
+        Draft: ["Scheduled", "Live"],
+        Scheduled: ["Draft", "Live"],
         Live: ["Paused", "Archived"],
         Paused: ["Live"],
-        Archived: ["Delete"],
+        Archived: [],
     };
 
     const optionLabels = {
@@ -43,11 +41,6 @@ export default function StatusSetterSelect({ course, setCourse, handleDelete, on
             return;
         }
 
-        if (value === "Delete") {
-            await handleDelete();
-            return;
-        }
-
         if (value === course.status) return;
 
         try {
@@ -61,14 +54,7 @@ export default function StatusSetterSelect({ course, setCourse, handleDelete, on
                     break;
                 case 'Live':
                     updatedCourse = await startCourse(course.uuid);
-                    try {
-                        await deactivatePreviousModule(course.uuid);
-                        await activateNextModule(course.uuid);
-                    } catch {
-                        // ignorujeme
-                    }
-                    await onRefresh();
-                    break;
+                    setCourse(updatedCourse);
                     await onRefresh();
                     break;
                 case 'Paused':

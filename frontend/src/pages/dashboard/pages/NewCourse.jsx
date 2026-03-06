@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createCourse } from '../../../services/CourseService';
 import CourseForm from '../courses/course-form/CourseForm';
+import Header from '../../../shared/layout/header/Header';
 
 export default function NewCourse({ user, setUser }) {
     const navigate = useNavigate();
@@ -38,6 +39,7 @@ export default function NewCourse({ user, setUser }) {
 
     return (
         <div>
+            <Header user={user} setUser={setUser} onlyMobile={true}/>
             <Sidenav user={user} setUser={setUser} current={'courses'} />
             <form className={styles.dashboard} onSubmit={onSubmit}>
                 <DashboardNav

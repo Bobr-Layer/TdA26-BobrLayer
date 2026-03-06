@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import ModuleDetail from '../modules/module-detail/ModuleDetail';
 import { getModuleByUuid } from '../../../services/ModuleService';
 import { activateNextModule, deactivatePreviousModule, getCourseByUuid } from '../../../services/CourseService';
+import Header from '../../../shared/layout/header/Header';
 
 export default function DashboardModule({ user, setUser }) {
     const { uuid, moduleUuid } = useParams();
@@ -72,11 +73,13 @@ export default function DashboardModule({ user, setUser }) {
         return <div>Chyba: {error}</div>;
     }
 
-    const currentIndex = course?.modules?.findIndex(m => m.uuid === moduleUuid) ?? -1;
-    const isLastModule = currentIndex === (course?.modules?.length - 1);
+    const activatedModules = course?.modules?.filter(m => m.activated) ?? [];
+    const isLastModule = activatedModules.length > 0 &&
+        activatedModules[activatedModules.length - 1].uuid === moduleUuid;
 
     return (
         <div>
+            <Header user={user} setUser={setUser} onlyMobile={true} />
             <Sidenav
                 user={user}
                 setUser={setUser}

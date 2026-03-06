@@ -10,6 +10,14 @@
     gap: 3.125rem;
     position: relative;
 
+    @media (max-width: 1200px) {
+        padding-inline: 3rem;
+    }
+
+    @media (max-width: 900px) {
+        padding: 3rem;
+    }
+
     .quiz_header {
         display: flex;
         align-items: center;

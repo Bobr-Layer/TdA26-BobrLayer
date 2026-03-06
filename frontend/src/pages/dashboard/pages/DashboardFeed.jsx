@@ -7,6 +7,7 @@ import FeedForm from '../../../shared/form/feed-form/FeedForm';
 import FeedCard from '../../../shared/courses/feed-card/FeedCard';
 import { getCourseFeed } from '../../../services/FeedService';
 import { Link } from 'react-router-dom';
+import Header from '../../../shared/layout/header/Header';
 
 export default function DashboardFeed({ user, setUser }) {
     const navigate = useNavigate();
@@ -84,6 +85,7 @@ export default function DashboardFeed({ user, setUser }) {
 
     return (
         <div>
+            <Header user={user} setUser={setUser} onlyMobile={true}/>
             <Sidenav user={user} setUser={setUser} showMore={true} current={'courseFeed'} uuid={uuid} modules={course?.modules}/>
             {course && (
                 <section className={styles.dashboard}>

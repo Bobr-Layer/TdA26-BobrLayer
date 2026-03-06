@@ -9,7 +9,7 @@
     padding-inline: 1.25rem;
     width: 100%;
     box-sizing: border-box;
-    height: 3.75rem;
+    min-height: 3.75rem;
 
     &:hover {
         border-color: map-get($colors, action2);

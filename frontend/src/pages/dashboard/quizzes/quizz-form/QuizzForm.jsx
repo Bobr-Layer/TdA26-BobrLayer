@@ -19,7 +19,7 @@ export default function QuizzForm({
             <div className={styles.quizz_form_content}>
                 <Input
                     name="title"
-                    placeholder="Název kvízu"
+                    placeholder="Zadejte název kvízu"
                     value={quizzData.title}
                     onChange={handleQuizzChange}
                     title={true}

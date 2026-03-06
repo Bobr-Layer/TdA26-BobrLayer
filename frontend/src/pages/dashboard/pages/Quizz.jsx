@@ -7,6 +7,7 @@ import { deleteQuiz, getQuizByUuid } from '../../../services/QuizzService';
 import { useState, useEffect } from 'react';
 import { getModules } from '../../../services/ModuleService';
 import { getCourseByUuid } from '../../../services/CourseService';
+import Header from '../../../shared/layout/header/Header';
 
 export default function Quizz({ user, setUser }) {
     const navigate = useNavigate();
@@ -52,6 +53,7 @@ export default function Quizz({ user, setUser }) {
 
     return (
         <div>
+            <Header user={user} setUser={setUser} onlyMobile={true}/>
             <Sidenav user={user} setUser={setUser} showMore={true} current={`courseModule_${moduleUuid}`} modules={modules}/>
             <section className={styles.dashboard}>
                 <DashboardNav

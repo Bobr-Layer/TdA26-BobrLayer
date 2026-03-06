@@ -46,10 +46,8 @@ public class CourseServiceImpl implements ICourseService {
     @Transactional(readOnly = true)
     public List<Course> findForStudent() {
         return repository.findForStudents(
-                List.of(StatusEnum.Scheduled, StatusEnum.Live, StatusEnum.Paused)
-        );
+                List.of(StatusEnum.Scheduled, StatusEnum.Live, StatusEnum.Paused));
     }
-
 
     @Override
     @Transactional
@@ -69,10 +67,12 @@ public class CourseServiceImpl implements ICourseService {
     @Override
     @Transactional
     public Course create(Course course) {
-//docasny zpusob, jejich testy nepodporuji prihlasovani kekw
-//        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-//        User lektor = userRepository.findByUsername(username)
-//                .orElseThrow(() -> new ResourceNotFoundException("Uživatel s uživatelským jménem " + username + " nebyl nalezen"));
+        // docasny zpusob, jejich testy nepodporuji prihlasovani kekw
+        // String username =
+        // SecurityContextHolder.getContext().getAuthentication().getName();
+        // User lektor = userRepository.findByUsername(username)
+        // .orElseThrow(() -> new ResourceNotFoundException("Uživatel s uživatelským
+        // jménem " + username + " nebyl nalezen"));
         User lektor = new User();
         Random rand = new Random();
 
@@ -131,12 +131,20 @@ public class CourseServiceImpl implements ICourseService {
     public Course start(UUID uuid) {
         Course c = this.getCourseOrThrow(uuid);
 
-        if (!c.getStatus().equals(StatusEnum.Draft) && !c.getStatus().equals(StatusEnum.Scheduled) && !c.getStatus().equals(StatusEnum.Paused)) {
+        if (!c.getStatus().equals(StatusEnum.Draft) && !c.getStatus().equals(StatusEnum.Scheduled)
+                && !c.getStatus().equals(StatusEnum.Paused)) {
             throw new InvalidResourceStateException(
                     "Kurz s ID " + uuid + " nelze použít - není ve stavu Draft či Scheduled");
         }
 
         c.setStatus(StatusEnum.Live);
+
+        // Deactivate all modules when going Live
+        if (c.getModules() != null) {
+            for (var m : c.getModules()) {
+                m.setActivated(false);
+            }
+        }
 
         return repository.save(c);
     }
@@ -197,7 +205,8 @@ public class CourseServiceImpl implements ICourseService {
             throw new InvalidResourceStateException("Kurz s ID " + courseUuid + " nelze použít - není ve stavu Live.");
 
         if (!moduleService.hasPrevious(courseUuid))
-            throw new InvalidResourceStateException("Kurz s ID " + courseUuid + " nemá žádný aktivní modul k deaktivaci.");
+            throw new InvalidResourceStateException(
+                    "Kurz s ID " + courseUuid + " nemá žádný aktivní modul k deaktivaci.");
 
         Module deactivated = moduleService.deactivate(courseUuid);
 
@@ -205,7 +214,6 @@ public class CourseServiceImpl implements ICourseService {
 
         return deactivated;
     }
-
 
     @Override
     @Transactional()
@@ -221,13 +229,13 @@ public class CourseServiceImpl implements ICourseService {
         User student = userService.find(studentUuid);
 
         if (course.getStudents().contains(student)) {
-            throw new ResourceAlreadyExistsException("Student s ID " + studentUuid + " je již zapsán v kurzu " + courseUuid);
+            throw new ResourceAlreadyExistsException(
+                    "Student s ID " + studentUuid + " je již zapsán v kurzu " + courseUuid);
         }
 
         course.addStudent(student);
         return repository.save(course);
     }
-
 
     @Override
     @Transactional

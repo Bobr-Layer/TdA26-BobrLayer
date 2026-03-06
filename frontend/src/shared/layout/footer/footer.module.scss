@@ -10,14 +10,34 @@
     gap: 7.5rem;
     position: relative;
 
+    @media (max-width: 1200px) {
+        padding-inline: 3rem;
+    }
+
+    @media (max-width: 900px) {
+        padding-block: 6rem;
+        gap: 6rem;
+    }
+
     article {
         width: 100%;
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
 
+        @media (max-width: 900px) {
+            flex-direction: column;
+            gap: 6rem;
+        }
+
+
         img {
             width: 18.034rem;
+
+            @media (max-width: 900px) {
+                width: 19.2rem;
+            }
+
         }
 
         .footer_list {
@@ -25,13 +45,28 @@
             align-items: flex-start;
             gap: 7.5rem;
 
+            @media (max-width: 900px) {
+                flex-direction: column;
+                gap: 4rem;
+            }
+
+
             .footer_list_block {
                 display: flex;
                 flex-direction: column;
                 gap: 1rem;
 
+                @media (max-width: 900px) {
+                    gap: 1.6rem;
+                }
+
                 h3 {
                     font-size: 1.5rem;
+
+                    @media (max-width: 900px) {
+                        font-size: 2.4rem;
+                    }
+
                 }
 
                 div {
@@ -39,7 +74,12 @@
                     flex-direction: column;
                     gap: 0.5rem;
 
-                    a, button {
+                    @media (max-width: 900px) {
+                        gap: 0.8rem;
+                    }
+
+                    a,
+                    button {
                         font-size: 1.25rem;
                         font-weight: 600;
                         color: map-get($colors, darkerBck);
@@ -53,6 +93,10 @@
                         &:hover {
                             text-decoration: underline;
                         }
+
+                        @media (max-width: 900px) {
+                            font-size: 2rem;
+                        }
                     }
                 }
             }
@@ -64,6 +108,12 @@
         font-size: 1.25rem;
         font-weight: 600;
         color: map-get($colors, shadow);
+
+        @media (max-width: 900px) {
+            text-align: left;
+            font-size: 2rem;
+        }
+
     }
 
     .footer_ball {
@@ -75,5 +125,9 @@
         height: 30rem;
         z-index: -1;
         filter: blur(100px);
+
+        @media (max-width: 900px) {
+            display: none;
+        }
     }
 }

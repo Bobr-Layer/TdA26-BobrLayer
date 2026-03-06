@@ -29,6 +29,15 @@
         position: relative;
         z-index: 2;
 
+        @media (max-width: 1200px) {
+            padding-inline: 3rem;
+        }
+
+        @media (max-width: 900px) {
+            gap: 2.5rem;
+            padding-top: 12rem;
+        }
+
         h1 {
             font-size: 2rem;
         }

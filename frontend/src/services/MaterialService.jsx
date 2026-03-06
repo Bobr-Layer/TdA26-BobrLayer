@@ -1,5 +1,15 @@
 import Api from './Api';
 
+export async function trackMaterial(courseId, moduleUuid, materialId) {
+  try {
+    await fetch(`${Api}/courses/${courseId}/modules/${moduleUuid}/materials/${materialId}/track`, {
+      method: 'POST',
+    });
+  } catch (err) {
+    console.error('Chyba při trackování materiálu:', err);
+  }
+}
+
 export async function getMaterials(courseId, moduleUuid) {
   const res = await fetch(`${Api}/courses/${courseId}/modules/${moduleUuid}/materials`);
 

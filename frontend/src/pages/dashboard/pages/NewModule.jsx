@@ -6,6 +6,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import ModuleForm from '../modules/module-form/ModuleForm';
 import { createModule, getModules } from '../../../services/ModuleService';
 import { createFileMaterial, createUrlMaterial } from '../../../services/MaterialService';
+import Header from '../../../shared/layout/header/Header';
 
 export default function NewModule({ user, setUser }) {
     const navigate = useNavigate();
@@ -69,6 +70,7 @@ export default function NewModule({ user, setUser }) {
 
     return (
         <div>
+            <Header user={user} setUser={setUser} onlyMobile={true}/>
             <Sidenav user={user} setUser={setUser} showMore={true} current={'courseDetail'} modules={modules}/>
             <form className={styles.dashboard} onSubmit={handleSubmit}>
                 <DashboardNav

@@ -4,6 +4,10 @@
     display: flex;
     gap: 2.5rem;
 
+    @media (max-width: 900px) {
+        flex-direction: column;
+    }
+
     .quizz_detail_info {
         display: flex;
         flex-direction: column;

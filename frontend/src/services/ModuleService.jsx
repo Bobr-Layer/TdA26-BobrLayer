@@ -81,3 +81,19 @@ export async function deleteModule(courseUuid, moduleUuid) {
 
   return;
 }
+
+export async function reorderModules(courseUuid, orderedUuids) {
+  const res = await fetch(`${Api}/courses/${courseUuid}/modules/reorder`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(orderedUuids),
+  });
+
+  if (!res.ok) {
+    throw new Error('Nepodařilo se přeřadit moduly');
+  }
+
+  return;
+}

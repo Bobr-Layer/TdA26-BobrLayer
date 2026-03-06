@@ -5,10 +5,18 @@
     align-items: flex-start;
     gap: 3.75rem;
 
+    @media (max-width: 900px) {
+        flex-direction: column-reverse;
+    }
+
     .quiz_question_header {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 1.25rem;
+
+        @media (max-width: 900px) {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
     }
 
     .quiz_question_content {
@@ -16,6 +24,11 @@
         flex-direction: column;
         flex: 1;
         gap: 3.75rem;
+
+        @media (max-width: 900px) {
+            flex: auto;
+            width: 100%;
+        }
 
         .quiz_question_content_top {
             display: flex;
@@ -47,6 +60,10 @@
 
                 span {
                     font-size: 1.25rem;
+
+                    @media (max-width: 900px) {
+                        display: none;
+                    }
                 }
 
                 &:hover {

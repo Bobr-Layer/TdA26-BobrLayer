@@ -19,4 +19,15 @@
             background-color: map-get($colors, darkerTxt);
         }
     }
+
+    @media (max-width: 900px) {
+        width: 100%;
+        box-sizing: border-box;
+        padding-block: 1.4rem;
+        padding-inline: 2rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 2rem;
+    }
 }

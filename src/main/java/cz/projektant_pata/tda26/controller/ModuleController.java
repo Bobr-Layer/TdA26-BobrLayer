@@ -19,55 +19,58 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ModuleController {
 
-    private final IModuleService moduleService;
-    private final ModuleMapper moduleMapper;
+        private final IModuleService moduleService;
+        private final ModuleMapper moduleMapper;
 
-    @GetMapping
-    public ResponseEntity<List<ModuleResponseDTO>> find(
-            @PathVariable UUID courseUuid
-    ) {
-        List<ModuleResponseDTO> response = moduleService.find(courseUuid).stream()
-                .map(moduleMapper::toResponse)
-                .toList();
-        return ResponseEntity.ok(response);
-    }
+        @GetMapping
+        public ResponseEntity<List<ModuleResponseDTO>> find(
+                        @PathVariable UUID courseUuid) {
+                List<ModuleResponseDTO> response = moduleService.find(courseUuid).stream()
+                                .map(moduleMapper::toResponse)
+                                .toList();
+                return ResponseEntity.ok(response);
+        }
 
-    @GetMapping("/{moduleUuid}")
-    public ResponseEntity<ModuleResponseDTO> find(
-            @PathVariable UUID courseUuid,
-            @PathVariable UUID moduleUuid
-    ) {
-        Module module = moduleService.find(courseUuid, moduleUuid);
-        return ResponseEntity.ok(moduleMapper.toResponse(module));
-    }
+        @GetMapping("/{moduleUuid}")
+        public ResponseEntity<ModuleResponseDTO> find(
+                        @PathVariable UUID courseUuid,
+                        @PathVariable UUID moduleUuid) {
+                Module module = moduleService.find(courseUuid, moduleUuid);
+                return ResponseEntity.ok(moduleMapper.toResponse(module));
+        }
 
-    @PostMapping
-    public ResponseEntity<ModuleResponseDTO> create(
-            @PathVariable UUID courseUuid,
-            @RequestBody @Valid ModuleRequestDTO request
-    ) {
-        Module created = moduleService.create(courseUuid, request);
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(moduleMapper.toResponse(created));
-    }
+        @PostMapping
+        public ResponseEntity<ModuleResponseDTO> create(
+                        @PathVariable UUID courseUuid,
+                        @RequestBody @Valid ModuleRequestDTO request) {
+                Module created = moduleService.create(courseUuid, request);
+                return ResponseEntity
+                                .status(HttpStatus.CREATED)
+                                .body(moduleMapper.toResponse(created));
+        }
 
-    @PutMapping("/{moduleUuid}")
-    public ResponseEntity<ModuleResponseDTO> update(
-            @PathVariable UUID courseUuid,
-            @PathVariable UUID moduleUuid,
-            @RequestBody @Valid ModuleRequestDTO request
-    ) {
-        Module updated = moduleService.update(courseUuid, moduleUuid, request);
-        return ResponseEntity.ok(moduleMapper.toResponse(updated));
-    }
+        @PutMapping("/{moduleUuid}")
+        public ResponseEntity<ModuleResponseDTO> update(
+                        @PathVariable UUID courseUuid,
+                        @PathVariable UUID moduleUuid,
+                        @RequestBody @Valid ModuleRequestDTO request) {
+                Module updated = moduleService.update(courseUuid, moduleUuid, request);
+                return ResponseEntity.ok(moduleMapper.toResponse(updated));
+        }
 
-    @DeleteMapping("/{moduleUuid}")
-    public ResponseEntity<Void> kill(
-            @PathVariable UUID courseUuid,
-            @PathVariable UUID moduleUuid
-    ) {
-        moduleService.kill(courseUuid, moduleUuid);
-        return ResponseEntity.noContent().build();
-    }
+        @DeleteMapping("/{moduleUuid}")
+        public ResponseEntity<Void> kill(
+                        @PathVariable UUID courseUuid,
+                        @PathVariable UUID moduleUuid) {
+                moduleService.kill(courseUuid, moduleUuid);
+                return ResponseEntity.noContent().build();
+        }
+
+        @PutMapping("/reorder")
+        public ResponseEntity<Void> reorder(
+                        @PathVariable UUID courseUuid,
+                        @RequestBody List<UUID> orderedModuleUuids) {
+                moduleService.reorder(courseUuid, orderedModuleUuids);
+                return ResponseEntity.noContent().build();
+        }
 }

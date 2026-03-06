@@ -78,7 +78,7 @@ public class FeedEventListener {
         @Async
         @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
         public void handleQuizSubmitted(QuizSubmittedEvent event) {
-                sseService.sendToAll(
+                sseService.sendToAuthenticated(
                                 event.course().getUuid(),
                                 new SseEventDTO<>("QUIZ_SUBMITTED", Map.of(
                                                 "quizUuid", event.quiz().getUuid(),

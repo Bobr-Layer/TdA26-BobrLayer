@@ -7,6 +7,7 @@ import ModuleForm from '../modules/module-form/ModuleForm';
 import { getModuleByUuid, updateModule } from '../../../services/ModuleService';
 import { getMaterials, createFileMaterial, createUrlMaterial, deleteMaterial } from '../../../services/MaterialService';
 import { getCourseByUuid } from '../../../services/CourseService';
+import Header from '../../../shared/layout/header/Header';
 
 export default function EditModule({ user, setUser }) {
     const { uuid, moduleUuid } = useParams();
@@ -93,6 +94,7 @@ export default function EditModule({ user, setUser }) {
 
     return (
         <div>
+            <Header user={user} setUser={setUser} onlyMobile={true}/>
             <Sidenav
                 user={user}
                 setUser={setUser}
