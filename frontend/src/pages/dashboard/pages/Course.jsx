@@ -5,6 +5,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getCourseByUuid, deleteCourse, createCourse } from '../../../services/CourseService';
 import { createModule } from '../../../services/ModuleService';
+import { getCourseFeed } from '../../../services/FeedService';
 import CourseDetail from '../courses/course-detail/CourseDetail';
 import StatusSetterSelect from '../../../shared/form/course-select/StatusSetterSelect';
 import Header from '../../../shared/layout/header/Header';
@@ -14,6 +15,8 @@ export default function Course({ user, setUser }) {
     const { uuid } = useParams();
     const [course, setCourse] = useState(null);
     const [duplicating, setDuplicating] = useState(false);
+    const [duplicateToast, setDuplicateToast] = useState(null);
+    const [feedNotification, setFeedNotification] = useState(false);
 
     const loadCourse = useCallback(async () => {
         try {
@@ -29,6 +32,25 @@ export default function Course({ user, setUser }) {
         loadCourse();
     }, [loadCourse]);
 
+    useEffect(() => {
+        if (!uuid) return;
+        const checkFeedNotification = async () => {
+            try {
+                const feedData = await getCourseFeed(uuid);
+                if (feedData.length === 0) return;
+                const latest = feedData.reduce((a, b) =>
+                    new Date(a.createdAt) > new Date(b.createdAt) ? a : b);
+                const lastSeen = parseInt(localStorage.getItem(`feedSeen_${uuid}`) || '0', 10);
+                if (new Date(latest.createdAt).getTime() > lastSeen) {
+                    setFeedNotification(true);
+                }
+            } catch (err) {
+                // ignore
+            }
+        };
+        checkFeedNotification();
+    }, [uuid]);
+
     const handleDelete = async () => {
         if (!course) return;
 
@@ -43,6 +65,8 @@ export default function Course({ user, setUser }) {
 
     const handleDuplicate = async () => {
         if (!course || duplicating) return;
+
+        if (!window.confirm(`Opravdu chcete duplikovat kurz "${course.name}"?`)) return;
 
         try {
             setDuplicating(true);
@@ -64,7 +88,8 @@ export default function Course({ user, setUser }) {
                 }
             }
 
-            navigate(`/dashboard/${newCourse.uuid}`);
+            setDuplicateToast(`Kurz byl úspěšně duplikován jako "${newCourse.name}".`);
+            setTimeout(() => setDuplicateToast(null), 4000);
         } catch (err) {
             console.error(err);
             alert(err.message);
@@ -76,7 +101,7 @@ export default function Course({ user, setUser }) {
     return (
         <div>
             <Header user={user} setUser={setUser} onlyMobile={true} />
-            <Sidenav user={user} setUser={setUser} showMore={true} current={'courseDetail'} uuid={uuid} modules={course?.modules} />
+            <Sidenav user={user} setUser={setUser} showMore={true} current={'courseDetail'} uuid={uuid} modules={course?.modules} feedNotification={feedNotification} />
             {course && (
                 <section className={styles.dashboard}>
                     <DashboardNav
@@ -122,6 +147,9 @@ export default function Course({ user, setUser }) {
                         } />
                     <CourseDetail course={course} />
                 </section>
+            )}
+            {duplicateToast && (
+                <div className={styles.toast}>{duplicateToast}</div>
             )}
         </div>
     )

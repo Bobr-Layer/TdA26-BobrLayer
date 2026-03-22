@@ -41,24 +41,51 @@
         transform: translate(-50%, -50%);
     }
 
-    input {
-        width: 100%;
+    .scheduler {
         position: absolute;
         top: 100%;
         left: 0;
-        box-sizing: border-box;
-        background-color: transparent;
-        border: 0;
-        outline: 0;
-        color: map-get($colors, bck);
-        font-size: 1rem;
-        font-weight: 600;
-        padding-inline: 1.25rem;
-        padding-block: 0.75rem;
-    }
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        background-color: map-get($colors, darkerTxt);
+        padding: 0.5rem 1rem;
+        z-index: 10;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 
-    input[type="datetime-local"]::-webkit-calendar-picker-indicator {
-        filter: invert(1);
-        cursor: pointer;
+        input[type="date"],
+        input[type="time"] {
+            background-color: transparent;
+            border: 0;
+            border-bottom: 1px solid map-get($colors, shadow);
+            outline: 0;
+            color: map-get($colors, bck);
+            font-size: 1rem;
+            font-weight: 600;
+            padding: 0.25rem 0.5rem;
+            width: auto;
+            position: static;
+        }
+
+        input[type="date"]::-webkit-calendar-picker-indicator,
+        input[type="time"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            cursor: pointer;
+        }
+
+        button {
+            background-color: map-get($colors, primary);
+            color: white;
+            border: 0;
+            padding: 0.35rem 0.75rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+
+            &:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+        }
     }
 }

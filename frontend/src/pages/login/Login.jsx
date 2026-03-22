@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import styles from './login.module.scss';
 import Input from '../../shared/form/input/Input';
 import SubmitButton from '../../shared/button/submit/SubmitButton';
@@ -48,6 +49,9 @@ function Login({ setUser }) {
           />
           <SubmitButton text={loading ? 'Probíhá přihlášení...' : 'Pokračovat'} type="submit" />
           {error && <p className={styles.err}>{error}</p>}
+          <p className={styles.link}>
+            Nemáte účet? <Link to="/register">Zaregistrujte se</Link>
+          </p>
         </form>
       </article>
 

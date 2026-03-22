@@ -43,6 +43,10 @@ export default function DashboardFeed({ user, setUser }) {
     }, []);
 
     useEffect(() => {
+        localStorage.setItem(`feedSeen_${uuid}`, Date.now().toString());
+    }, [uuid]);
+
+    useEffect(() => {
         const loadCourse = async () => {
             try {
                 const foundCourse = await getCourseByUuid(uuid);

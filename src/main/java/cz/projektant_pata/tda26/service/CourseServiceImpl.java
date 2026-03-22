@@ -183,8 +183,8 @@ public class CourseServiceImpl implements ICourseService {
     public Module activateNextModule(UUID courseUuid) {
         Course course = getCourseOrThrow(courseUuid);
 
-        if (!course.getStatus().equals(StatusEnum.Live))
-            throw new InvalidResourceStateException("Kurz s ID " + courseUuid + " nelze použít - není ve stavu Live.");
+        if (!course.getStatus().equals(StatusEnum.Live) && !course.getStatus().equals(StatusEnum.Scheduled))
+            throw new InvalidResourceStateException("Kurz s ID " + courseUuid + " nelze použít - není ve stavu Live nebo Scheduled.");
 
         if (!moduleService.hasNext(courseUuid))
             throw new InvalidResourceStateException("Kurz s ID " + courseUuid + " nemá žádný další modul k aktivaci.");
@@ -201,8 +201,8 @@ public class CourseServiceImpl implements ICourseService {
     public Module deactivatePreviousModule(UUID courseUuid) {
         Course course = getCourseOrThrow(courseUuid);
 
-        if (!course.getStatus().equals(StatusEnum.Live))
-            throw new InvalidResourceStateException("Kurz s ID " + courseUuid + " nelze použít - není ve stavu Live.");
+        if (!course.getStatus().equals(StatusEnum.Live) && !course.getStatus().equals(StatusEnum.Scheduled))
+            throw new InvalidResourceStateException("Kurz s ID " + courseUuid + " nelze použít - není ve stavu Live nebo Scheduled.");
 
         if (!moduleService.hasPrevious(courseUuid))
             throw new InvalidResourceStateException(

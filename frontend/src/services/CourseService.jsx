@@ -127,3 +127,33 @@ export async function deactivatePreviousModule(courseUuid) {
   if (!res.ok) throw new Error('Nepodařilo se deaktivovat předchozí modul');
   return res.json();
 }
+
+export async function enrollCourse(uuid) {
+  const res = await fetch(`${Api}/courses/${uuid}/enroll`, {
+    ...defaultOptions,
+    method: 'POST',
+  });
+
+  if (!res.ok) throw new Error('Nepodařilo se přihlásit na kurz');
+  return res.json();
+}
+
+export async function unenrollCourse(uuid) {
+  const res = await fetch(`${Api}/courses/${uuid}/enroll`, {
+    ...defaultOptions,
+    method: 'DELETE',
+  });
+
+  if (!res.ok) throw new Error('Nepodařilo se odhlásit z kurzu');
+  return res.json();
+}
+
+export async function isEnrolled(uuid) {
+  const res = await fetch(`${Api}/courses/${uuid}/enrolled`, {
+    ...defaultOptions,
+  });
+
+  if (!res.ok) return false;
+  const data = await res.json();
+  return data.enrolled;
+}

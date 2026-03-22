@@ -35,14 +35,14 @@ public class FeedEventListener {
         public void handleModuleActivated(ModuleActivatedEvent event) {
                 createAndBroadcast(
                                 event.course().getUuid(),
-                                "Byl aktivován modul č. " + event.module().getIndex() + ": "
+                                "Byl aktivován modul č. " + (event.module().getIndex() + 1) + ": "
                                                 + event.module().getName());
                 sseService.sendToAll(
                                 event.course().getUuid(),
                                 new SseEventDTO<>("MODULE_ACTIVATED", new ModuleEventPayload(
                                                 event.module().getUuid(),
                                                 event.module().getName(),
-                                                event.module().getIndex())));
+                                                (event.module().getIndex() + 1))));
         }
 
         @Async
@@ -50,14 +50,14 @@ public class FeedEventListener {
         public void handleModuleDeactivated(ModuleDeactivatedEvent event) {
                 createAndBroadcast(
                                 event.course().getUuid(),
-                                "Modul č. " + event.module().getIndex() + " '" + event.module().getName()
+                                "Modul č. " + (event.module().getIndex() + 1) + " '" + event.module().getName()
                                                 + "' byl deaktivován.");
                 sseService.sendToAll(
                                 event.course().getUuid(),
                                 new SseEventDTO<>("MODULE_DEACTIVATED", new ModuleEventPayload(
                                                 event.module().getUuid(),
                                                 event.module().getName(),
-                                                event.module().getIndex())));
+                                                (event.module().getIndex() + 1))));
         }
 
         // --- MATERIALS ---

@@ -11,7 +11,8 @@ import {
 export default function StatusSetterSelect({ course, setCourse, onRefresh }) {
     const [loading, setLoading] = useState(false);
     const [showScheduler, setShowScheduler] = useState(false);
-    const [scheduledAt, setScheduledAt] = useState("");
+    const [schedDate, setSchedDate] = useState('');
+    const [schedTime, setSchedTime] = useState('');
 
     const allowedTransitions = {
         Draft: ["Scheduled", "Live"],
@@ -76,26 +77,20 @@ export default function StatusSetterSelect({ course, setCourse, onRefresh }) {
         }
     };
 
-    const handleScheduleChange = async (e) => {
-        const value = e.target.value;
-        setScheduledAt(value);
-
-        if (!value) return;
+    const handleScheduleSubmit = async () => {
+        if (!schedDate || !schedTime) return;
 
         try {
             setLoading(true);
 
-            const formattedDate = new Date(value).toISOString();
+            const formattedDate = new Date(`${schedDate}T${schedTime}`).toISOString();
 
-            const updatedCourse = await scheduleCourse(
-                course.uuid,
-                formattedDate
-            );
+            const updatedCourse = await scheduleCourse(course.uuid, formattedDate);
 
             setCourse(updatedCourse);
             setShowScheduler(false);
-            setScheduledAt("");
-
+            setSchedDate('');
+            setSchedTime('');
         } catch (err) {
             alert(err.message);
         } finally {
@@ -125,12 +120,26 @@ export default function StatusSetterSelect({ course, setCourse, onRefresh }) {
             </svg>
 
             {showScheduler && (
-                <input
-                    type="datetime-local"
-                    value={scheduledAt}
-                    onChange={handleScheduleChange}
-                    min={new Date().toISOString().slice(0, 16)}
-                />
+                <div className={styles.scheduler}>
+                    <input
+                        type="date"
+                        value={schedDate}
+                        onChange={(e) => setSchedDate(e.target.value)}
+                        min={new Date().toISOString().slice(0, 10)}
+                    />
+                    <input
+                        type="time"
+                        value={schedTime}
+                        onChange={(e) => setSchedTime(e.target.value)}
+                    />
+                    <button
+                        type="button"
+                        onClick={handleScheduleSubmit}
+                        disabled={!schedDate || !schedTime || loading}
+                    >
+                        Potvrdit
+                    </button>
+                </div>
             )}
         </div>
     );

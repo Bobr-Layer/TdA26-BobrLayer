@@ -1,0 +1,172 @@
+@use "../../index.scss" as *;
+
+.admin {
+    display: flex;
+    flex-direction: column;
+    padding: 3.75rem;
+    padding-left: calc(18.75rem + 3.75rem);
+    width: 100%;
+    min-height: 100dvh;
+    box-sizing: border-box;
+    gap: 3.75rem;
+
+    @media (max-width: 1200px) {
+        padding-right: 3rem;
+        padding-left: calc(18.75rem + 3rem);
+    }
+
+    @media (max-width: 900px) {
+        padding-left: 3rem;
+        padding-top: 12rem;
+    }
+}
+
+.admin_header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    div {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+
+        h1 {
+            font-size: 2rem;
+        }
+
+        p {
+            font-size: 1rem;
+            font-weight: 600;
+            color: map-get($colors, shadow);
+        }
+    }
+}
+
+.state_msg {
+    font-size: 1.125rem;
+    color: map-get($colors, shadow);
+}
+
+.state_msg_err {
+    font-size: 1.125rem;
+    color: map-get($colors, warning);
+}
+
+.user_list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    list-style: none;
+}
+
+.user_card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 1.25rem 1.5rem;
+    box-sizing: border-box;
+    gap: 1.25rem;
+
+    @media (max-width: 600px) {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+.user_card_info {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+}
+
+.user_avatar {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.user_details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+}
+
+.user_name {
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.user_role {
+    font-size: 0.875rem;
+    font-weight: 600;
+    padding: 0.25rem 0.75rem;
+    width: fit-content;
+}
+
+.role_student {
+    background-color: rgba(2, 87, 165, 0.25);
+    color: rgba(73, 179, 180, 1);
+}
+
+.role_lektor {
+    background-color: rgba(145, 245, 173, 0.15);
+    color: rgba(145, 245, 173, 1);
+}
+
+.role_admin {
+    background-color: rgba(220, 51, 51, 0.2);
+    color: rgba(220, 100, 100, 1);
+}
+
+.user_card_actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-shrink: 0;
+
+    @media (max-width: 600px) {
+        flex-wrap: wrap;
+    }
+}
+
+.btn_role {
+    background-color: map-get($colors, darkerTxt);
+    border: 0;
+    outline: 0;
+    cursor: pointer;
+    padding-inline: 1.5rem;
+    padding-block: 0.625rem;
+    font-size: 1rem;
+    white-space: nowrap;
+
+    &:hover {
+        background-color: rgba(73, 179, 180, 0.3);
+        color: map-get($colors, action2);
+    }
+}
+
+.btn_delete {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: rgba(139, 32, 32, 0.6);
+    border: 0;
+    outline: 0;
+    cursor: pointer;
+    padding-inline: 1.5rem;
+    padding-block: 0.625rem;
+    font-size: 1rem;
+    white-space: nowrap;
+
+    &:hover {
+        background-color: rgba(168, 40, 40, 0.8);
+    }
+}

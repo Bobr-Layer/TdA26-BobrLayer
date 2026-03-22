@@ -23,6 +23,11 @@ export default function NewCourse({ user, setUser }) {
     const onSubmit = async (e) => {
         e.preventDefault();
 
+        if (!newCourseData.name.trim()) {
+            alert('Název kurzu nesmí být prázdný.');
+            return;
+        }
+
         try {
             const createdCourse = await createCourse(newCourseData);
             if (!createdCourse || !createdCourse.uuid) {
@@ -30,7 +35,7 @@ export default function NewCourse({ user, setUser }) {
             }
 
             setNewCourseData({ name: '', description: '' });
-            navigate('/dashboard', { replace: true });
+            navigate(`/dashboard/${createdCourse.uuid}`, { replace: true });
         } catch (err) {
             console.error('Chyba při vytváření kurzu:', err);
             alert(`Nepodařilo se vytvořit kurz: ${err.message}`);

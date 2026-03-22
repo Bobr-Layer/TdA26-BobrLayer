@@ -1,0 +1,125 @@
+@use "../../index.scss" as *;
+
+.profile {
+    display: flex;
+    flex-direction: column;
+    padding-top: 11.25rem;
+    padding-inline: 7.5rem;
+    box-sizing: border-box;
+    padding-bottom: 3.125rem;
+    gap: 1.875rem;
+    position: relative;
+    z-index: 2;
+
+    h1 {
+        font-size: 2rem;
+
+        @media (max-width: 900px) {
+            font-size: 3.5rem;
+        }
+    }
+
+    .profile_card {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 1rem;
+        padding: 2.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        max-width: 40rem;
+
+        .profile_card_avatar {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+
+            img {
+                width: 5rem;
+                height: 5rem;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.1);
+                padding: 0.5rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            p {
+                font-size: 1rem;
+                font-weight: 400;
+                color: map-get($colors, darkerBck);
+            }
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+
+            .profile_card_fields {
+                display: flex;
+                flex-direction: column;
+                gap: 1.25rem;
+
+                label {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 0.5rem;
+
+                    span {
+                        font-size: 0.875rem;
+                        font-weight: 400;
+                        color: map-get($colors, darkerBck);
+                    }
+                }
+            }
+
+            .err {
+                font-size: 1rem;
+                text-align: center;
+                color: map-get($colors, warning);
+            }
+
+            .success {
+                font-size: 1rem;
+                text-align: center;
+                color: map-get($colors, success);
+            }
+        }
+    }
+
+    @media (max-width: 1200px) {
+        padding-inline: 3rem;
+    }
+
+    @media (max-width: 900px) {
+        padding-top: 12rem;
+        padding-bottom: 6rem;
+        gap: 4rem;
+
+        .profile_card {
+            max-width: 100%;
+        }
+    }
+}
+
+.wrapper {
+    position: relative;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    .profile_ball {
+        position: absolute;
+        top: 0;
+        right: 0;
+        background: radial-gradient(circle at top right, rgba(73, 179, 180, 0.5), map-get($colors, txt) 70%);
+        height: 100dvh;
+        width: 50dvh;
+        z-index: -1;
+        filter: blur(100px);
+    }
+}

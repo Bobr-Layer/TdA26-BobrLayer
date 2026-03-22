@@ -26,11 +26,11 @@
     display: flex;
     flex-direction: column;
     gap: 2.5rem;
-    
+
     @media (max-width: 1200px) {
         padding-inline: 3rem;
     }
-    
+
     @media (max-width: 900px) {
         padding-top: 12rem;
         padding-bottom: 3rem;
@@ -74,6 +74,38 @@
             .detail_content_about_p {
                 font-size: 1.25rem;
                 color: map-get($colors, darkerBck);
+            }
+
+            .enroll_button {
+                background-color: map-get($colors, action);
+                height: 3.5rem;
+                padding-inline: 2rem;
+                padding-block: 0.875rem;
+                width: 100%;
+                box-sizing: border-box;
+                border: 0;
+                outline: 0;
+                color: map-get($colors, txt);
+                font-size: 1.25rem;
+                font-weight: 700;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: opacity 0.2s ease;
+
+                &:hover {
+                    opacity: 0.8;
+                }
+
+                &:disabled {
+                    opacity: 0.5;
+                    cursor: not-allowed;
+                }
+
+                &.enrolled {
+                    background-color: map-get($colors, warning);
+                }
             }
 
             .detail_content_about_list {

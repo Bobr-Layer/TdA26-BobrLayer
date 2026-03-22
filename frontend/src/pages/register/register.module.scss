@@ -1,6 +1,6 @@
 @use "../../index.scss" as *;
 
-.login {
+.register {
     height: 100dvh;
     width: 100%;
     display: flex;
@@ -22,7 +22,7 @@
         }
     }
 
-    .login_form {
+    .register_form {
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -68,22 +68,22 @@
         }
     }
 
-    .login_ball {
+    .register_ball {
         position: absolute;
         top: 0;
         left: 0;
-        background: radial-gradient(circle at top left, rgba(2, 87, 165, 0.5), map-get($colors, txt) 70%);
+        background: radial-gradient(circle at top left, rgba(73, 179, 180, 0.5), map-get($colors, txt) 70%);
         height: 100dvh;
         width: 50dvh;
         z-index: -1;
         filter: blur(100px);
     }
 
-    .login_ball_2 {
+    .register_ball_2 {
         position: absolute;
         bottom: 0;
         right: 0;
-        background: radial-gradient(circle at bottom right, rgba(73, 179, 180, 0.5), map-get($colors, txt) 70%);
+        background: radial-gradient(circle at bottom right, rgba(2, 87, 165, 0.5), map-get($colors, txt) 70%);
         height: 100dvh;
         width: 50dvh;
         z-index: -1;

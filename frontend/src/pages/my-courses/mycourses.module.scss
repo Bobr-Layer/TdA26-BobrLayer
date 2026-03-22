@@ -1,0 +1,69 @@
+@use "../../index.scss" as *;
+
+.mycourses {
+    display: flex;
+    flex-direction: column;
+    padding-top: 11.25rem;
+    padding-inline: 7.5rem;
+    box-sizing: border-box;
+    padding-bottom: 3.125rem;
+    gap: 1.875rem;
+    position: relative;
+    z-index: 2;
+
+    h1 {
+        font-size: 2rem;
+
+        @media (max-width: 900px) {
+            font-size: 3.5rem;
+        }
+    }
+
+    .loading {
+        font-size: 1.25rem;
+        font-weight: 400;
+    }
+
+    .empty {
+        font-size: 1.25rem;
+        font-weight: 400;
+
+        a {
+            color: map-get($colors, action2);
+            text-decoration: underline;
+
+            &:hover {
+                color: map-get($colors, action);
+            }
+        }
+    }
+
+    @media (max-width: 1200px) {
+        padding-inline: 3rem;
+    }
+
+    @media (max-width: 900px) {
+        padding-top: 12rem;
+        padding-bottom: 6rem;
+        gap: 4rem;
+    }
+}
+
+.wrapper {
+    position: relative;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    .mycourses_ball {
+        position: absolute;
+        top: 0;
+        right: 0;
+        background: radial-gradient(circle at top right, rgba(2, 87, 165, 0.5), map-get($colors, txt) 70%);
+        height: 100dvh;
+        width: 50dvh;
+        z-index: -1;
+        filter: blur(100px);
+    }
+}

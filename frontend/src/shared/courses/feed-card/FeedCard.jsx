@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import styles from './feed-card.module.scss';
 import { updateFeedPost, deleteFeedPost } from '../../../services/FeedService';
+import { User } from 'lucide-react';
 
 export default function FeedCard({ feed, admin, courseId }) {
     const [showEdit, setShowEdit] = useState(false);
@@ -57,8 +58,10 @@ export default function FeedCard({ feed, admin, courseId }) {
                         </>
                     ) : (
                         <>
-                            <img src="/img/person.png" alt="" />
-                            <p>Lektor</p>
+                            <div className={styles.img_container} style={{ width: '2.5rem', height: '2.5rem', borderRadius: '50%', backgroundColor: 'rgba(0,0,0,0.1)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                <User size={24} color="var(--primary-color, black)" />
+                            </div>
+                            <p>lecturer</p>
                         </>
                     )}
                 </div>

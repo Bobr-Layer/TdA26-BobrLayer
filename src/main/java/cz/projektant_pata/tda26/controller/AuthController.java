@@ -1,9 +1,12 @@
 package cz.projektant_pata.tda26.controller;
 
 import cz.projektant_pata.tda26.dto.auth.LoginRequestDTO;
+import cz.projektant_pata.tda26.dto.auth.ProfileUpdateDTO;
 import cz.projektant_pata.tda26.dto.auth.RegisterRequestDTO;
 import cz.projektant_pata.tda26.dto.auth.ResetPasswordDTO;
+import cz.projektant_pata.tda26.dto.course.CourseResponseDTO;
 import cz.projektant_pata.tda26.dto.user.UserResponseDTO;
+import cz.projektant_pata.tda26.mapper.CourseMapper;
 import cz.projektant_pata.tda26.mapper.UserMapper;
 import cz.projektant_pata.tda26.model.user.RoleEnum;
 import cz.projektant_pata.tda26.model.user.User;
@@ -21,7 +24,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -32,23 +37,26 @@ public class AuthController {
     private final IUserService service;
     private final AuthenticationManager authManager;
     private final UserMapper mapper;
+    private final CourseMapper courseMapper;
 
+    // Registrace — vždy STUDENT, učitel/admin se registrovat nemůže
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequestDTO request) {
-        return registerUserWithRole(request, RoleEnum.LEKTOR);
+        User user = mapper.toEntity(request);
+        user.setRole(RoleEnum.STUDENT);
+
+        user = service.create(user);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(mapper.toResponse(user));
     }
 
     @PostMapping("/registerAdmin")
     public ResponseEntity<?> registerAdmin(@RequestBody RegisterRequestDTO request) {
-        return registerUserWithRole(request, RoleEnum.ADMIN);
-    }
-
-    private ResponseEntity<?> registerUserWithRole(RegisterRequestDTO request, RoleEnum role) {
         User user = mapper.toEntity(request);
-        user.setRole(role);
-
+        user.setRole(RoleEnum.ADMIN);
         user = service.create(user);
-
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(mapper.toResponse(user));
@@ -58,8 +66,7 @@ public class AuthController {
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequestDTO request) {
         try {
             Authentication authentication = authManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
-            );
+                    new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
             SecurityContextHolder.getContext().setAuthentication(authentication);
             User user = (User) authentication.getPrincipal();
             return ResponseEntity.ok(mapper.toResponse(user));
@@ -82,11 +89,11 @@ public class AuthController {
         return ResponseEntity.ok("Odhlášení proběhlo úspěšně");
     }
 
-
     @GetMapping("/me")
     public ResponseEntity<UserResponseDTO> getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated() && authentication.getPrincipal() instanceof User) {
+        if (authentication != null && authentication.isAuthenticated()
+                && authentication.getPrincipal() instanceof User) {
             User user = (User) authentication.getPrincipal();
             return ResponseEntity.ok(mapper.toResponse(user));
         }
@@ -94,10 +101,52 @@ public class AuthController {
     }
 
     @PutMapping("/reset-password/{uuid}")
-    public ResponseEntity<UserResponseDTO> updatePassword(@PathVariable UUID uuid, @RequestBody ResetPasswordDTO request){
+    public ResponseEntity<UserResponseDTO> updatePassword(@PathVariable UUID uuid,
+            @RequestBody ResetPasswordDTO request) {
 
         User updatedUser = service.update(uuid, request.getPassword());
 
         return ResponseEntity.ok(mapper.toResponse(updatedUser));
+    }
+
+    // Úprava vlastního profilu (username a/nebo heslo)
+    @PutMapping("/profile")
+    public ResponseEntity<?> updateProfile(@Valid @RequestBody ProfileUpdateDTO request) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !(authentication.getPrincipal() instanceof User)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        User currentUser = (User) authentication.getPrincipal();
+
+        User updates = new User();
+        if (request.getUsername() != null) {
+            updates.setUsername(request.getUsername());
+        }
+        if (request.getPassword() != null) {
+            updates.setPassword(request.getPassword());
+        }
+
+        User updated = service.update(currentUser.getUuid(), updates);
+        return ResponseEntity.ok(mapper.toResponse(updated));
+    }
+
+    // Kurzy přihlášeného studenta
+    @GetMapping("/me/courses")
+    public ResponseEntity<?> getMyEnrolledCourses() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !(authentication.getPrincipal() instanceof User)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        User currentUser = (User) authentication.getPrincipal();
+        // Refresh user from DB to get enrolled courses
+        User freshUser = service.find(currentUser.getUuid());
+
+        List<CourseResponseDTO> courses = freshUser.getEnrolledCourses().stream()
+                .map(courseMapper::toResponse)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(courses);
     }
 }

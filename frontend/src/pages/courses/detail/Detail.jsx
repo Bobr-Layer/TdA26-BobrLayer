@@ -4,11 +4,12 @@ import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import LectorCard from '../../../shared/lectors/lector-card/LectorCard';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getCourseByUuid } from '../../../services/CourseService'
+import { getCourseByUuid, enrollCourse, unenrollCourse, isEnrolled } from '../../../services/CourseService'
 import { useRef, useCallback } from 'react';
 import { getCourseFeed } from '../../../services/FeedService'
 import ModuleCard from '../../../shared/courses/module-card/ModuleCard';
 import Api from '../../../services/Api';
+import { User } from 'lucide-react';
 
 export default function Detail({ user, setUser }) {
     const { uuid } = useParams();
@@ -19,6 +20,10 @@ export default function Detail({ user, setUser }) {
     const [feeds, setFeeds] = useState([]);
 
     const [loading, setLoading] = useState(false);
+    const [enrolled, setEnrolled] = useState(false);
+    const [enrollLoading, setEnrollLoading] = useState(false);
+
+    const isStudent = user && user.role === 'STUDENT';
 
     useEffect(() => {
         if (!uuid) return;
@@ -36,7 +41,12 @@ export default function Detail({ user, setUser }) {
         };
 
         loadData();
-    }, [uuid]);
+
+        // Check enrollment status for students
+        if (isStudent) {
+            isEnrolled(uuid).then(setEnrolled).catch(console.error);
+        }
+    }, [uuid, isStudent]);
 
     const loadFeeds = useCallback(async (courseUuid) => {
         try {
@@ -119,6 +129,35 @@ export default function Detail({ user, setUser }) {
                     <div className={styles.detail_content_about}>
                         <LectorCard lectorName={course.lectorName} lectorMail={course.lectorMail} />
                         <p className={styles.detail_content_about_p}>{course.description}</p>
+                        {isStudent && (
+                            <button
+                                className={`${styles.enroll_button} ${enrolled ? styles.enrolled : ''}`}
+                                onClick={async () => {
+                                    setEnrollLoading(true);
+                                    try {
+                                        if (enrolled) {
+                                            await unenrollCourse(uuid);
+                                            setEnrolled(false);
+                                        } else {
+                                            await enrollCourse(uuid);
+                                            setEnrolled(true);
+                                        }
+                                    } catch (err) {
+                                        console.error(err);
+                                        alert(err.message);
+                                    } finally {
+                                        setEnrollLoading(false);
+                                    }
+                                }}
+                                disabled={enrollLoading}
+                            >
+                                {enrollLoading
+                                    ? 'Zpracování...'
+                                    : enrolled
+                                        ? 'Odhlásit se z kurzu'
+                                        : 'Přihlásit se na kurz'}
+                            </button>
+                        )}
                         <div className={styles.detail_content_about_list}>
                             <h3>Moduly</h3>
                             {course.modules?.filter(m => m.activated).map((m) => (
@@ -180,8 +219,10 @@ function FeedCard({ feed }) {
                         </>
                     ) : (
                         <>
-                            <img src="/img/person.png" alt="" className={styles.p} />
-                            <p>Lektor</p>
+                            <div className={styles.img_container} style={{ width: '2rem', height: '2rem', borderRadius: '50%', backgroundColor: 'rgba(255,255,255,0.1)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                <User size={20} color="white" />
+                            </div>
+                            <p>lecturer</p>
                         </>
                     )}
                 </div>

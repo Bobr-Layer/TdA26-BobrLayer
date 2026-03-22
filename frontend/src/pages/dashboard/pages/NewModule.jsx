@@ -50,6 +50,11 @@ export default function NewModule({ user, setUser }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        if (!moduleData.name.trim()) {
+            alert('Název modulu nesmí být prázdný.');
+            return;
+        }
+
         try {
             const createdModule = await createModule(uuid, { ...moduleData, index: nextIndex });
 

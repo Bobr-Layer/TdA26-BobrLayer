@@ -27,7 +27,7 @@ export default function Footer({ user, setUser }) {
                         </div>
                     </div>
                     <div className={styles.footer_list_block}>
-                        <h3>Pro lektory</h3>
+                        <h3>Pro lecturers</h3>
                         <div>
                             {user ? (
                                 <>

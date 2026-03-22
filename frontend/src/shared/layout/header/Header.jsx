@@ -16,6 +16,9 @@ function Header({ green, transparent, user, setUser, onlyMobile }) {
         }
     }
 
+    const isStudent = user && user.role === 'STUDENT';
+    const isLektor = user && (user.role === 'LEKTOR' || user.role === 'ADMIN');
+
     return (
         <>
             <div className={`${styles.grad} ${green ? styles.green : ''} ${transparent ? styles.transparent : ''} ${onlyMobile ? styles.only_mobile : ''}`}></div>
@@ -28,10 +31,15 @@ function Header({ green, transparent, user, setUser, onlyMobile }) {
                     <Link to={"/courses"}>Seznam kurzů</Link>
                     <Link to={"/about"}>O nás</Link>
                     {!user ? (
-                        <Link to={"/login"}>Přihlásit se</Link>
+                        <>
+                            <Link to={"/login"}>Přihlásit se</Link>
+                            <Link to={"/register"}>Registrace</Link>
+                        </>
                     ) : (
                         <>
-                            <Link to={"/dashboard"}>Dashboard</Link>
+                            {isStudent && <Link to={"/my-courses"}>Moje kurzy</Link>}
+                            {isLektor && <Link to={"/dashboard"}>Dashboard</Link>}
+                            <Link to={"/profile"}>Profil</Link>
                             <button onClick={handleLogout}>Odhlásit se</button>
                         </>
                     )}
@@ -64,10 +72,15 @@ function Header({ green, transparent, user, setUser, onlyMobile }) {
                         </nav>
                         <nav>
                             {!user ? (
-                                <Link to={"/login"}>Přihlásit se</Link>
+                                <>
+                                    <Link to={"/login"}>Přihlásit se</Link>
+                                    <Link to={"/register"}>Registrace</Link>
+                                </>
                             ) : (
                                 <>
-                                    <Link to={"/dashboard"}>Dashboard</Link>
+                                    {isStudent && <Link to={"/my-courses"}>Moje kurzy</Link>}
+                                    {isLektor && <Link to={"/dashboard"}>Dashboard</Link>}
+                                    <Link to={"/profile"}>Profil</Link>
                                     <button onClick={handleLogout}>Odhlásit se</button>
                                 </>
                             )}

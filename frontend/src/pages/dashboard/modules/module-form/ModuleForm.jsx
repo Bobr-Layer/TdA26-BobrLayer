@@ -40,21 +40,6 @@ export default function ModuleForm({ moduleData, handleModuleDataChange, initial
 
     return (
         <div className={styles.module_form}>
-            <Input
-                name="name"
-                placeholder="Zadejte název modulu"
-                value={moduleData.name}
-                onChange={handleModuleDataChange}
-                title={true}
-            />
-            <Textarea
-                name="description"
-                placeholder="Krátký popis modulu"
-                value={moduleData.description}
-                onChange={handleModuleDataChange}
-                bigger={true}
-            />
-
             <div className={styles.module_form_content}>
                 <h3>Soubory</h3>
                 <div className={styles.module_form_content_list}>
@@ -86,6 +71,21 @@ export default function ModuleForm({ moduleData, handleModuleDataChange, initial
                     />
                 </div>
             </div>
+
+            <Input
+                name="name"
+                placeholder="Zadejte název modulu"
+                value={moduleData.name}
+                onChange={handleModuleDataChange}
+                title={true}
+            />
+            <Textarea
+                name="description"
+                placeholder="Krátký popis modulu"
+                value={moduleData.description}
+                onChange={handleModuleDataChange}
+                bigger={true}
+            />
 
             <div className={styles.module_form_content}>
                 <h3>Odkazy</h3>

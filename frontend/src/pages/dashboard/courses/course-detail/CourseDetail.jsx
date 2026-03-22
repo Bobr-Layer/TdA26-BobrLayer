@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import SearchInput from '../../../../shared/form/search-input/SearchInput';
 import styles from './course-detail.module.scss';
 import DashboardButton from '../../../../shared/button/dashboard/DashboardButton';
@@ -10,16 +10,24 @@ import { getModules, reorderModules } from '../../../../services/ModuleService';
 export default function CourseDetail({ course, onRefresh }) {
     const modules = course.modules;
     const [moduleData, setModuleData] = useState(modules);
+    const [actionToast, setActionToast] = useState(null);
 
     const canActivate = moduleData?.some(m => !m.activated);
     const canDeactivate = moduleData?.some(m => m.activated);
 
+    const showToast = (msg) => {
+        setActionToast(msg);
+        setTimeout(() => setActionToast(null), 3000);
+    };
+
     const handleActivate = async () => {
+        if (!window.confirm('Aktivovat další modul?')) return;
         try {
             await activateNextModule(course.uuid);
             const updated = await getModules(course.uuid);
             setModuleData(updated);
             if (onRefresh) onRefresh();
+            showToast('Modul byl aktivován.');
         } catch (err) {
             console.error(err);
             alert(err.message);
@@ -27,11 +35,13 @@ export default function CourseDetail({ course, onRefresh }) {
     };
 
     const handleDeactivate = async () => {
+        if (!window.confirm('Deaktivovat modul?')) return;
         try {
             await deactivatePreviousModule(course.uuid);
             const updated = await getModules(course.uuid);
             setModuleData(updated);
             if (onRefresh) onRefresh();
+            showToast('Modul byl deaktivován.');
         } catch (err) {
             console.error(err);
             alert(err.message);
@@ -55,6 +65,7 @@ export default function CourseDetail({ course, onRefresh }) {
 
     return (
         <article className={styles.course_detail}>
+            {actionToast && <div className={styles.action_toast}>{actionToast}</div>}
             <div className={styles.course_detail_header}>
                 <p>
                     {course.status}
@@ -78,7 +89,7 @@ export default function CourseDetail({ course, onRefresh }) {
                 <div className={styles.course_detail_modules_header}>
                     <SearchInput text={'Hledejte modul podle názvu'} data={moduleData} setData={setModuleData} />
                     <ModuleSelect setModuleData={setModuleData} moduleData={modules} />
-                    {course.status === 'Live' && (
+                    {(course.status === 'Live' || course.status === 'Scheduled') && (
                         <div className={styles.course_detail_modules_actions}>
                             {canActivate && (
                                 <button
