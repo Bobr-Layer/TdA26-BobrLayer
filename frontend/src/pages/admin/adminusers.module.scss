@@ -43,6 +43,58 @@
     }
 }
 
+.filters {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.filter_input {
+    background-color: map-get($colors, darkerTxt);
+    border: 1px solid map-get($colors, darkerTxt);
+    outline: 0;
+    padding: 0.875rem 1.25rem;
+    font-size: 1rem;
+    color: map-get($colors, bck);
+    width: 100%;
+    max-width: 28rem;
+    box-sizing: border-box;
+
+    &::placeholder {
+        color: map-get($colors, shadow);
+    }
+
+    &:focus {
+        border-color: map-get($colors, action2);
+    }
+}
+
+.role_filters {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.role_filter_btn {
+    background-color: map-get($colors, darkerTxt);
+    border: 1px solid map-get($colors, darkerTxt);
+    outline: 0;
+    cursor: pointer;
+    padding: 0.5rem 1.25rem;
+    font-size: 0.875rem;
+    color: map-get($colors, shadow);
+    transition: all 0.15s ease;
+
+    &:hover {
+        color: map-get($colors, bck);
+    }
+
+    &.active {
+        border-color: map-get($colors, action2);
+        color: map-get($colors, action2);
+    }
+}
+
 .state_msg {
     font-size: 1.125rem;
     color: map-get($colors, shadow);

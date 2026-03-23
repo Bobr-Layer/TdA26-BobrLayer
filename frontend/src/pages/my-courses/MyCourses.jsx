@@ -4,8 +4,10 @@ import CourseList from '../../shared/courses/course-list/CourseList';
 import styles from './mycourses.module.scss';
 import { useState, useEffect } from 'react';
 import { getMyEnrolledCourses } from '../../services/AuthService';
+import { usePageTitle } from '../../hooks/usePageTitle';
 
 function MyCourses({ user, setUser }) {
+    usePageTitle('Moje kurzy');
     const [courses, setCourses] = useState([]);
     const [loading, setLoading] = useState(true);
 

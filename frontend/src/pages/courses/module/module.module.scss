@@ -60,17 +60,42 @@
     .module_content {
         display: flex;
         gap: 3.75rem;
-        flex-direction: column;
 
-        .module_content_p {
-            font-size: 1.25rem;
-            color: map-get($colors, darkerBck);
+        @media (max-width: 900px) {
+            flex-direction: column;
         }
 
-        .module_content_list {
+        .module_content_main {
+            display: flex;
+            flex-direction: column;
+            gap: 2.5rem;
+            flex: 1;
+
+            .module_content_desc {
+                font-size: 1.25rem;
+                color: map-get($colors, darkerBck);
+            }
+
+            .module_content_section {
+                display: flex;
+                flex-direction: column;
+                gap: 1.25rem;
+
+                h3 {
+                    font-size: 1.5rem;
+                }
+            }
+        }
+
+        .module_content_side {
             display: flex;
             flex-direction: column;
             gap: 1.25rem;
+            width: 25rem;
+
+            @media (max-width: 900px) {
+                width: 100%;
+            }
 
             h3 {
                 font-size: 1.5rem;
@@ -81,17 +106,89 @@
 
 .material_list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+    grid-template-columns: 1fr 1fr;
     gap: 1.25rem;
+
+    @media (max-width: 600px) {
+        grid-template-columns: 1fr;
+    }
+
+    > * {
+        min-height: 5rem;
+        align-items: flex-start;
+        padding-block: 1rem;
+    }
 }
 
 .quiz_list {
     display: grid;
     grid-template-columns: 1fr;
     gap: 1.25rem;
+}
 
-    @media (max-width: 900px) {
-        grid-template-columns: 1fr;
+.feed_list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    max-height: calc(100dvh - 22rem);
+    overflow-y: scroll;
+    overflow-x: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+.feed_card {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    width: 100%;
+    padding: 1.25rem;
+    background-color: map-get($colors, darkerTxt);
+    box-sizing: border-box;
+
+    .feed_card_header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        div {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+
+            img {
+                width: 1.813rem;
+                height: 2rem;
+            }
+
+            p {
+                font-size: 1rem;
+                color: map-get($colors, bck);
+            }
+        }
+
+        p {
+            font-size: 0.75rem;
+            color: map-get($colors, darkerBck);
+        }
+    }
+
+    .feed_card_avatar {
+        width: 2rem;
+        height: 2rem;
+        border-radius: 50%;
+        background-color: rgba(255, 255, 255, 0.1);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .feed_card_content {
+        font-size: 1.25rem;
     }
 }
 

@@ -6,8 +6,10 @@ import { useNavigate } from 'react-router-dom';
 import { createCourse } from '../../../services/CourseService';
 import CourseForm from '../courses/course-form/CourseForm';
 import Header from '../../../shared/layout/header/Header';
+import { usePageTitle } from '../../../hooks/usePageTitle';
 
 export default function NewCourse({ user, setUser }) {
+    usePageTitle('Nový kurz');
     const navigate = useNavigate();
 
     const [newCourseData, setNewCourseData] = useState({

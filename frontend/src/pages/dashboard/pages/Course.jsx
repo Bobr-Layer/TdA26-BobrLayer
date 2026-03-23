@@ -9,14 +9,18 @@ import { getCourseFeed } from '../../../services/FeedService';
 import CourseDetail from '../courses/course-detail/CourseDetail';
 import StatusSetterSelect from '../../../shared/form/course-select/StatusSetterSelect';
 import Header from '../../../shared/layout/header/Header';
+import NotFound from '../../not-found/NotFound';
+import { usePageTitle } from '../../../hooks/usePageTitle';
 
 export default function Course({ user, setUser }) {
     const navigate = useNavigate();
     const { uuid } = useParams();
     const [course, setCourse] = useState(null);
+    usePageTitle(course?.name);
     const [duplicating, setDuplicating] = useState(false);
     const [duplicateToast, setDuplicateToast] = useState(null);
     const [feedNotification, setFeedNotification] = useState(false);
+    const [notFound, setNotFound] = useState(false);
 
     const loadCourse = useCallback(async () => {
         try {
@@ -24,9 +28,9 @@ export default function Course({ user, setUser }) {
             setCourse(foundCourse);
         } catch (err) {
             console.error(err);
-            navigate('/dashboard', { replace: true });
+            setNotFound(true);
         }
-    }, [uuid, navigate]);
+    }, [uuid]);
 
     useEffect(() => {
         loadCourse();
@@ -97,6 +101,8 @@ export default function Course({ user, setUser }) {
             setDuplicating(false);
         }
     };
+
+    if (notFound) return <NotFound />;
 
     return (
         <div>

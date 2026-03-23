@@ -57,7 +57,7 @@
             color: map-get($colors, action2);
         }
 
-        svg path {
+        .course_card_end svg path {
             fill: map-get($colors, action2);
         }
     }

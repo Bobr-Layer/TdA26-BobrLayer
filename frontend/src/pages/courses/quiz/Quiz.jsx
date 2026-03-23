@@ -1,5 +1,6 @@
 import styles from './quiz.module.scss';
 import { useState, useEffect, useCallback } from 'react';
+import { usePageTitle } from '../../../hooks/usePageTitle';
 import QuizQuestion from './quiz-question/QuizQuestion';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import QuizResults from './quiz-results/QuizResults';
@@ -11,6 +12,7 @@ export default function Quiz({ user, setUser }) {
     const { uuid, moduleUuid, quizzUuid } = useParams();
     const [quiz, setQuiz] = useState();
     const [loading, setLoading] = useState(false);
+    usePageTitle(quiz?.title);
     const [currentStep, setCurrentStep] = useState(0);
     const [finish, setFinish] = useState(false);
     const [showResults, setShowResults] = useState(false);
@@ -116,7 +118,7 @@ export default function Quiz({ user, setUser }) {
                                 <QuizResults
                                     name={quiz.title}
                                     result={quizResult}
-                                    setShowResults={setShowResults}
+                                    onShowReview={() => { setCurrentStep(0); setShowResults(true); }}
                                 />
                             )}
                         </>

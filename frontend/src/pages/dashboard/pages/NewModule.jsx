@@ -7,8 +7,10 @@ import ModuleForm from '../modules/module-form/ModuleForm';
 import { createModule, getModules } from '../../../services/ModuleService';
 import { createFileMaterial, createUrlMaterial } from '../../../services/MaterialService';
 import Header from '../../../shared/layout/header/Header';
+import { usePageTitle } from '../../../hooks/usePageTitle';
 
 export default function NewModule({ user, setUser }) {
+    usePageTitle('Nový modul');
     const navigate = useNavigate();
     const { uuid } = useParams();
 

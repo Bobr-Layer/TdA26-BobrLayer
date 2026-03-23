@@ -2,18 +2,36 @@ import Header from '../../../shared/layout/header/Header';
 import styles from './module.module.scss';
 import { Link } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { getModuleByUuid } from '../../../services/ModuleService';
 import QuizCard from '../../../shared/courses/quiz-card/QuizCard';
 import MaterialCard from '../../../shared/courses/material-card/MaterialCard';
 import { getMaterials } from '../../../services/MaterialService';
+import { getCourseFeed } from '../../../services/FeedService';
+import Api from '../../../services/Api';
+import { User } from 'lucide-react';
+import { usePageTitle } from '../../../hooks/usePageTitle';
 
 export default function Module({ user, setUser }) {
     const { uuid, moduleUuid } = useParams();
     const [module, setModule] = useState();
-    const [materials, setMaterials] = useState();
+    const [files, setFiles] = useState([]);
+    const [urls, setUrls] = useState([]);
+    usePageTitle(module?.name);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [feeds, setFeeds] = useState([]);
+    const feedListRef = useRef(null);
+
+    const loadFeeds = useCallback(async () => {
+        try {
+            const feedData = await getCourseFeed(uuid);
+            const sorted = [...feedData].sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+            setFeeds(sorted);
+        } catch (err) {
+            console.error('Chyba při načítání feedu:', err);
+        }
+    }, [uuid]);
 
     useEffect(() => {
         const fetchModule = async () => {
@@ -22,7 +40,8 @@ export default function Module({ user, setUser }) {
                 setModule(data);
 
                 const materialData = await getMaterials(uuid, moduleUuid);
-                setMaterials(materialData);
+                setFiles(materialData.filter(m => m.type === 'file'));
+                setUrls(materialData.filter(m => m.type === 'url'));
             } catch (err) {
                 setError(err.message);
             } finally {
@@ -31,7 +50,30 @@ export default function Module({ user, setUser }) {
         };
 
         fetchModule();
-    }, [uuid, moduleUuid]);
+        loadFeeds();
+    }, [uuid, moduleUuid, loadFeeds]);
+
+    useEffect(() => {
+        const eventSource = new EventSource(`${Api}/courses/${uuid}/stream`);
+
+        eventSource.addEventListener('FEED_CREATED', (event) => {
+            try {
+                const data = JSON.parse(event.data);
+                const payload = data.payload;
+                if (!payload || !payload.uuid) return;
+                setFeeds(prev => {
+                    if (prev.some(f => f.uuid === payload.uuid)) return prev;
+                    return [...prev, payload];
+                });
+            } catch (err) {
+                console.error('Error parsing SSE feed:', err);
+            }
+        });
+
+        eventSource.onerror = () => {};
+
+        return () => eventSource.close();
+    }, [uuid]);
 
     if (loading) return <div>Načítám modul...</div>;
     if (error) return <div>Chyba: {error}</div>;
@@ -49,14 +91,24 @@ export default function Module({ user, setUser }) {
                     <h1>{module.name}</h1>
                 </article>
                 <article className={styles.module_content}>
-                    <p className={styles.module_content_p}>{module.description}</p>
-                    <div className={styles.module_content_list}>
-                        <h3>Přílohy</h3>
-                        <MaterialList materials={materials} courseUuid={uuid} moduleUuid={moduleUuid} />
+                    <div className={styles.module_content_main}>
+                        <p className={styles.module_content_desc}>{module.description}</p>
+                        <div className={styles.module_content_section}>
+                            <h3>Soubory</h3>
+                            <MaterialList materials={files} courseUuid={uuid} moduleUuid={moduleUuid} emptyText="Žádné dostupné soubory" />
+                        </div>
+                        <div className={styles.module_content_section}>
+                            <h3>Odkazy</h3>
+                            <MaterialList materials={urls} courseUuid={uuid} moduleUuid={moduleUuid} emptyText="Žádné dostupné odkazy" />
+                        </div>
+                        <div className={styles.module_content_section}>
+                            <h3>Kvízy</h3>
+                            <QuizList quizzes={module.quizzes} uuid={uuid} moduleUuid={moduleUuid} />
+                        </div>
                     </div>
-                    <div className={styles.module_content_list}>
-                        <h3>Kvízy</h3>
-                        <QuizList quizzes={module.quizzes} uuid={uuid} moduleUuid={moduleUuid} />
+                    <div className={styles.module_content_side}>
+                        <h3>Feed kurzu</h3>
+                        <FeedList posts={feeds} feedListRef={feedListRef} />
                     </div>
                 </article>
             </section>
@@ -66,48 +118,36 @@ export default function Module({ user, setUser }) {
     )
 }
 
-function MaterialList({ materials, courseUuid, moduleUuid }) {
+function MaterialList({ materials, courseUuid, moduleUuid, emptyText }) {
     const [showMore, setShowMore] = useState(false);
 
-    const visibleMaterials = showMore
-        ? materials
-        : materials.slice(0, 5);
+    const visibleMaterials = showMore ? materials : materials.slice(0, 5);
 
     if (materials.length === 0) {
-        return (
-            <p className={styles.no}>Žádné dostupné přílohy</p>
-        )
+        return <p className={styles.no}>{emptyText}</p>;
     }
 
     return (
         <>
             <div className={styles.material_list}>
                 {visibleMaterials.map((m) => (
-                    <MaterialCard key={m.uuid} material={m} file={m.type === 'file' ? true : false} courseUuid={courseUuid} moduleUuid={moduleUuid} />
+                    <MaterialCard key={m.uuid} material={m} file={m.type === 'file'} courseUuid={courseUuid} moduleUuid={moduleUuid} />
                 ))}
             </div>
-
             {materials.length > 5 && (
-                <ShowMoreButton
-                    showMore={showMore}
-                    setShowMore={setShowMore}
-                />
+                <ShowMoreButton showMore={showMore} setShowMore={setShowMore} />
             )}
         </>
-    )
+    );
 }
 
 function QuizList({ quizzes, uuid, moduleUuid }) {
     const [showMore, setShowMore] = useState(false);
 
-    const visibleQuizzes = showMore
-        ? quizzes
-        : quizzes.slice(0, 2);
+    const visibleQuizzes = showMore ? quizzes : quizzes.slice(0, 2);
 
     if (quizzes.length === 0) {
-        return (
-            <p className={styles.no}>Žádné dostupné kvízy</p>
-        )
+        return <p className={styles.no}>Žádné dostupné kvízy</p>;
     }
 
     return (
@@ -117,14 +157,64 @@ function QuizList({ quizzes, uuid, moduleUuid }) {
                     <QuizCard key={q.uuid} quiz={q} uuid={uuid} moduleUuid={moduleUuid} />
                 ))}
             </div>
-
             {quizzes.length > 2 && (
-                <ShowMoreButton
-                    showMore={showMore}
-                    setShowMore={setShowMore}
-                />
+                <ShowMoreButton showMore={showMore} setShowMore={setShowMore} />
             )}
         </>
+    );
+}
+
+function FeedList({ posts, feedListRef }) {
+    useEffect(() => {
+        if (!feedListRef.current) return;
+        feedListRef.current.scrollTop = feedListRef.current.scrollHeight;
+    }, [posts, feedListRef]);
+
+    if (posts.length === 0) {
+        return <p className={styles.no}>Žádné příspěvky</p>;
+    }
+
+    return (
+        <div ref={feedListRef} className={styles.feed_list}>
+            {posts.map(p => (
+                <FeedCard key={p.uuid} feed={p} />
+            ))}
+        </div>
+    );
+}
+
+function FeedCard({ feed }) {
+    function formatDate(dateString) {
+        return new Date(dateString).toLocaleString('cs-CZ', {
+            day: '2-digit',
+            month: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+        });
+    }
+
+    return (
+        <div className={styles.feed_card}>
+            <div className={styles.feed_card_header}>
+                <div>
+                    {feed.type === 'system' ? (
+                        <>
+                            <img src="/img/symbol-w.png" alt="" />
+                            <p>Systémová zpráva</p>
+                        </>
+                    ) : (
+                        <>
+                            <div className={styles.feed_card_avatar}>
+                                <User size={20} color="white" />
+                            </div>
+                            <p>{feed.authorName || 'Lektor'}</p>
+                        </>
+                    )}
+                </div>
+                <p>{formatDate(feed.createdAt)}</p>
+            </div>
+            <p className={styles.feed_card_content}>{feed.message}</p>
+        </div>
     );
 }
 
@@ -136,5 +226,5 @@ function ShowMoreButton({ showMore, setShowMore }) {
                 <path d="M20.0306 9.53055L12.5306 17.0306C12.4609 17.1003 12.3782 17.1556 12.2871 17.1933C12.1961 17.2311 12.0985 17.2505 11.9999 17.2505C11.9014 17.2505 11.8038 17.2311 11.7127 17.1933C11.6217 17.1556 11.539 17.1003 11.4693 17.0306L3.9693 9.53055C3.82857 9.38982 3.74951 9.19895 3.74951 8.99993C3.74951 8.80091 3.82857 8.61003 3.9693 8.4693C4.11003 8.32857 4.30091 8.24951 4.49993 8.24951C4.69895 8.24951 4.88982 8.32857 5.03055 8.4693L11.9999 15.4396L18.9693 8.4693C19.039 8.39962 19.1217 8.34435 19.2128 8.30663C19.3038 8.26892 19.4014 8.24951 19.4999 8.24951C19.5985 8.24951 19.6961 8.26892 19.7871 8.30663C19.8781 8.34435 19.9609 8.39962 20.0306 8.4693C20.1002 8.53899 20.1555 8.62171 20.1932 8.71276C20.2309 8.8038 20.2503 8.90138 20.2503 8.99993C20.2503 9.09847 20.2309 9.19606 20.1932 9.2871C20.1555 9.37815 20.1002 9.46087 20.0306 9.53055Z" fill="#838383" />
             </svg>
         </button>
-    )
+    );
 }

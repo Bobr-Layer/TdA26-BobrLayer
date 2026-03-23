@@ -7,12 +7,16 @@ import ModuleDetail from '../modules/module-detail/ModuleDetail';
 import { getModuleByUuid } from '../../../services/ModuleService';
 import { activateNextModule, deactivatePreviousModule, getCourseByUuid } from '../../../services/CourseService';
 import Header from '../../../shared/layout/header/Header';
+import NotFound from '../../not-found/NotFound';
+import { usePageTitle } from '../../../hooks/usePageTitle';
 
 export default function DashboardModule({ user, setUser }) {
     const { uuid, moduleUuid } = useParams();
 
     const [course, setCourse] = useState();
     const [module, setModule] = useState(null);
+    usePageTitle(module?.name);
+    const [notFound, setNotFound] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [activating, setActivating] = useState(false);
@@ -28,7 +32,7 @@ export default function DashboardModule({ user, setUser }) {
 
                 console.log(data);
             } catch (err) {
-                setError(err.message);
+                setNotFound(true);
             } finally {
                 setLoading(false);
             }
@@ -64,6 +68,8 @@ export default function DashboardModule({ user, setUser }) {
             setActivating(false);
         }
     };
+
+    if (notFound) return <NotFound />;
 
     if (loading) {
         return <div>Načítám modul...</div>;

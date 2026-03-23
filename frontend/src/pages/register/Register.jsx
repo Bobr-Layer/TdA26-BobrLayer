@@ -4,8 +4,10 @@ import styles from './register.module.scss';
 import Input from '../../shared/form/input/Input';
 import SubmitButton from '../../shared/button/submit/SubmitButton';
 import { register as registerUser, login as loginUser } from '../../services/AuthService';
+import { usePageTitle } from '../../hooks/usePageTitle';
 
 function Register({ setUser }) {
+    usePageTitle('Registrace');
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [passwordConfirm, setPasswordConfirm] = useState('');
@@ -39,7 +41,7 @@ function Register({ setUser }) {
 
     return (
         <section className={styles.register}>
-            <img src="/img/w.png" alt="Bílé logo Think Different Academy" />
+            <Link to="/"><img src="/img/w.png" alt="Bílé logo Think Different Academy" /></Link>
             <article className={styles.register_form}>
                 <h1>Registrace</h1>
                 <form onSubmit={handleSubmit}>

@@ -1,8 +1,10 @@
 import Footer from '../../shared/layout/footer/Footer';
 import Header from '../../shared/layout/header/Header';
 import styles from './info.module.scss';
+import { usePageTitle } from '../../hooks/usePageTitle';
 
 export default function Contact({ user, setUser }) {
+    usePageTitle('Kontakt');
     return (
         <div className={styles.info_wrapper}>
             <Header user={user} setUser={setUser} />

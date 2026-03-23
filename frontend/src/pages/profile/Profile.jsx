@@ -7,8 +7,10 @@ import Input from '../../shared/form/input/Input';
 import SubmitButton from '../../shared/button/submit/SubmitButton';
 import { updateProfile, getCurrentUser } from '../../services/AuthService';
 import { User } from 'lucide-react';
+import { usePageTitle } from '../../hooks/usePageTitle';
 
 function Profile({ user, setUser }) {
+    usePageTitle(`Profil – ${user?.username}`);
     const [username, setUsername] = useState(user?.username || '');
     const [password, setPassword] = useState('');
     const [passwordConfirm, setPasswordConfirm] = useState('');

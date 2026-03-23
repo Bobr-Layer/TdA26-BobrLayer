@@ -8,13 +8,17 @@ import FeedCard from '../../../shared/courses/feed-card/FeedCard';
 import { getCourseFeed } from '../../../services/FeedService';
 import { Link } from 'react-router-dom';
 import Header from '../../../shared/layout/header/Header';
+import NotFound from '../../not-found/NotFound';
+import { usePageTitle } from '../../../hooks/usePageTitle';
 
 export default function DashboardFeed({ user, setUser }) {
     const navigate = useNavigate();
     const { uuid } = useParams();
     const [course, setCourse] = useState();
+    usePageTitle(course ? `Feed – ${course.name}` : 'Feed');
     const [feed, setFeed] = useState([]);
     const [isLoadingFeed, setIsLoadingFeed] = useState(true);
+    const [notFound, setNotFound] = useState(false);
     const feedEndRef = useRef(null);
     const pollingIntervalRef = useRef(null);
 
@@ -54,7 +58,7 @@ export default function DashboardFeed({ user, setUser }) {
                 await loadFeed(foundCourse.uuid);
             } catch (err) {
                 console.error(err);
-                navigate('/dashboard', { replace: true });
+                setNotFound(true);
             }
         };
         loadCourse();
@@ -86,6 +90,8 @@ export default function DashboardFeed({ user, setUser }) {
             feedEndRef.current?.scrollIntoView({ behavior: 'smooth' });
         }
     }, [isLoadingFeed, feed]);
+
+    if (notFound) return <NotFound />;
 
     return (
         <div>

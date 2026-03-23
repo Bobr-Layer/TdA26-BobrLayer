@@ -7,6 +7,7 @@ import QuizzForm from '../quizzes/quizz-form/QuizzForm';
 import { updateQuiz, getQuizByUuid } from '../../../services/QuizzService';
 import { getCourseByUuid } from '../../../services/CourseService';
 import Header from '../../../shared/layout/header/Header';
+import { usePageTitle } from '../../../hooks/usePageTitle';
 
 export default function EditQuiz({ user, setUser }) {
     const navigate = useNavigate();
@@ -19,6 +20,7 @@ export default function EditQuiz({ user, setUser }) {
         title: '',
         questions: []
     });
+    usePageTitle(editQuizzData.title ? `Upravit – ${editQuizzData.title}` : 'Upravit kvíz');
 
     const handleEditQuizzChange = (e) => {
         const { name, value } = e.target;

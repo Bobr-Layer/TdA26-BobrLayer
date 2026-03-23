@@ -2,14 +2,16 @@ import CourseDashboardList from "../../shared/courses/course-dashboard-list/Cour
 import Sidenav from "../../shared/layout/sidenav/Sidenav"
 import styles from './dashboard.module.scss';
 import { useState, useEffect } from "react";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 import { getCourses } from '../../services/CourseService';
 import DashboardButton from "../../shared/button/dashboard/DashboardButton";
 import SearchInput from "../../shared/form/search-input/SearchInput";
 import CourseSelect from "../../shared/form/course-select/CourseSelect";
 import Header from "../../shared/layout/header/Header";
+import { usePageTitle } from "../../hooks/usePageTitle";
 
 function Dashboard({ user, setUser }) {
+  usePageTitle('Dashboard');
   const navigate = useNavigate();
   const [courses, setCourses] = useState([]);
   const [coursesData, setCoursesData] = useState([]);
@@ -28,6 +30,8 @@ function Dashboard({ user, setUser }) {
 
     loadCourses();
   }, []);
+
+  if (user?.role === 'ADMIN') return <Navigate to="/dashboard/users" replace />;
 
   return (
     <div>

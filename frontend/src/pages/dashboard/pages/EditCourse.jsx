@@ -7,9 +7,13 @@ import { updateCourse, getCourseByUuid } from '../../../services/CourseService';
 import { getUrlMaterials, getFileMaterials, createUrlMaterial, updateUrlMaterial, createFileMaterial, updateFileMaterial, deleteMaterial } from '../../../services/MaterialService';
 import CourseForm from '../courses/course-form/CourseForm';
 import Header from '../../../shared/layout/header/Header';
+import NotFound from '../../not-found/NotFound';
+import { usePageTitle } from '../../../hooks/usePageTitle';
 
 export default function EditCourse({ user, setUser }) {
     const [course, setCourse] = useState();
+    usePageTitle(course ? `Upravit – ${course.name}` : 'Upravit kurz');
+    const [notFound, setNotFound] = useState(false);
     const { uuid } = useParams();
     const navigate = useNavigate();
 
@@ -35,7 +39,7 @@ export default function EditCourse({ user, setUser }) {
 
             } catch (err) {
                 console.error(err);
-                navigate('/dashboard', { replace: true });
+                setNotFound(true);
             }
         };
 
@@ -54,6 +58,8 @@ export default function EditCourse({ user, setUser }) {
             alert('Nepodařilo se uložit změny. Zkuste to prosím znovu.');
         }
     };
+
+    if (notFound) return <NotFound />;
 
     return (
         <div>

@@ -40,6 +40,7 @@ export default function QuizQuestion({
                     currentAnswer={currentAnswer}
                     onAnswerChange={onAnswerChange}
                     disabled={!info}
+                    correctAnswer={currentQuestion.type === 'singleChoice' ? currentQuestion.correctIndex : currentQuestion.correctIndices}
                 />
                 <div className={styles.quiz_question_content_nav}>
                     {currentStep != 0 ? (

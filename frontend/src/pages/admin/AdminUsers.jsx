@@ -4,11 +4,15 @@ import Header from '../../shared/layout/header/Header';
 import styles from './adminusers.module.scss';
 import { getUsers, updateUserRole, deleteUser } from '../../services/UserService';
 import { User } from 'lucide-react';
+import { usePageTitle } from '../../hooks/usePageTitle';
 
 function AdminUsers({ user, setUser }) {
+  usePageTitle('Správa uživatelů');
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchName, setSearchName] = useState('');
+  const [filterRole, setFilterRole] = useState('ALL');
 
   useEffect(() => {
     loadUsers();
@@ -51,6 +55,12 @@ function AdminUsers({ user, setUser }) {
     return 'Admin';
   };
 
+  const filteredUsers = users.filter(u => {
+    const matchName = u.username.toLowerCase().includes(searchName.toLowerCase());
+    const matchRole = filterRole === 'ALL' || u.role === filterRole;
+    return matchName && matchRole;
+  });
+
   return (
     <div>
       <Header user={user} setUser={setUser} onlyMobile={true} />
@@ -59,19 +69,40 @@ function AdminUsers({ user, setUser }) {
         <article className={styles.admin_header}>
           <div>
             <h1>Správa uživatelů</h1>
-            <p>{users.length} uživatelů</p>
+            <p>{filteredUsers.length} / {users.length} uživatelů</p>
           </div>
         </article>
+
+        <div className={styles.filters}>
+          <input
+            className={styles.filter_input}
+            type="text"
+            placeholder="Hledat podle jména..."
+            value={searchName}
+            onChange={e => setSearchName(e.target.value)}
+          />
+          <div className={styles.role_filters}>
+            {['ALL', 'STUDENT', 'LEKTOR', 'ADMIN'].map(role => (
+              <button
+                key={role}
+                className={`${styles.role_filter_btn} ${filterRole === role ? styles.active : ''}`}
+                onClick={() => setFilterRole(role)}
+              >
+                {role === 'ALL' ? 'Všichni' : roleLabel(role)}
+              </button>
+            ))}
+          </div>
+        </div>
 
         {loading ? (
           <p className={styles.state_msg}>Načítání...</p>
         ) : error ? (
           <p className={styles.state_msg_err}>{error}</p>
-        ) : users.length === 0 ? (
-          <p className={styles.state_msg}>Žádní uživatelé nebyli nalezeni.</p>
+        ) : filteredUsers.length === 0 ? (
+          <p className={styles.state_msg}>Žádní uživatelé nenalezeni.</p>
         ) : (
           <ul className={styles.user_list}>
-            {users.map(u => (
+            {filteredUsers.map(u => (
               <li key={u.uuid} className={styles.user_card}>
                 <div className={styles.user_card_info}>
                   <div className={styles.user_avatar}>

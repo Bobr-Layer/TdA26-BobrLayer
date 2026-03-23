@@ -122,6 +122,14 @@
         border-bottom: 1px solid map-get($colors, darkerTxt);
     }
 
+    .user_menu_logout {
+        color: #e53e3e;
+
+        svg path {
+            fill: #e53e3e;
+        }
+    }
+
     .user_menu_content {
         display: flex;
         align-items: center;

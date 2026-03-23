@@ -92,6 +92,7 @@
     nav {
         display: flex;
         gap: 3.75rem;
+        align-items: center;
 
         a,
         button {
@@ -109,6 +110,67 @@
 
         @media (max-width: 900px) {
             display: none;
+        }
+    }
+
+    .user_menu {
+        position: relative;
+
+        .user_button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: transparent;
+            border: 0;
+            outline: 0;
+            cursor: pointer;
+            padding: 0;
+
+            &:hover {
+                text-decoration: none;
+                opacity: 0.8;
+            }
+        }
+
+        .dropdown {
+            position: absolute;
+            top: calc(100% + 1rem);
+            right: 0;
+            background-color: map-get($colors, txt);
+            border: 1px solid map-get($colors, darkerTxt);
+            min-width: 12rem;
+            display: flex;
+            flex-direction: column;
+            z-index: 200;
+
+            a,
+            button {
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                padding: 0.875rem 1.25rem;
+                font-size: 1rem;
+                color: map-get($colors, bck);
+                background-color: transparent;
+                border: 0;
+                outline: 0;
+                cursor: pointer;
+                text-align: left;
+                width: 100%;
+                box-sizing: border-box;
+                text-decoration: none;
+
+                &:hover {
+                    background-color: map-get($colors, darkerTxt);
+                    text-decoration: none;
+                }
+            }
+
+            .logout_button {
+                span {
+                    color: #e53e3e;
+                }
+            }
         }
     }
 
@@ -133,6 +195,7 @@
     filter: blur(8px);
     z-index: 98;
     height: 12.5rem;
+    pointer-events: none;
 
     &.only_mobile {
         display: none;

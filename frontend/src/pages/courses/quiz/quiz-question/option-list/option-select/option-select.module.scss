@@ -28,4 +28,12 @@
         color: map-get($colors, txt);
         background-color: map-get($colors, bck);
     }
+
+    &.correct {
+        color: map-get($colors, success);
+    }
+
+    &.wrong {
+        color: map-get($colors, warning);
+    }
 }

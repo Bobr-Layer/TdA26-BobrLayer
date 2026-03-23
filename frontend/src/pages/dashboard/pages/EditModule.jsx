@@ -8,12 +8,14 @@ import { getModuleByUuid, updateModule } from '../../../services/ModuleService';
 import { getMaterials, createFileMaterial, createUrlMaterial, deleteMaterial } from '../../../services/MaterialService';
 import { getCourseByUuid } from '../../../services/CourseService';
 import Header from '../../../shared/layout/header/Header';
+import { usePageTitle } from '../../../hooks/usePageTitle';
 
 export default function EditModule({ user, setUser }) {
     const { uuid, moduleUuid } = useParams();
     const navigate = useNavigate();
 
     const [moduleData, setModuleData] = useState({ name: '', description: '' });
+    usePageTitle(moduleData.name ? `Upravit – ${moduleData.name}` : 'Upravit modul');
     const [initialFiles, setInitialFiles] = useState([]);
     const [initialUrls, setInitialUrls] = useState([]);
     const [currentFiles, setCurrentFiles] = useState([]);
@@ -123,6 +125,7 @@ export default function EditModule({ user, setUser }) {
                     initialUrls={initialUrls}
                     onFilesChange={setCurrentFiles}
                     onUrlsChange={setCurrentUrls}
+                    filesFirst={false}
                 />
             </form>
         </div>

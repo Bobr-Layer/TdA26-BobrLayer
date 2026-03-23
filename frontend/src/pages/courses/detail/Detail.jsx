@@ -1,5 +1,6 @@
 import styles from './detail.module.scss';
 import Header from '../../../shared/layout/header/Header';
+import { usePageTitle } from '../../../hooks/usePageTitle';
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import LectorCard from '../../../shared/lectors/lector-card/LectorCard';
@@ -10,6 +11,7 @@ import { getCourseFeed } from '../../../services/FeedService'
 import ModuleCard from '../../../shared/courses/module-card/ModuleCard';
 import Api from '../../../services/Api';
 import { User } from 'lucide-react';
+import NotFound from '../../not-found/NotFound';
 
 export default function Detail({ user, setUser }) {
     const { uuid } = useParams();
@@ -18,6 +20,8 @@ export default function Detail({ user, setUser }) {
 
     const [course, setCourse] = useState();
     const [feeds, setFeeds] = useState([]);
+    const [notFound, setNotFound] = useState(false);
+    usePageTitle(course?.name);
 
     const [loading, setLoading] = useState(false);
     const [enrolled, setEnrolled] = useState(false);
@@ -34,7 +38,7 @@ export default function Detail({ user, setUser }) {
                 setCourse(courseData);
             } catch (err) {
                 console.error('Chyba při načítání dat:', err);
-                navigate('/courses');
+                setNotFound(true);
             } finally {
                 setLoading(false);
             }
@@ -112,6 +116,8 @@ export default function Detail({ user, setUser }) {
     if (!course) {
         return null;
     }
+
+    if (notFound) return <NotFound />;
 
     return (
         <div className={styles.wrapper}>

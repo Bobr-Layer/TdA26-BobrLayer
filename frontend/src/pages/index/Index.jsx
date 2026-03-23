@@ -5,8 +5,10 @@ import CourseList from '../../shared/courses/course-list/CourseList'
 import { useState, useEffect, useRef } from "react";
 import { getCourses } from "../../services/CourseService";
 import Footer from "../../shared/layout/footer/Footer";
+import { usePageTitle } from "../../hooks/usePageTitle";
 
 function Index({user, setUser}) {
+  usePageTitle('Domů');
   const [courses, setCourses] = useState([]);
   const aboutRef = useRef(null);
   const [hideScrollBtn, setHideScrollBtn] = useState(false);

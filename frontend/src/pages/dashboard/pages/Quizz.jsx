@@ -8,11 +8,13 @@ import { useState, useEffect } from 'react';
 import { getModules } from '../../../services/ModuleService';
 import { getCourseByUuid } from '../../../services/CourseService';
 import Header from '../../../shared/layout/header/Header';
+import { usePageTitle } from '../../../hooks/usePageTitle';
 
 export default function Quizz({ user, setUser }) {
     const navigate = useNavigate();
     const { uuid, moduleUuid, quizzUuid } = useParams();
     const [quiz, setQuiz] = useState();
+    usePageTitle(quiz?.title);
     const [loading, setLoading] = useState(false);
     const [modules, setModules] = useState();
     const [course, setCourse] = useState();

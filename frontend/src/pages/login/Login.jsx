@@ -4,8 +4,10 @@ import styles from './login.module.scss';
 import Input from '../../shared/form/input/Input';
 import SubmitButton from '../../shared/button/submit/SubmitButton';
 import { login as loginUser } from '../../services/AuthService';
+import { usePageTitle } from '../../hooks/usePageTitle';
 
 function Login({ setUser }) {
+  usePageTitle('Přihlášení');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
@@ -28,7 +30,7 @@ function Login({ setUser }) {
 
   return (
     <section className={styles.login}>
-      <img src="/img/w.png" alt="Bílé logo Think Different Academy" />
+      <Link to="/"><img src="/img/w.png" alt="Bílé logo Think Different Academy" /></Link>
       <article className={styles.login_form}>
         <h1>Přihlásit se</h1>
         <form onSubmit={handleSubmit}>

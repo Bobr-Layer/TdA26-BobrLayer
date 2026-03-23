@@ -8,7 +8,8 @@ export default function OptionList({
     questionId,
     currentAnswer,
     onAnswerChange,
-    disabled
+    disabled,
+    correctAnswer
 }) {
     const [selected, setSelected] = useState(() => {
         if (currentAnswer !== undefined && currentAnswer !== null) {
@@ -46,6 +47,8 @@ export default function OptionList({
                     multi={multi}
                     selected={selected}
                     setSelected={handleSelectionChange}
+                    isReview={disabled}
+                    correctAnswer={correctAnswer}
                 />
             ))}
         </article>

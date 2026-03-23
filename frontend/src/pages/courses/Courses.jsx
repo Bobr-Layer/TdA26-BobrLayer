@@ -6,8 +6,10 @@ import { useState, useEffect } from 'react';
 import { getCourses } from '../../services/CourseService';
 import Footer from '../../shared/layout/footer/Footer'
 import CourseSelect from '../../shared/form/course-select/CourseSelect'
+import { usePageTitle } from '../../hooks/usePageTitle';
 
 function Courses({ user, setUser }) {
+  usePageTitle('Kurzy');
   const [courses, setCourses] = useState([]);
   const [coursesData, setCoursesData] = useState([]);
 

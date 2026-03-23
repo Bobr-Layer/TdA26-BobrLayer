@@ -1,10 +1,13 @@
 import { Link } from 'react-router-dom';
 import styles from './header.module.scss';
 import { logout } from '../../../services/AuthService';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { User, LogOut } from 'lucide-react';
 
 function Header({ green, transparent, user, setUser, onlyMobile }) {
     const [showSidenav, setShowSidenav] = useState(false);
+    const [showDropdown, setShowDropdown] = useState(false);
+    const dropdownRef = useRef(null);
 
     const handleLogout = async () => {
         try {
@@ -15,6 +18,16 @@ function Header({ green, transparent, user, setUser, onlyMobile }) {
             alert('Nepodařilo se odhlásit');
         }
     }
+
+    useEffect(() => {
+        function handleClickOutside(e) {
+            if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+                setShowDropdown(false);
+            }
+        }
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
 
     const isStudent = user && user.role === 'STUDENT';
     const isLektor = user && (user.role === 'LEKTOR' || user.role === 'ADMIN');
@@ -31,16 +44,32 @@ function Header({ green, transparent, user, setUser, onlyMobile }) {
                     <Link to={"/courses"}>Seznam kurzů</Link>
                     <Link to={"/about"}>O nás</Link>
                     {!user ? (
-                        <>
-                            <Link to={"/login"}>Přihlásit se</Link>
-                            <Link to={"/register"}>Registrace</Link>
-                        </>
+                        <Link to={"/login"}>Přihlásit se</Link>
                     ) : (
                         <>
                             {isStudent && <Link to={"/my-courses"}>Moje kurzy</Link>}
                             {isLektor && <Link to={"/dashboard"}>Dashboard</Link>}
-                            <Link to={"/profile"}>Profil</Link>
-                            <button onClick={handleLogout}>Odhlásit se</button>
+                            <div className={styles.user_menu} ref={dropdownRef}>
+                                <button
+                                    className={styles.user_button}
+                                    onClick={() => setShowDropdown(prev => !prev)}
+                                    aria-label="Uživatelské menu"
+                                >
+                                    <User size={24} color="white" />
+                                </button>
+                                {showDropdown && (
+                                    <div className={styles.dropdown}>
+                                        <Link to={"/profile"} onClick={() => setShowDropdown(false)}>
+                                            <User size={20} color="white" />
+                                            Profil
+                                        </Link>
+                                        <button onClick={handleLogout} className={styles.logout_button}>
+                                            <LogOut size={20} color="#e53e3e" />
+                                            <span>Odhlásit se</span>
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
                         </>
                     )}
                 </nav>

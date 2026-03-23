@@ -49,3 +49,25 @@
         }
     }
 }
+
+.quiz_results_score {
+    font-size: 3rem;
+    font-weight: 700;
+}
+
+.review_button {
+    margin-top: 1rem;
+    background-color: map-get($colors, action);
+    border: 0;
+    outline: 0;
+    cursor: pointer;
+    padding: 0.875rem 2.5rem;
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: map-get($colors, bck);
+    transition: opacity 0.2s ease;
+
+    &:hover {
+        opacity: 0.8;
+    }
+}

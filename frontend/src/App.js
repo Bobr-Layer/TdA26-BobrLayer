@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/index/Index";
 import Courses from "./pages/courses/Courses";
 import Login from "./pages/login/Login";
@@ -26,6 +26,7 @@ import DashboardModule from "./pages/dashboard/pages/DashboardModule";
 import NewModule from "./pages/dashboard/pages/NewModule";
 import EditModule from "./pages/dashboard/pages/EditModule";
 import AdminUsers from "./pages/admin/AdminUsers";
+import NotFound from "./pages/not-found/NotFound";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -102,21 +103,13 @@ function App() {
       ) : (
         <>
           <Route path="/login" element={<Login setUser={setUser} />} />
-          <Route path="/profile" element={<Login setUser={setUser} />} />
-          <Route path="/my-courses" element={<Login setUser={setUser} />} />
-          <Route path="/dashboard" element={<Login setUser={setUser} />} />
-
-          <Route path="/dashboard/new" element={<Login setUser={setUser} />} />
-          <Route path="/dashboard/:uuid" element={<Login setUser={setUser} />} />
-          <Route path="/dashboard/:uuid/edit" element={<Login setUser={setUser} />} />
-
-          <Route path="/dashboard/:uuid/quizzes/:quizzUuid" element={<Login setUser={setUser} />} />
-          <Route path="/dashboard/:uuid/quizzes/new" element={<Login setUser={setUser} />} />
-          <Route path="/dashboard/:uuid/quizzes/:quizzUuid/edit" element={<Login setUser={setUser} />} />
-
-          <Route path="/dashboard/:uuid/feed" element={<Login setUser={setUser} />} />
+          <Route path="/profile" element={<Navigate to="/login" replace />} />
+          <Route path="/my-courses" element={<Navigate to="/login" replace />} />
+          <Route path="/dashboard" element={<Navigate to="/login" replace />} />
+          <Route path="/dashboard/*" element={<Navigate to="/login" replace />} />
         </>
       )}
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }

@@ -6,8 +6,10 @@ import DashboardNav from '../../../shared/layout/dashboard-nav/DashboardNav';
 import QuizzForm from '../quizzes/quizz-form/QuizzForm';
 import { createQuiz } from '../../../services/QuizzService';
 import Header from '../../../shared/layout/header/Header';
+import { usePageTitle } from '../../../hooks/usePageTitle';
 
 export default function NewQuizz({ user, setUser }) {
+    usePageTitle('Nový kvíz');
     const navigate = useNavigate();
     const { uuid, moduleUuid } = useParams();
 
