@@ -49,7 +49,9 @@ function Index({user, setUser}) {
           </div>
           <IndexButton text={'Prohlédnout si kurzy'} link={'/courses'} />
         </article>
-        <img src="/img/w.png" alt="" />
+        <div className={styles.index_image_wrapper}>
+          <img src="/img/w.png" alt="" />
+        </div>
 
         <button
           className={`${styles.index_scroll} ${hideScrollBtn ? styles.hidden : ""

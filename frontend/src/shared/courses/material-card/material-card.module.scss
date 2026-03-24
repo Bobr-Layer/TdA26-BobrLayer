@@ -10,6 +10,7 @@
     width: 100%;
     box-sizing: border-box;
     min-height: 3.75rem;
+    cursor: pointer;
 
     &:hover {
         border-color: map-get($colors, action2);
@@ -55,7 +56,7 @@
         gap: 1.25rem;
         height: 100%;
 
-        a,
+        .material_card_icon,
         button {
             padding: 0;
             margin: 0;
@@ -64,18 +65,85 @@
             border: 0;
             outline: 0;
             cursor: pointer;
+            display: flex;
+            align-items: center;
 
             &:hover,
             &:focus {
                 border: 0;
                 outline: 0;
             }
+        }
 
+        button {
             &:hover {
                 svg path {
                     fill: map-get($colors, action2);
                 }
             }
         }
+    }
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-0.5rem);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-0.5rem);
+    }
+}
+
+.toast {
+    position: fixed;
+    top: 1rem;
+    left: 0;
+    right: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    pointer-events: none;
+    animation: slideDown 0.2s ease-out forwards;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: -20%;
+        left: 0;
+        right: 0;
+        height: 250%;
+        background: linear-gradient(to top, transparent, #000);
+        z-index: -1;
+        pointer-events: none;
+    }
+
+    span {
+        background-color: map-get($colors, darkerTxt);
+        border: 2px solid map-get($colors, action2);
+        padding: 0.625rem 1.75rem;
+        font-size: 1.125rem;
+        font-weight: 600;
+        line-height: 1;
+        white-space: nowrap;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+    }
+
+    &.toast_out {
+        animation: slideUp 0.3s ease-in forwards;
     }
 }

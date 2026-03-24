@@ -17,10 +17,14 @@ $colors: (
     margin: 0;
     font-family: "Dosis", sans-serif;
     font-optical-sizing: auto;
-    font-weight: 700;
+    font-weight: 600;
     font-style: normal;
     color: map-get($colors, bck);
     transition: 0.3s ease-in-out;
+}
+
+p, span, li, label, td, th, input, textarea, select, small, caption {
+    font-weight: 500;
 }
 
 body {

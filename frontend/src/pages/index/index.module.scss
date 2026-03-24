@@ -16,7 +16,7 @@
     height: 100dvh;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
     gap: 3.125rem;
     padding: 7.5rem;
     box-sizing: border-box;
@@ -80,11 +80,18 @@
         }
     }
 
-    img {
-        width: 21.875rem;
+    .index_image_wrapper {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
 
         @media (max-width: 900px) {
             display: none;
+        }
+
+        img {
+            width: 21.875rem;
         }
     }
 

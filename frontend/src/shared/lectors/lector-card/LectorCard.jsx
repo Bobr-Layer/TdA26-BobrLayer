@@ -5,7 +5,7 @@ function LectorCard({ lectorName, lectorMail }) {
     return (
         <div className={styles.lector_card}>
             <div className={styles.img_container}>
-                <User size={32} color="white" />
+                <User size={20} color="white" />
             </div>
             <div>
                 <h4>{lectorName || 'lecturer'}</h4>

@@ -115,7 +115,6 @@
 
     > * {
         min-height: 5rem;
-        align-items: flex-start;
         padding-block: 1rem;
     }
 }
@@ -216,7 +215,7 @@
 }
 
 .no {
-    font-size: 0.75rem;
-    text-align: center;
+    font-size: 1rem;
+    text-align: left;
     color: map-get($colors, shadow);
 }
