@@ -61,10 +61,10 @@
                 }
 
                 h3 {
-                    font-size: 1.5rem;
+                    font-size: 1.125rem;
 
                     @media (max-width: 900px) {
-                        font-size: 2.4rem;
+                        font-size: 1.8rem;
                     }
 
                 }
@@ -80,7 +80,7 @@
 
                     a,
                     button {
-                        font-size: 1.25rem;
+                        font-size: 1rem;
                         font-weight: 600;
                         color: map-get($colors, darkerBck);
                         background-color: transparent;
@@ -95,7 +95,7 @@
                         }
 
                         @media (max-width: 900px) {
-                            font-size: 2rem;
+                            font-size: 1.6rem;
                         }
                     }
                 }
@@ -105,13 +105,13 @@
 
     p {
         text-align: center;
-        font-size: 1.25rem;
+        font-size: 1rem;
         font-weight: 600;
         color: map-get($colors, shadow);
 
         @media (max-width: 900px) {
             text-align: left;
-            font-size: 2rem;
+            font-size: 1.4rem;
         }
 
     }

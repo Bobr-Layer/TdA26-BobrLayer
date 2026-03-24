@@ -6,7 +6,7 @@
     padding: 3.75rem;
     padding-left: calc(18.75rem + 3.75rem);
     width: 100%;
-    min-height: 100dvh;
+    height: fit-content;
     box-sizing: border-box;
     gap: 3.75rem;
 
@@ -29,14 +29,95 @@
     padding-top: 12rem;
 }
 
-.dashboard_header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+// ─── Feed page — chat layout ──────────────────────────────────────────────────
 
+.feed_page {
+    position: fixed;
+    top: 0;
+    left: 18.75rem;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    background-color: map-get($colors, txt);
+    z-index: 1;
+
+    @media (max-width: 900px) {
+        left: 0;
+    }
+}
+
+.feed_page_header {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    padding: 3rem 3.75rem 2rem;
+    background-color: map-get($colors, txt);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+
+    @media (max-width: 900px) {
+        padding: 12rem 2rem 1.5rem;
+    }
+
+    h1 {
+        font-size: 2rem;
+
+        @media (max-width: 900px) {
+            font-size: 2.5rem;
+        }
+    }
+}
+
+.feed_page_messages {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    padding: 2rem 3.75rem;
+
+    @media (max-width: 900px) {
+        padding: 1.5rem 2rem;
+    }
+
+    & > p {
+        font-size: 1.25rem;
+        color: map-get($colors, shadow);
+        margin: auto;
+        text-align: center;
+    }
+
+    &::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 2px;
+    }
+}
+
+.feed_page_footer {
+    flex-shrink: 0;
+    padding: 0 3.75rem 2rem;
+    background-color: map-get($colors, txt);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+
+    @media (max-width: 900px) {
+        padding: 0 2rem 2rem;
+    }
+}
+
+.dashboard_header {
     div {
         display: flex;
         flex-direction: column;
+        align-items: flex-start;
         gap: 0.75rem;
 
         h1 {
@@ -81,19 +162,19 @@
     h1 {
         font-size: 2rem;
     }
+}
 
-    .feed_header_back {
-        display: flex;
-        align-items: center;
-        gap: 0.625rem;
-        font-size: 1.25rem;
+.feed_header_back {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    font-size: 1.25rem;
 
-        &:hover {
-            color: map-get($colors, darkerBck);
+    &:hover {
+        color: map-get($colors, darkerBck);
 
-            svg path {
-                fill: map-get($colors, darkerBck);
-            }
+        svg path {
+            fill: map-get($colors, darkerBck);
         }
     }
 }
@@ -111,6 +192,17 @@
     box-sizing: border-box;
     font-size: 1.25rem;
     cursor: pointer;
+    color: white;
+
+    .module_button_text {
+        @media (max-width: 900px) {
+            display: none;
+        }
+    }
+}
+
+.module_button_inactive {
+    color: #aaaaaa;
 }
 
 .course_button {
@@ -124,6 +216,11 @@
     border: 0;
     outline: 0;
     cursor: pointer;
+
+    @media (max-width: 900px) {
+        width: 100%;
+        justify-content: center;
+    }
 }
 
 .course_button_delete {
@@ -138,12 +235,21 @@
     position: fixed;
     bottom: 2rem;
     right: 2rem;
-    background-color: #1e5c2e;
-    color: white;
+    background-color: map-get($colors, action2);
+    color: map-get($colors, txt);
     padding: 1rem 1.5rem;
     font-size: 1rem;
-    font-weight: 600;
+    font-weight: 700;
     z-index: 1000;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
     max-width: 24rem;
+
+    @media (max-width: 900px) {
+        right: 50%;
+        transform: translateX(50%);
+        width: calc(100% - 4rem);
+        max-width: unset;
+        text-align: center;
+        bottom: 2rem;
+    }
 }

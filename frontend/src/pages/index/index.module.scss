@@ -28,7 +28,11 @@
 
     @media (max-width: 900px) {
         flex-direction: column;
-        justify-content: center;
+        justify-content: flex-start;
+        min-height: 100dvh;
+        height: auto;
+        padding-top: 10rem;
+        padding-bottom: 5rem;
         width: 100%;
         box-sizing: border-box;
     }
@@ -42,7 +46,7 @@
 
         @media (max-width: 900px) {
             width: 100%;
-            gap: 3rem;
+            gap: 2rem;
         }
 
         h1 {
@@ -54,7 +58,7 @@
 
             @media (max-width: 900px) {
                 text-align: center;
-                font-size: 4rem;
+                font-size: 3.5rem;
             }
         }
 
@@ -64,7 +68,7 @@
             font-weight: 600;
 
             @media (max-width: 900px) {
-                font-size: 2rem;
+                font-size: 1.6rem;
                 text-align: center;
             }
         }
@@ -86,21 +90,25 @@
 
     .index_scroll {
         position: absolute;
-        left: 50%;
+        left: 0;
+        right: 0;
         bottom: 3.75rem;
-        transform: translate(-50%);
+        width: fit-content;
+        margin-inline: auto;
         background-color: transparent;
         border: 0;
         outline: 0;
+        -webkit-appearance: none;
+        appearance: none;
         cursor: pointer;
         padding: 0;
         animation: jump 2s ease-in-out infinite;
         opacity: 1;
+        transition: opacity 0.3s ease-in-out;
 
         &.hidden {
             opacity: 0;
             pointer-events: none;
-            transform: translateY(0.5rem);
         }
 
         @media (max-width: 900px) {
@@ -122,8 +130,8 @@
     }
 
     @media (max-width: 900px) {
-        gap: 12rem;
-        padding-top: 0;
+        gap: 6rem;
+        padding-top: 3rem;
         padding-bottom: 6rem;
     }
 

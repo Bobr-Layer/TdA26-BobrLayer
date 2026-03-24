@@ -47,6 +47,10 @@
                 display: grid;
                 gap: 1.25rem;
                 grid-template-columns: 1fr 1fr 1fr;
+
+                @media (max-width: 900px) {
+                    grid-template-columns: 1fr;
+                }
             }
         }
     }
@@ -56,6 +60,10 @@
         flex-direction: column;
         gap: 2.5rem;
         width: 25rem;
+
+        @media (max-width: 900px) {
+            width: 100%;
+        }
 
         h3 {
             font-size: 1.5rem;

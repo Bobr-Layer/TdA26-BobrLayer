@@ -2,16 +2,20 @@ import DashboardButton from '../../../../shared/button/dashboard/DashboardButton
 import MaterialDashboardCard from '../../../../shared/courses/material-dashboard-card/MaterialDashboardCard';
 import QuizDashboardCard from '../../../../shared/courses/quiz-dashboard-card/QuizDashboardCard';
 import styles from './module-detail.module.scss';
+import dashboardStyles from '../../dashboard.module.scss';
 import { useState, useEffect } from 'react';
 import { getMaterials } from '../../../../services/MaterialService';
+import { useToast } from '../../../../hooks/useToast';
 
 export default function ModuleDetail({ module, uuid, course }) {
     const [quizzes, setQuizzes] = useState(module.quizzes || []);
     const [files, setFiles] = useState([]);
     const [urls, setUrls] = useState([]);
+    const { toast, showToast } = useToast();
 
-    const handleQuizDelete = (deletedUuid) => {
+    const handleQuizDelete = (deletedUuid, message) => {
         setQuizzes(prev => prev.filter(q => q.uuid !== deletedUuid));
+        if (message) showToast(message);
     };
 
     useEffect(() => {
@@ -29,6 +33,8 @@ export default function ModuleDetail({ module, uuid, course }) {
     }, [uuid, module.uuid]);
 
     return (
+        <>
+        {toast && <div className={dashboardStyles.toast}>{toast}</div>}
         <article className={styles.module_detail}>
             <div className={styles.module_detail_main}>
                 <div className={styles.module_detail_main_header}>
@@ -69,5 +75,6 @@ export default function ModuleDetail({ module, uuid, course }) {
                 </div>
             </div>
         </article>
+        </>
     )
 }

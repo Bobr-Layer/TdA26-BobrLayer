@@ -9,6 +9,11 @@ function Header({ green, transparent, user, setUser, onlyMobile }) {
     const [showDropdown, setShowDropdown] = useState(false);
     const dropdownRef = useRef(null);
 
+    useEffect(() => {
+        document.body.style.overflow = showSidenav ? 'hidden' : '';
+        return () => { document.body.style.overflow = ''; };
+    }, [showSidenav]);
+
     const handleLogout = async () => {
         try {
             await logout();
@@ -103,7 +108,6 @@ function Header({ green, transparent, user, setUser, onlyMobile }) {
                             {!user ? (
                                 <>
                                     <Link to={"/login"}>Přihlásit se</Link>
-                                    <Link to={"/register"}>Registrace</Link>
                                 </>
                             ) : (
                                 <>

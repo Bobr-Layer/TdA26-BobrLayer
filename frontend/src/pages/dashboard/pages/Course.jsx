@@ -3,6 +3,7 @@ import DashboardNav from '../../../shared/layout/dashboard-nav/DashboardNav';
 import styles from '../dashboard.module.scss';
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useToast } from '../../../hooks/useToast';
 import { getCourseByUuid, deleteCourse, createCourse } from '../../../services/CourseService';
 import { createModule } from '../../../services/ModuleService';
 import { getCourseFeed } from '../../../services/FeedService';
@@ -18,7 +19,7 @@ export default function Course({ user, setUser }) {
     const [course, setCourse] = useState(null);
     usePageTitle(course?.name);
     const [duplicating, setDuplicating] = useState(false);
-    const [duplicateToast, setDuplicateToast] = useState(null);
+    const { toast, showToast } = useToast();
     const [feedNotification, setFeedNotification] = useState(false);
     const [notFound, setNotFound] = useState(false);
 
@@ -57,10 +58,12 @@ export default function Course({ user, setUser }) {
 
     const handleDelete = async () => {
         if (!course) return;
+        if (!window.confirm(`Opravdu chcete smazat kurz "${course.name}"? Tato akce je nevratná.`)) return;
 
         try {
+            const name = course.name;
             await deleteCourse(course.uuid);
-            navigate('/dashboard', { replace: true });
+            navigate('/dashboard', { replace: true, state: { toast: `Kurz "${name}" byl smazán.` } });
         } catch (err) {
             console.error(err);
             alert(err.message);
@@ -92,8 +95,7 @@ export default function Course({ user, setUser }) {
                 }
             }
 
-            setDuplicateToast(`Kurz byl úspěšně duplikován jako "${newCourse.name}".`);
-            setTimeout(() => setDuplicateToast(null), 4000);
+            showToast(`Kurz byl úspěšně duplikován jako "${newCourse.name}".`);
         } catch (err) {
             console.error(err);
             alert(err.message);
@@ -154,8 +156,8 @@ export default function Course({ user, setUser }) {
                     <CourseDetail course={course} />
                 </section>
             )}
-            {duplicateToast && (
-                <div className={styles.toast}>{duplicateToast}</div>
+            {toast && (
+                <div className={styles.toast}>{toast}</div>
             )}
         </div>
     )

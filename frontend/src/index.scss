@@ -27,6 +27,7 @@ body {
     background-color: map-get($colors, txt);
     color: map-get($colors, bck);
     font-size: 16px;
+    scrollbar-gutter: stable;
 
     @media (min-width: 2500px) {
         font-size: 22px;

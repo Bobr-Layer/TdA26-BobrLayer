@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import styles from './login.module.scss';
 import Input from '../../shared/form/input/Input';
 import SubmitButton from '../../shared/button/submit/SubmitButton';
@@ -12,6 +12,7 @@ function Login({ setUser }) {
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,6 +22,11 @@ function Login({ setUser }) {
     try {
       const user = await loginUser(username, password);
       setUser(user);
+      if (user.role === 'STUDENT') {
+        navigate('/my-courses');
+      } else {
+        navigate('/dashboard');
+      }
     } catch (err) {
       setError(err.message);
     } finally {

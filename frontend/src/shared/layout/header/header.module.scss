@@ -7,7 +7,7 @@
     width: 100%;
     height: 100dvh;
     z-index: 110;
-    background-color: map-get($colors, txt);
+    background-color: rgba(14, 14, 14, 0.97);
     padding: 3rem;
     box-sizing: border-box;
     display: flex;
@@ -46,7 +46,7 @@
                 background-color: transparent;
                 border: 0;
                 outline: 0;
-                font-size: 2.8rem;
+                font-size: 2.2rem;
                 text-align: left;
             }
         }
@@ -57,7 +57,9 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: transparent;
+    background: rgba(26, 26, 26, 0.4);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     height: 6.25rem;
     width: 100%;
     box-sizing: border-box;
@@ -69,11 +71,7 @@
     z-index: 99;
 
     &.only_mobile {
-        display: none;
-
-        @media (max-width: 900px) {
-            display: flex;
-        }
+        display: none !important;
     }
 
     @media (max-width: 1200px) {
@@ -198,11 +196,7 @@
     pointer-events: none;
 
     &.only_mobile {
-        display: none;
-
-        @media (max-width: 900px) {
-            display: flex;
-        }
+        display: none !important;
     }
 
     @media (max-width: 900px) {

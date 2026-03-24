@@ -34,7 +34,7 @@ docker compose up --build
 ### 2. Přístup k aplikaci
 
 - **Aplikace:** http://localhost
-- **API:** http://localhost:8080/api
+- **API:** http://localhost/api
 
 ### Přihlašovací údaje
 

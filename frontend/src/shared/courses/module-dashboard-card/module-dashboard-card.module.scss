@@ -5,7 +5,8 @@
     background-color: map-get($colors, darkerTxt);
     padding: 1rem;
     box-sizing: border-box;
-    height: 7.5rem;
+    min-height: 7.5rem;
+    height: auto;
     display: flex;
     gap: 1.25rem;
     border: 2px solid map-get($colors, darkerTxt);

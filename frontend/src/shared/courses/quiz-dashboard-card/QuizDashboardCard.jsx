@@ -11,10 +11,11 @@ export default function QuizDashboardCard({ quiz, uuid, quizUuid, moduleUuid, on
 
     const handleDelete = async (e) => {
         e.stopPropagation();
+        if (!window.confirm(`Opravdu chcete smazat kvíz "${quiz.title}"?`)) return;
 
         try {
             await deleteQuiz(uuid, moduleUuid, quizUuid);
-            onDelete?.(quizUuid);
+            onDelete?.(quizUuid, `Kvíz "${quiz.title}" byl smazán.`);
         } catch (err) {
             console.error(err);
             alert('Nepodařilo se smazat kvíz');

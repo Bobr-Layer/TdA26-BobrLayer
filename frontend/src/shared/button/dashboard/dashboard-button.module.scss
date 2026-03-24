@@ -30,6 +30,11 @@
         justify-content: center;
     }
 
+    @media (max-width: 900px) {
+        width: 100%;
+        justify-content: center;
+    }
+
     &:hover {
         background-color: map-get($colors, darkerBck);
     }

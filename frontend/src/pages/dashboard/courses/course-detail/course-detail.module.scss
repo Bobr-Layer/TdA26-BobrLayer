@@ -9,8 +9,12 @@
         display: flex;
         flex-direction: column;
 
-        h1 {
+        h2 {
             font-size: 2rem;
+
+            @media (max-width: 900px) {
+                font-size: 2.5rem;
+            }
         }
 
         p {
