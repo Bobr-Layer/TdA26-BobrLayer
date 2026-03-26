@@ -1,102 +1,118 @@
 @use "../../index.scss" as *;
 
 .login {
-    height: 100dvh;
+    min-height: 100dvh;
     width: 100%;
     display: flex;
     align-items: center;
-    position: relative;
-    gap: 15rem;
     justify-content: center;
-    padding: 3rem 2rem;
+    position: relative;
+    padding: 3rem 1.5rem;
     box-sizing: border-box;
     overflow: hidden;
+}
 
-    @media (max-width: 900px) {
-        flex-direction: column;
-        gap: 3rem;
-        padding: 3rem 1.5rem;
-    }
+/* ── CARD ── */
+.card {
+    @include box;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    width: 26rem;
+    max-width: 100%;
+    padding: 2.5rem;
+    position: relative;
+    z-index: 1;
+}
+
+/* ── REVEAL ── */
+.reveal {
+    opacity: 0;
+    transform: translateY(1.5rem);
+    transition: opacity 0.55s ease, transform 0.55s ease;
+}
+.revealed {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ── LOGO ── */
+.logo_link {
+    display: block;
 
     img {
-        width: 28rem;
+        height: 3.5rem;
+        width: auto;
+    }
+}
 
-        @media (max-width: 1100px) {
-            width: 22rem;
-        }
+/* ── HEADING ── */
+.heading {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
 
-        @media (max-width: 900px) {
-            width: 14rem;
-        }
+.eyebrow {
+    @include section-label;
+}
+
+.heading h1 {
+    font-size: 2.25rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+}
+
+/* ── FORM ── */
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    .err {
+        font-size: 0.9rem;
+        color: #DC3333;
+        letter-spacing: 0.02em;
     }
 
-    .login_form {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        width: 25rem;
-        max-width: 100%;
-        gap: 2.5rem;
+    .link {
+        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.4);
+        text-align: center;
 
-        h1 {
-            font-size: 2.5rem;
-            text-align: center;
+        a {
+            color: #49B3B4;
+            text-decoration: none;
 
-            @media (max-width: 900px) {
-                display: none;
-            }
-        }
-
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 1.25rem;
-            width: 25rem;
-            max-width: 100%;
-
-            .err {
-                font-size: 1rem;
-                text-align: center;
-                color: map-get($colors, warning);
-            }
-
-            .link {
-                font-size: 1rem;
-                text-align: center;
-                font-weight: 400;
-
-                a {
-                    color: map-get($colors, action2);
-                    text-decoration: underline;
-
-                    &:hover {
-                        color: map-get($colors, action);
-                    }
-                }
+            &:hover {
+                color: #fff;
             }
         }
     }
+}
 
-    .login_ball {
-        position: absolute;
-        top: 0;
-        left: 0;
-        background: radial-gradient(circle at top left, rgba(2, 87, 165, 0.5), map-get($colors, txt) 70%);
-        height: 100dvh;
-        width: 50dvh;
-        z-index: -1;
-        filter: blur(100px);
-    }
+/* ── AMBIENT ── */
+.login_ball {
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: radial-gradient(circle at top left, rgba(2, 87, 165, 0.4), transparent 65%);
+    height: 100dvh;
+    width: 60dvh;
+    z-index: 0;
+    pointer-events: none;
+    filter: blur(80px);
+}
 
-    .login_ball_2 {
-        position: absolute;
-        bottom: 0;
-        right: 0;
-        background: radial-gradient(circle at bottom right, rgba(73, 179, 180, 0.5), map-get($colors, txt) 70%);
-        height: 100dvh;
-        width: 50dvh;
-        z-index: -1;
-        filter: blur(100px);
-    }
+.login_ball_2 {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    background: radial-gradient(circle at bottom right, rgba(73, 179, 180, 0.3), transparent 65%);
+    height: 100dvh;
+    width: 60dvh;
+    z-index: 0;
+    pointer-events: none;
+    filter: blur(80px);
 }

@@ -115,6 +115,21 @@ export default function Detail({ user, setUser }) {
         };
     }, [course, loadFeeds]);
 
+    useEffect(() => {
+        const els = document.querySelectorAll(`.${styles.reveal}`);
+        const observer = new IntersectionObserver(
+            entries => entries.forEach(e => {
+                if (e.isIntersecting) {
+                    e.target.classList.add(styles.revealed);
+                    observer.unobserve(e.target);
+                }
+            }),
+            { threshold: 0.05 }
+        );
+        els.forEach(el => observer.observe(el));
+        return () => observer.disconnect();
+    }, [course]);
+
     if (!course) return null;
     if (notFound) return <NotFound />;
 
@@ -127,7 +142,7 @@ export default function Detail({ user, setUser }) {
             <section className={styles.detail}>
 
                 {/* Back link */}
-                <Link to="/courses" className={styles.back_link}>
+                <Link to="/courses" className={`${styles.back_link} ${styles.reveal}`} style={{ '--delay': '0s' }}>
                     <svg width="1rem" viewBox="0 0 20 20" fill="none">
                         <path d="M17.5 10C17.5 10.1658 17.4342 10.3247 17.317 10.4419C17.1997 10.5592 17.0408 10.625 16.875 10.625H4.63359L9.19219 15.1828C9.30951 15.3001 9.37539 15.4592 9.37539 15.625C9.37539 15.7908 9.30951 15.9499 9.19219 16.0672C9.07487 16.1845 8.91581 16.2504 8.74997 16.2504C8.58412 16.2504 8.42506 16.1845 8.30774 16.0672L2.68274 10.4422C2.62466 10.3842 2.57855 10.3153 2.54711 10.2394C2.51567 10.1635 2.49951 10.0822 2.49951 10C2.49951 9.9178 2.51567 9.83649 2.54711 9.76062C2.57855 9.68474 2.62466 9.61581 2.68274 9.55782L8.30774 3.93282C8.42506 3.8155 8.58412 3.74963 8.74997 3.74963C8.91581 3.74963 9.07487 3.8155 9.19219 3.93282C9.30951 4.05014 9.37539 4.2092 9.37539 4.37504C9.37539 4.54089 9.30951 4.69994 9.19219 4.81727L4.63359 9.375H16.875C17.0408 9.375 17.1997 9.44085 17.317 9.55807C17.4342 9.6753 17.5 9.83424 17.5 10Z" fill="white"/>
                     </svg>
@@ -135,7 +150,7 @@ export default function Detail({ user, setUser }) {
                 </Link>
 
                 {/* Hero */}
-                <div className={styles.detail_hero}>
+                <div className={`${styles.detail_hero} ${styles.reveal}`} style={{ '--delay': '0.1s' }}>
                     <div className={styles.hero_meta}>
                         <span className={styles.hero_eyebrow}>KURZ</span>
                         {course.status && (
@@ -165,7 +180,7 @@ export default function Detail({ user, setUser }) {
                 <div className={styles.body}>
 
                     {/* Left column */}
-                    <div className={styles.left_col}>
+                    <div className={`${styles.left_col} ${styles.reveal}`} style={{ '--delay': '0.2s' }}>
                         <p className={styles.description}>{course.description}</p>
 
                         {isStudent && (
@@ -212,7 +227,7 @@ export default function Detail({ user, setUser }) {
                     </div>
 
                     {/* Right column — feed */}
-                    <div className={styles.right_col}>
+                    <div className={`${styles.right_col} ${styles.reveal}`} style={{ '--delay': '0.3s' }}>
                         <span className={styles.feed_label}>Feed kurzu</span>
                         <FeedList posts={feeds} feedListRef={feedListRef} />
                     </div>

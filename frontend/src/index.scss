@@ -91,6 +91,12 @@ a {
     background-color: rgba(73, 179, 180, 0.04);
 }
 
+// Form field focus — white border, used on all inputs/search/select
+@mixin field-focus {
+    border-color: rgba(255, 255, 255, 0.5);
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
 // Section label — small uppercase teal label above headings
 @mixin section-label {
     font-size: 0.95rem;

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styles from './register.module.scss';
 import Input from '../../shared/form/input/Input';
@@ -15,6 +15,22 @@ function Register({ setUser }) {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
+    useEffect(() => {
+        const card = document.querySelector(`.${styles.card}`);
+        if (!card) return;
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    card.classList.add(styles.revealed);
+                    observer.disconnect();
+                }
+            },
+            { threshold: 0.05 }
+        );
+        observer.observe(card);
+        return () => observer.disconnect();
+    }, []);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError(null);
@@ -28,7 +44,6 @@ function Register({ setUser }) {
 
         try {
             await registerUser(username, password);
-            // Auto-login po registraci
             const user = await loginUser(username, password);
             setUser(user);
             navigate('/my-courses');
@@ -41,10 +56,18 @@ function Register({ setUser }) {
 
     return (
         <section className={styles.register}>
-            <Link to="/"><img src="/img/w.png" alt="Bílé logo Think Different Academy" /></Link>
-            <article className={styles.register_form}>
-                <h1>Registrace</h1>
-                <form onSubmit={handleSubmit}>
+
+            <div className={styles.card}>
+                <Link to="/" className={styles.logo_link}>
+                    <img src="/img/logo_erb_white.svg" alt="Think different Academy" />
+                </Link>
+
+                <div className={styles.heading}>
+                    <span className={styles.eyebrow}>Registrace</span>
+                    <h1>Vytvořte si účet</h1>
+                </div>
+
+                <form className={styles.form} onSubmit={handleSubmit}>
                     <Input
                         name="username"
                         placeholder="Uživatelské jméno"
@@ -74,10 +97,10 @@ function Register({ setUser }) {
                         Již máte účet? <Link to="/login">Přihlásit se</Link>
                     </p>
                 </form>
-            </article>
+            </div>
 
-            <div className={styles.register_ball}></div>
-            <div className={styles.register_ball_2}></div>
+            <div className={styles.register_ball} />
+            <div className={styles.register_ball_2} />
         </section>
     );
 }

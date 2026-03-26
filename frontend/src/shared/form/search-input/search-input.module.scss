@@ -7,6 +7,10 @@
     justify-content: space-between;
     width: 100%;
 
+    &:hover {
+        @include field-focus;
+    }
+
     &.active {
         @include box-hover;
     }
@@ -38,7 +42,7 @@
         cursor: pointer;
 
         &:hover svg path {
-            fill: #49B3B4;
+            fill: #fff;
         }
     }
 }

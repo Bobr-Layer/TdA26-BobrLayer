@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styles from './login.module.scss';
 import Input from '../../shared/form/input/Input';
@@ -13,6 +13,22 @@ function Login({ setUser }) {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const card = document.querySelector(`.${styles.card}`);
+    if (!card) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          card.classList.add(styles.revealed);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.05 }
+    );
+    observer.observe(card);
+    return () => observer.disconnect();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -36,10 +52,18 @@ function Login({ setUser }) {
 
   return (
     <section className={styles.login}>
-      <Link to="/"><img src="/img/w.png" alt="Bílé logo Think Different Academy" /></Link>
-      <article className={styles.login_form}>
-        <h1>Přihlásit se</h1>
-        <form onSubmit={handleSubmit}>
+
+      <div className={styles.card}>
+        <Link to="/" className={styles.logo_link}>
+          <img src="/img/logo_erb_white.svg" alt="Think different Academy" />
+        </Link>
+
+        <div className={styles.heading}>
+          <span className={styles.eyebrow}>Přihlášení</span>
+          <h1>Vítejte zpět</h1>
+        </div>
+
+        <form className={styles.form} onSubmit={handleSubmit}>
           <Input
             name="username"
             placeholder="Uživatelské jméno"
@@ -61,10 +85,10 @@ function Login({ setUser }) {
             Nemáte účet? <Link to="/register">Zaregistrujte se</Link>
           </p>
         </form>
-      </article>
+      </div>
 
-      <div className={styles.login_ball}></div>
-      <div className={styles.login_ball_2}></div>
+      <div className={styles.login_ball} />
+      <div className={styles.login_ball_2} />
     </section>
   );
 }

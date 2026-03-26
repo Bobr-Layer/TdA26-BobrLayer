@@ -33,6 +33,18 @@
     }
 }
 
+/* ── REVEAL ── */
+.reveal {
+    opacity: 0;
+    transform: translateY(1.5rem);
+    transition: opacity 0.55s ease, transform 0.55s ease;
+    transition-delay: var(--delay, 0s);
+}
+.revealed {
+    opacity: 1;
+    transform: translateY(0);
+}
+
 .wrapper {
     position: relative;
     min-height: 100dvh;
