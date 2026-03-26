@@ -3,41 +3,33 @@
 .courses {
     display: flex;
     flex-direction: column;
-    padding-top: 11.25rem;
+    padding-top: 11rem;
     padding-inline: 7.5rem;
+    padding-bottom: 6rem;
     box-sizing: border-box;
-    padding-bottom: 3.125rem;
-    gap: 1.875rem;
+    gap: 3rem;
     position: relative;
     z-index: 2;
-
-    h1 {
-        font-size: 2rem;
-
-        @media (max-width: 900px) {
-            font-size: 3.5rem;
-        }
-    }
-
-    .courses_nav {
-        display: grid;
-        grid-template-columns: 3fr 1fr;
-        gap: 1.25rem;
-
-        @media (max-width: 900px) {
-            grid-template-columns: 1fr;
-            gap: 2rem;
-        }
-    }
 
     @media (max-width: 1200px) {
         padding-inline: 3rem;
     }
 
     @media (max-width: 900px) {
-        padding-top: 12rem;
+        padding-top: 10rem;
         padding-bottom: 6rem;
-        gap: 4rem;
+        gap: 3rem;
+    }
+
+    .courses_nav {
+        display: grid;
+        grid-template-columns: 3fr 1fr;
+        gap: 1rem;
+
+        @media (max-width: 900px) {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
     }
 }
 
@@ -49,13 +41,17 @@
     justify-content: space-between;
 
     .courses_ball {
-        position: absolute;
+        position: fixed;
         top: 0;
         right: 0;
-        background: radial-gradient(circle at top right, rgba(2, 87, 165, 0.5), map-get($colors, txt) 70%);
-        height: 100dvh;
-        width: 50dvh;
+        background: radial-gradient(circle at top right, rgba(2, 87, 165, 0.35), transparent 70%);
+        height: 140dvh;
+        width: 60dvh;
         z-index: -1;
-        filter: blur(100px);
+        filter: blur(80px);
+
+        @media (max-width: 900px) {
+            display: none;
+        }
     }
 }

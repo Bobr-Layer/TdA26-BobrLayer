@@ -1,6 +1,7 @@
 @use "../../../index.scss" as *;
 
 .quiz_button {
+    @include btn-solid;
     text-align: center;
     height: 3rem;
     width: 100%;
@@ -10,21 +11,17 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: map-get($colors, action2);
     font-size: 1rem;
-    color: map-get($colors, bck);
-    cursor: pointer;
-    border-radius: 0;
-    border: none;
-    outline: none;
-
-    &:hover,
-    &:focus {
-        border: none;
-        outline: none;
-    }
 
     &.red {
         background-color: map-get($colors, warning);
+        border-color: map-get($colors, warning);
+        color: #fff;
+
+        &:hover {
+            background-color: darken(#dc3333, 8%);
+            border-color: darken(#dc3333, 8%);
+            color: #fff;
+        }
     }
 }

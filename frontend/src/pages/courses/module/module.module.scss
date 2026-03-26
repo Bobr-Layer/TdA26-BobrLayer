@@ -5,217 +5,227 @@
     min-height: 100dvh;
     display: flex;
     flex-direction: column;
-
-    .module_ball {
-        position: absolute;
-        top: 0;
-        right: 0;
-        background: radial-gradient(circle at top right, rgba(2, 87, 165, 0.5), map-get($colors, txt) 70%);
-        height: 100dvh;
-        width: 50dvh;
-        z-index: -1;
-        filter: blur(100px);
-    }
 }
 
+.module_ball {
+    position: fixed;
+    top: 0;
+    right: 0;
+    background: radial-gradient(circle at top right, rgba(2, 87, 165, 0.28), transparent 65%);
+    height: 100dvh;
+    width: 60dvh;
+    z-index: 0;
+    pointer-events: none;
+    filter: blur(80px);
+}
+
+/* ── PAGE ── */
 .module {
-    padding-top: 11.25rem;
+    padding-top: 10rem;
     padding-inline: 7.5rem;
+    padding-bottom: 6rem;
     box-sizing: border-box;
-    padding-bottom: 3.125rem;
     display: flex;
     flex-direction: column;
-    gap: 2.5rem;
+    gap: 3.5rem;
+    position: relative;
+    z-index: 1;
+    flex: 1;
 
-    @media (max-width: 1200px) {
-        padding-inline: 3rem;
-    }
+    @media (max-width: 1200px) { padding-inline: 3rem; }
+    @media (max-width: 900px)  { padding-top: 9rem; padding-bottom: 4rem; gap: 2.5rem; }
+}
 
-    @media (max-width: 900px) {
-        padding-top: 12rem;
-        padding-bottom: 3rem;
-    }
+/* ── BACK LINK ── */
+.back_link {
+    @include btn-ghost;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.6rem 1.25rem;
+    font-size: 0.875rem;
+    letter-spacing: 0.06em;
+    text-decoration: none;
+    align-self: flex-start;
 
-    .module_header {
-        display: flex;
-        align-items: center;
-        gap: 1.25rem;
+    svg path { fill: #fff; }
+    &:hover svg path { fill: #49B3B4; }
+}
 
-        @media (max-width: 900px) {
-            flex-direction: column;
-            align-items: flex-start;
-        }
+/* ── HERO ── */
+.module_hero {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
 
-        h1 {
-            font-size: 2rem;
-        }
+.hero_eyebrow {
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #49B3B4;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
 
-        a:hover {
-            svg path {
-                fill: map-get($colors, darkerBck);
-            }
-        }
-    }
+.module_title {
+    font-size: 4rem;
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    margin-bottom: 1.75rem;
 
-    .module_content {
-        display: flex;
-        gap: 3.75rem;
+    @media (max-width: 900px) { font-size: 2.75rem; }
+}
 
-        @media (max-width: 900px) {
-            flex-direction: column;
-        }
+.hero_rule {
+    @include rule;
+}
 
-        .module_content_main {
-            display: flex;
-            flex-direction: column;
-            gap: 2.5rem;
-            flex: 1;
+/* ── BODY GRID ── */
+.body {
+    display: grid;
+    grid-template-columns: 5fr 3fr;
+    gap: 5rem;
+    align-items: start;
 
-            .module_content_desc {
-                font-size: 1.25rem;
-                color: map-get($colors, darkerBck);
-            }
+    @media (max-width: 1100px) { grid-template-columns: 1fr; gap: 3rem; }
+}
 
-            .module_content_section {
-                display: flex;
-                flex-direction: column;
-                gap: 1.25rem;
+/* ── LEFT ── */
+.left_col {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+}
 
-                h3 {
-                    font-size: 1.5rem;
-                }
-            }
-        }
+.description {
+    font-size: 1.2rem;
+    line-height: 1.75;
+    color: rgba(255, 255, 255, 0.5);
+}
 
-        .module_content_side {
-            display: flex;
-            flex-direction: column;
-            gap: 1.25rem;
-            width: 25rem;
+.section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
 
-            @media (max-width: 900px) {
-                width: 100%;
-            }
-
-            h3 {
-                font-size: 1.5rem;
-            }
-        }
-    }
+.section_label {
+    @include section-label;
 }
 
 .material_list {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.25rem;
-
-    @media (max-width: 600px) {
-        grid-template-columns: 1fr;
-    }
-
-    > * {
-        min-height: 5rem;
-        padding-block: 1rem;
-    }
+    grid-template-columns: 1fr;
+    gap: 1rem;
 }
 
 .quiz_list {
-    display: grid;
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.show_more_button {
+    @include btn-ghost;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+    letter-spacing: 0.06em;
+    align-self: flex-start;
+    cursor: pointer;
+
+    svg { transition: transform 0.2s; }
+
+    &.expanded svg { transform: rotate(180deg); }
+}
+
+.no {
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.2);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+/* ── RIGHT (FEED) ── */
+.right_col {
+    display: flex;
+    flex-direction: column;
     gap: 1.25rem;
+    position: sticky;
+    top: 8rem;
+
+    @media (max-width: 1100px) { position: static; }
+}
+
+.feed_label {
+    @include section-label;
 }
 
 .feed_list {
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
+    gap: 0.625rem;
     max-height: calc(100dvh - 22rem);
-    overflow-y: scroll;
+    overflow-y: auto;
     overflow-x: hidden;
     scrollbar-width: none;
-    -ms-overflow-style: none;
+    &::-webkit-scrollbar { display: none; }
 
-    &::-webkit-scrollbar {
-        display: none;
+    @media (max-width: 1100px) { max-height: 28rem; }
+}
+
+/* ── FEED CARD ── */
+.feed_card {
+    @include box;
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    padding: 0.875rem 1rem;
+
+    &.system_card {
+        border-left-color: rgba(73, 179, 180, 0.45);
+        border-left-width: 2px;
     }
 }
 
-.feed_card {
+.feed_card_header {
     display: flex;
-    flex-direction: column;
-    gap: 1.25rem;
-    width: 100%;
-    padding: 1.25rem;
-    background-color: map-get($colors, darkerTxt);
-    box-sizing: border-box;
+    justify-content: space-between;
+    align-items: center;
 
-    .feed_card_header {
+    .feed_author {
         display: flex;
-        justify-content: space-between;
         align-items: center;
+        gap: 0.5rem;
 
-        div {
+        img { width: 1.125rem; height: auto; }
+
+        .author_avatar {
+            width: 1.5rem;
+            height: 1.5rem;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-
-            img {
-                width: 1.813rem;
-                height: 2rem;
-            }
-
-            p {
-                font-size: 1rem;
-                color: map-get($colors, bck);
-            }
+            justify-content: center;
         }
 
-        p {
-            font-size: 0.75rem;
-            color: map-get($colors, darkerBck);
-        }
+        p { font-size: 0.8rem; color: #49B3B4; letter-spacing: 0.04em; }
     }
 
-    .feed_card_avatar {
-        width: 2rem;
-        height: 2rem;
-        border-radius: 50%;
-        background-color: rgba(255, 255, 255, 0.1);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .feed_card_content {
-        font-size: 1.25rem;
+    .feed_time {
+        font-size: 0.7rem;
+        color: rgba(255, 255, 255, 0.25);
+        letter-spacing: 0.04em;
     }
 }
 
-.show_more_button {
-    background-color: transparent;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    border: 0;
-    outline: 0;
-    cursor: pointer;
-
-    p {
-        font-size: 0.75rem;
-        color: map-get($colors, shadow);
-    }
-
-    &.true {
-        flex-direction: column-reverse;
-
-        svg {
-            transform: rotate(180deg);
-        }
-    }
-}
-
-.no {
+.feed_card_content {
     font-size: 1rem;
-    text-align: left;
-    color: map-get($colors, shadow);
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.65);
 }

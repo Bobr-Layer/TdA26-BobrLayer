@@ -7,6 +7,7 @@ import { getCourses } from '../../services/CourseService';
 import Footer from '../../shared/layout/footer/Footer'
 import CourseSelect from '../../shared/form/course-select/CourseSelect'
 import { usePageTitle } from '../../hooks/usePageTitle';
+import SectionHeading from '../../shared/ui/section-heading/SectionHeading';
 
 function Courses({ user, setUser }) {
   usePageTitle('Kurzy');
@@ -32,7 +33,7 @@ function Courses({ user, setUser }) {
       <div>
         <Header user={user} setUser={setUser} />
         <section className={styles.courses}>
-          <h1>Dostupné kurzy</h1>
+          <SectionHeading label="SEZNAM KURZŮ" heading="Dostupné kurzy" as="h1" />
           <div className={styles.courses_nav}>
             <SearchInput text={'Hledejte kurz'} data={coursesData} setData={setCoursesData} />
             <CourseSelect courseData={courses} setCourseData={setCoursesData}/>

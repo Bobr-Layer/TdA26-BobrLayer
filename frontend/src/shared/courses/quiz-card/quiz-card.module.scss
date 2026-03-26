@@ -1,51 +1,57 @@
 @use "../../../index.scss" as *;
 
 .quiz_card {
+    @include box;
     display: flex;
     justify-content: space-between;
-    border: 2px solid map-get($colors, darkerTxt);
-    background-color: map-get($colors, darkerTxt);
+    align-items: center;
     width: 100%;
-    padding: 1rem;
-    height: 7.5rem;
+    padding: 1.25rem 1.5rem;
+    min-height: 5.5rem;
     box-sizing: border-box;
+    text-decoration: none;
+    gap: 1rem;
 
     .quiz_card_text {
         display: flex;
         flex-direction: column;
-        gap: 0.625;
+        gap: 0.3rem;
         flex: 1;
 
         h4 {
-            font-size: 1rem;
+            font-size: 1.2rem;
+            font-weight: 700;
             color: map-get($colors, bck);
         }
 
         p {
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: map-get($colors, darkerBck);
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.4);
         }
     }
 
     .quiz_card_actions {
         display: flex;
         flex-direction: column;
-        gap: 0.75rem;
-        justify-content: space-between;
+        gap: 0.5rem;
         align-items: flex-end;
+        flex-shrink: 0;
 
         p {
-            font-size: 0.75rem;
-            color: map-get($colors, bck);
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.5);
+            white-space: nowrap;
 
-            &.none {
-                color: map-get($colors, shadow);
-            }
+            &.none { color: rgba(255, 255, 255, 0.2); }
         }
+
+        svg { opacity: 0.5; }
     }
 
     &:hover {
-        border-color: map-get($colors, action2);
+        @include box-hover;
+
+        .quiz_card_text h4 { color: #49B3B4; }
+        .quiz_card_actions svg { opacity: 1; path { fill: #49B3B4; } }
     }
 }

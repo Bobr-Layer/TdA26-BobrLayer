@@ -28,7 +28,7 @@ function SearchInput({ text, data, setData }) {
     };
 
     return (
-        <div className={styles.search_input}>
+        <div className={`${styles.search_input} ${searchTerm ? styles.active : ''}`}>
             <input
                 type="text"
                 placeholder={text}

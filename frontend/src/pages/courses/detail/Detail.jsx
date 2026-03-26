@@ -3,8 +3,7 @@ import Header from '../../../shared/layout/header/Header';
 import { usePageTitle } from '../../../hooks/usePageTitle';
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import LectorCard from '../../../shared/lectors/lector-card/LectorCard';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { getCourseByUuid, enrollCourse, unenrollCourse, isEnrolled } from '../../../services/CourseService'
 import { useRef, useCallback } from 'react';
 import { getCourseFeed } from '../../../services/FeedService'
@@ -12,10 +11,18 @@ import ModuleCard from '../../../shared/courses/module-card/ModuleCard';
 import Api from '../../../services/Api';
 import { User } from 'lucide-react';
 import NotFound from '../../not-found/NotFound';
+import Footer from '../../../shared/layout/footer/Footer';
+
+const STATUS_LABELS = {
+    Draft: 'Koncept',
+    Scheduled: 'Plánovaný',
+    Live: 'Aktivní',
+    Paused: 'Pozastavený',
+    Archived: 'Archivovaný',
+};
 
 export default function Detail({ user, setUser }) {
     const { uuid } = useParams();
-    const navigate = useNavigate();
     const feedListRef = useRef(null);
 
     const [course, setCourse] = useState();
@@ -46,7 +53,6 @@ export default function Detail({ user, setUser }) {
 
         loadData();
 
-        // Check enrollment status for students
         if (isStudent) {
             isEnrolled(uuid).then(setEnrolled).catch(console.error);
         }
@@ -78,11 +84,9 @@ export default function Detail({ user, setUser }) {
 
         loadFeeds(course.uuid);
 
-        // SSE: listen for module activation/deactivation and feed events
         const eventSource = new EventSource(`${Api}/courses/${course.uuid}/stream`);
 
         eventSource.addEventListener('MODULE_ACTIVATED', () => {
-            // Refetch course to update visible modules
             getCourseByUuid(uuid).then(setCourse).catch(console.error);
         });
 
@@ -104,37 +108,66 @@ export default function Detail({ user, setUser }) {
             }
         });
 
-        eventSource.onerror = () => {
-            // SSE will auto-reconnect
-        };
+        eventSource.onerror = () => {};
 
         return () => {
             eventSource.close();
         };
     }, [course, loadFeeds]);
 
-    if (!course) {
-        return null;
-    }
-
+    if (!course) return null;
     if (notFound) return <NotFound />;
+
+    const activatedModules = course.modules?.filter(m => m.activated) ?? [];
 
     return (
         <div className={styles.wrapper}>
             <Header user={user} setUser={setUser} />
+
             <section className={styles.detail}>
-                <article className={styles.detail_header}>
-                    <Link to={'/courses'}>
-                        <svg width="2.5rem" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M35 20C35 20.3315 34.8683 20.6494 34.6339 20.8838C34.3995 21.1183 34.0815 21.25 33.75 21.25H9.26719L18.3844 30.3656C18.5005 30.4817 18.5926 30.6196 18.6555 30.7713C18.7184 30.9231 18.7507 31.0857 18.7507 31.25C18.7507 31.4142 18.7184 31.5768 18.6555 31.7286C18.5926 31.8803 18.5005 32.0182 18.3844 32.1343C18.2682 32.2505 18.1304 32.3426 17.9786 32.4055C17.8269 32.4683 17.6643 32.5007 17.5 32.5007C17.3358 32.5007 17.1731 32.4683 17.0214 32.4055C16.8696 32.3426 16.7318 32.2505 16.6156 32.1343L5.36563 20.8843C5.24941 20.7682 5.15721 20.6304 5.09431 20.4786C5.0314 20.3269 4.99902 20.1642 4.99902 20C4.99902 19.8357 5.0314 19.673 5.09431 19.5213C5.15721 19.3695 5.24941 19.2317 5.36563 19.1156L16.6156 7.86559C16.8502 7.63104 17.1683 7.49927 17.5 7.49927C17.8317 7.49927 18.1498 7.63104 18.3844 7.86559C18.6189 8.10014 18.7507 8.41826 18.7507 8.74996C18.7507 9.08167 18.6189 9.39979 18.3844 9.63434L9.26719 18.75H33.75C34.0815 18.75 34.3995 18.8817 34.6339 19.1161C34.8683 19.3505 35 19.6684 35 20Z" fill="white" />
-                        </svg>
-                    </Link>
-                    <h1>{course.name}</h1>
-                </article>
-                <article className={styles.detail_content}>
-                    <div className={styles.detail_content_about}>
-                        <LectorCard lectorName={course.lectorName} lectorMail={course.lectorMail} />
-                        <p className={styles.detail_content_about_p}>{course.description}</p>
+
+                {/* Back link */}
+                <Link to="/courses" className={styles.back_link}>
+                    <svg width="1rem" viewBox="0 0 20 20" fill="none">
+                        <path d="M17.5 10C17.5 10.1658 17.4342 10.3247 17.317 10.4419C17.1997 10.5592 17.0408 10.625 16.875 10.625H4.63359L9.19219 15.1828C9.30951 15.3001 9.37539 15.4592 9.37539 15.625C9.37539 15.7908 9.30951 15.9499 9.19219 16.0672C9.07487 16.1845 8.91581 16.2504 8.74997 16.2504C8.58412 16.2504 8.42506 16.1845 8.30774 16.0672L2.68274 10.4422C2.62466 10.3842 2.57855 10.3153 2.54711 10.2394C2.51567 10.1635 2.49951 10.0822 2.49951 10C2.49951 9.9178 2.51567 9.83649 2.54711 9.76062C2.57855 9.68474 2.62466 9.61581 2.68274 9.55782L8.30774 3.93282C8.42506 3.8155 8.58412 3.74963 8.74997 3.74963C8.91581 3.74963 9.07487 3.8155 9.19219 3.93282C9.30951 4.05014 9.37539 4.2092 9.37539 4.37504C9.37539 4.54089 9.30951 4.69994 9.19219 4.81727L4.63359 9.375H16.875C17.0408 9.375 17.1997 9.44085 17.317 9.55807C17.4342 9.6753 17.5 9.83424 17.5 10Z" fill="white"/>
+                    </svg>
+                    Zpět na kurzy
+                </Link>
+
+                {/* Hero */}
+                <div className={styles.detail_hero}>
+                    <div className={styles.hero_meta}>
+                        <span className={styles.hero_eyebrow}>KURZ</span>
+                        {course.status && (
+                            <span
+                                className={styles.status_badge}
+                                data-status={course.status}
+                            >
+                                {STATUS_LABELS[course.status] ?? course.status}
+                            </span>
+                        )}
+                    </div>
+
+                    <h1 className={styles.course_title}>{course.name}</h1>
+
+                    <div className={styles.hero_rule} />
+
+                    <div className={styles.lector_row}>
+                        <div className={styles.lector_avatar}>
+                            <User size={14} color="rgba(255,255,255,0.5)" />
+                        </div>
+                        <span className={styles.lector_label}>Lektor</span>
+                        <span className={styles.lector_name}>{course.lectorName || 'lecturer'}</span>
+                    </div>
+                </div>
+
+                {/* Body */}
+                <div className={styles.body}>
+
+                    {/* Left column */}
+                    <div className={styles.left_col}>
+                        <p className={styles.description}>{course.description}</p>
+
                         {isStudent && (
                             <button
                                 className={`${styles.enroll_button} ${enrolled ? styles.enrolled : ''}`}
@@ -150,7 +183,6 @@ export default function Detail({ user, setUser }) {
                                         }
                                     } catch (err) {
                                         console.error(err);
-                                        alert(err.message);
                                     } finally {
                                         setEnrollLoading(false);
                                     }
@@ -164,35 +196,44 @@ export default function Detail({ user, setUser }) {
                                         : 'Přihlásit se na kurz'}
                             </button>
                         )}
-                        <div className={styles.detail_content_about_list}>
-                            <h3>Moduly</h3>
-                            {course.modules?.filter(m => m.activated).map((m) => (
-                                <ModuleCard module={m} key={m.uuid} />
-                            ))}
+
+                        <div className={styles.modules_section}>
+                            <span className={styles.modules_label}>Moduly</span>
+                            <div className={styles.modules_list}>
+                                {activatedModules.length === 0 ? (
+                                    <p className={styles.no_modules}>Žádné aktivované moduly</p>
+                                ) : (
+                                    activatedModules.map(m => (
+                                        <ModuleCard module={m} key={m.uuid} />
+                                    ))
+                                )}
+                            </div>
                         </div>
                     </div>
-                    <div className={styles.detail_content_feed}>
-                        <h3>Feed kurzu</h3>
+
+                    {/* Right column — feed */}
+                    <div className={styles.right_col}>
+                        <span className={styles.feed_label}>Feed kurzu</span>
                         <FeedList posts={feeds} feedListRef={feedListRef} />
                     </div>
-                </article>
+
+                </div>
             </section>
 
-            <div className={styles.detail_ball}></div>
+            <Footer user={user} setUser={setUser} />
+            <div className={styles.detail_ball} />
         </div>
-    )
+    );
 }
 
 function FeedList({ posts, feedListRef }) {
     useEffect(() => {
         if (!feedListRef.current) return;
-
-        feedListRef.current.scrollTop =
-            feedListRef.current.scrollHeight;
+        feedListRef.current.scrollTop = feedListRef.current.scrollHeight;
     }, [posts]);
 
     if (posts.length === 0) {
-        return <p className={styles.no}>Žádné dostupné příspěvky</p>;
+        return <p className={styles.no_feed}>Žádné dostupné příspěvky</p>;
     }
 
     return (
@@ -214,27 +255,29 @@ function FeedCard({ feed }) {
         });
     }
 
+    const isSystem = feed.type === 'SYSTEM' || feed.type === 'system';
+
     return (
-        <div className={styles.feed_card}>
+        <div className={`${styles.feed_card} ${isSystem ? styles.system_card : ''} ${feed.edited ? styles.edited_card : ''}`}>
             <div className={styles.feed_card_header}>
-                <div>
-                    {feed.type === 'system' ? (
+                <div className={styles.feed_author}>
+                    {isSystem ? (
                         <>
                             <img src="/img/symbol-w.png" alt="" />
-                            <p>Systémová zpráva</p>
+                            <p>Systém</p>
                         </>
                     ) : (
                         <>
-                            <div className={styles.img_container} style={{ width: '2rem', height: '2rem', borderRadius: '50%', backgroundColor: 'rgba(255,255,255,0.1)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                <User size={20} color="white" />
+                            <div className={styles.author_avatar}>
+                                <User size={12} color="rgba(255,255,255,0.5)" />
                             </div>
-                            <p>lecturer</p>
+                            <p>{feed.authorName || 'Lektor'}</p>
                         </>
                     )}
                 </div>
-                <p>{formatDate(feed.createdAt)}</p>
+                <span className={styles.feed_time}>{formatDate(feed.createdAt)}</span>
             </div>
             <p className={styles.feed_card_content}>{feed.message}</p>
         </div>
-    )
+    );
 }

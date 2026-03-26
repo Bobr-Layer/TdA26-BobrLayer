@@ -1,33 +1,18 @@
 @use "../../../index.scss" as *;
 
 .index_button {
-    background-color: map-get($colors, bck);
-    color: map-get($colors, txt);
+    @include btn-solid;
     padding-block: 0.875rem;
     padding-inline: 2rem;
     font-size: 1.25rem;
-
-    &:hover {
-        background-color: map-get($colors, darkerBck);
-    }
-
-    &.darker {
-        background-color: map-get($colors, txt);
-        color: map-get($colors, bck);
-
-        &:hover {
-            background-color: map-get($colors, darkerTxt);
-        }
-    }
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 
     @media (max-width: 900px) {
         width: 100%;
         box-sizing: border-box;
         padding-block: 1.2rem;
-        padding-inline: 2rem;
-        display: flex;
-        justify-content: center;
-        align-items: center;
         font-size: 1.6rem;
     }
 }

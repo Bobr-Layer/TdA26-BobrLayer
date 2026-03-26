@@ -1,41 +1,26 @@
 @use "../../../index.scss" as *;
 
 .dashboard_button {
-    display: flex;
+    @include btn-solid;
+    display: inline-flex;
     align-items: center;
     padding-block: 0.625rem;
     padding-inline: 1.5rem;
     gap: 0.5rem;
-    background-color: map-get($colors, bck);
-    cursor: pointer;
-    border: none;
-    outline: none;
     height: 3rem;
     box-sizing: border-box;
 
-    &:hover,
-    &:focus {
-        border: none;
-        outline: none;
-    }
-
     span {
-        color: map-get($colors, txt);
         font-size: 1.25rem;
     }
 
     &.longer {
         width: 100%;
-        box-sizing: border-box;
         justify-content: center;
     }
 
     @media (max-width: 900px) {
         width: 100%;
         justify-content: center;
-    }
-
-    &:hover {
-        background-color: map-get($colors, darkerBck);
     }
 }

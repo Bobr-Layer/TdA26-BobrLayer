@@ -1,10 +1,15 @@
 @use "../../../index.scss" as *;
 
 .search_input {
+    @include box;
     display: flex;
+    align-items: center;
     justify-content: space-between;
-    background-color: map-get($colors, darkerTxt);
     width: 100%;
+
+    &.active {
+        @include box-hover;
+    }
 
     input {
         padding-left: 1.25rem;
@@ -16,19 +21,15 @@
         font-size: 1rem;
         width: 100%;
 
-        &:hover,
-        &:focus {
-            border: none;
-            outline: none;
-        }
-
         &::placeholder {
-            color: map-get($colors, shadow);
-            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.3);
         }
     }
 
     button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
         padding-inline: 1.75rem;
         padding-block: 0.75rem;
         border: none;
@@ -36,14 +37,8 @@
         background-color: transparent;
         cursor: pointer;
 
-        &:hover,
-        &:focus {
-            border: none;
-            outline: none;
-
-            svg path {
-                fill: map-get($colors, shadow);
-            }
+        &:hover svg path {
+            fill: #49B3B4;
         }
     }
 }

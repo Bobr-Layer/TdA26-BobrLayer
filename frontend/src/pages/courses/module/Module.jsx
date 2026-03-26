@@ -11,6 +11,7 @@ import { getCourseFeed } from '../../../services/FeedService';
 import Api from '../../../services/Api';
 import { User } from 'lucide-react';
 import { usePageTitle } from '../../../hooks/usePageTitle';
+import Footer from '../../../shared/layout/footer/Footer';
 
 export default function Module({ user, setUser }) {
     const { uuid, moduleUuid } = useParams();
@@ -75,53 +76,73 @@ export default function Module({ user, setUser }) {
         return () => eventSource.close();
     }, [uuid]);
 
-    if (loading) return <div>Načítám modul...</div>;
+    if (loading) return null;
     if (error) return <div>Chyba: {error}</div>;
 
     return (
         <div className={styles.wrapper}>
             <Header user={user} setUser={setUser} />
+
             <section className={styles.module}>
-                <article className={styles.module_header}>
-                    <Link to={'/courses/' + uuid}>
-                        <svg width="2.5rem" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M35 20C35 20.3315 34.8683 20.6494 34.6339 20.8838C34.3995 21.1183 34.0815 21.25 33.75 21.25H9.26719L18.3844 30.3656C18.5005 30.4817 18.5926 30.6196 18.6555 30.7713C18.7184 30.9231 18.7507 31.0857 18.7507 31.25C18.7507 31.4142 18.7184 31.5768 18.6555 31.7286C18.5926 31.8803 18.5005 32.0182 18.3844 32.1343C18.2682 32.2505 18.1304 32.3426 17.9786 32.4055C17.8269 32.4683 17.6643 32.5007 17.5 32.5007C17.3358 32.5007 17.1731 32.4683 17.0214 32.4055C16.8696 32.3426 16.7318 32.2505 16.6156 32.1343L5.36563 20.8843C5.24941 20.7682 5.15721 20.6304 5.09431 20.4786C5.0314 20.3269 4.99902 20.1642 4.99902 20C4.99902 19.8357 5.0314 19.673 5.09431 19.5213C5.15721 19.3695 5.24941 19.2317 5.36563 19.1156L16.6156 7.86559C16.8502 7.63104 17.1683 7.49927 17.5 7.49927C17.8317 7.49927 18.1498 7.63104 18.3844 7.86559C18.6189 8.10014 18.7507 8.41826 18.7507 8.74996C18.7507 9.08167 18.6189 9.39979 18.3844 9.63434L9.26719 18.75H33.75C34.0815 18.75 34.3995 18.8817 34.6339 19.1161C34.8683 19.3505 35 19.6684 35 20Z" fill="white" />
-                        </svg>
-                    </Link>
-                    <h1>{module.name}</h1>
-                </article>
-                <article className={styles.module_content}>
-                    <div className={styles.module_content_main}>
-                        <p className={styles.module_content_desc}>{module.description}</p>
-                        <div className={styles.module_content_section}>
-                            <h3>Soubory</h3>
+
+                {/* Back link */}
+                <Link to={'/courses/' + uuid} className={styles.back_link}>
+                    <svg width="1rem" viewBox="0 0 20 20" fill="none">
+                        <path d="M17.5 10C17.5 10.1658 17.4342 10.3247 17.317 10.4419C17.1997 10.5592 17.0408 10.625 16.875 10.625H4.63359L9.19219 15.1828C9.30951 15.3001 9.37539 15.4592 9.37539 15.625C9.37539 15.7908 9.30951 15.9499 9.19219 16.0672C9.07487 16.1845 8.91581 16.2504 8.74997 16.2504C8.58412 16.2504 8.42506 16.1845 8.30774 16.0672L2.68274 10.4422C2.62466 10.3842 2.57855 10.3153 2.54711 10.2394C2.51567 10.1635 2.49951 10.0822 2.49951 10C2.49951 9.9178 2.51567 9.83649 2.54711 9.76062C2.57855 9.68474 2.62466 9.61581 2.68274 9.55782L8.30774 3.93282C8.42506 3.8155 8.58412 3.74963 8.74997 3.74963C8.91581 3.74963 9.07487 3.8155 9.19219 3.93282C9.30951 4.05014 9.37539 4.2092 9.37539 4.37504C9.37539 4.54089 9.30951 4.69994 9.19219 4.81727L4.63359 9.375H16.875C17.0408 9.375 17.1997 9.44085 17.317 9.55807C17.4342 9.6753 17.5 9.83424 17.5 10Z" fill="white"/>
+                    </svg>
+                    Zpět na kurz
+                </Link>
+
+                {/* Hero */}
+                <div className={styles.module_hero}>
+                    <span className={styles.hero_eyebrow}>MODUL</span>
+                    <h1 className={styles.module_title}>{module.name}</h1>
+                    <div className={styles.hero_rule} />
+                </div>
+
+                {/* Body */}
+                <div className={styles.body}>
+
+                    {/* Left column */}
+                    <div className={styles.left_col}>
+                        {module.description && (
+                            <p className={styles.description}>{module.description}</p>
+                        )}
+
+                        <div className={styles.section}>
+                            <span className={styles.section_label}>Soubory</span>
                             <MaterialList materials={files} courseUuid={uuid} moduleUuid={moduleUuid} emptyText="Žádné dostupné soubory" />
                         </div>
-                        <div className={styles.module_content_section}>
-                            <h3>Odkazy</h3>
+
+                        <div className={styles.section}>
+                            <span className={styles.section_label}>Odkazy</span>
                             <MaterialList materials={urls} courseUuid={uuid} moduleUuid={moduleUuid} emptyText="Žádné dostupné odkazy" />
                         </div>
-                        <div className={styles.module_content_section}>
-                            <h3>Kvízy</h3>
+
+                        <div className={styles.section}>
+                            <span className={styles.section_label}>Kvízy</span>
                             <QuizList quizzes={module.quizzes} uuid={uuid} moduleUuid={moduleUuid} />
                         </div>
                     </div>
-                    <div className={styles.module_content_side}>
-                        <h3>Feed kurzu</h3>
+
+                    {/* Right column — feed */}
+                    <div className={styles.right_col}>
+                        <span className={styles.feed_label}>Feed kurzu</span>
                         <FeedList posts={feeds} feedListRef={feedListRef} />
                     </div>
-                </article>
+
+                </div>
             </section>
 
-            <div className={styles.module_ball}></div>
+            <Footer user={user} setUser={setUser} />
+            <div className={styles.module_ball} />
         </div>
-    )
+    );
 }
 
 function MaterialList({ materials, courseUuid, moduleUuid, emptyText }) {
     const [showMore, setShowMore] = useState(false);
-
-    const visibleMaterials = showMore ? materials : materials.slice(0, 5);
+    const visible = showMore ? materials : materials.slice(0, 5);
 
     if (materials.length === 0) {
         return <p className={styles.no}>{emptyText}</p>;
@@ -130,7 +151,7 @@ function MaterialList({ materials, courseUuid, moduleUuid, emptyText }) {
     return (
         <>
             <div className={styles.material_list}>
-                {visibleMaterials.map((m) => (
+                {visible.map(m => (
                     <MaterialCard key={m.uuid} material={m} file={m.type === 'file'} courseUuid={courseUuid} moduleUuid={moduleUuid} />
                 ))}
             </div>
@@ -143,8 +164,7 @@ function MaterialList({ materials, courseUuid, moduleUuid, emptyText }) {
 
 function QuizList({ quizzes, uuid, moduleUuid }) {
     const [showMore, setShowMore] = useState(false);
-
-    const visibleQuizzes = showMore ? quizzes : quizzes.slice(0, 2);
+    const visible = showMore ? quizzes : quizzes.slice(0, 2);
 
     if (quizzes.length === 0) {
         return <p className={styles.no}>Žádné dostupné kvízy</p>;
@@ -153,7 +173,7 @@ function QuizList({ quizzes, uuid, moduleUuid }) {
     return (
         <>
             <div className={styles.quiz_list}>
-                {visibleQuizzes.map((q) => (
+                {visible.map(q => (
                     <QuizCard key={q.uuid} quiz={q} uuid={uuid} moduleUuid={moduleUuid} />
                 ))}
             </div>
@@ -193,25 +213,27 @@ function FeedCard({ feed }) {
         });
     }
 
+    const isSystem = feed.type === 'SYSTEM' || feed.type === 'system';
+
     return (
-        <div className={styles.feed_card}>
+        <div className={`${styles.feed_card} ${isSystem ? styles.system_card : ''}`}>
             <div className={styles.feed_card_header}>
-                <div>
-                    {feed.type === 'system' ? (
+                <div className={styles.feed_author}>
+                    {isSystem ? (
                         <>
                             <img src="/img/symbol-w.png" alt="" />
-                            <p>Systémová zpráva</p>
+                            <p>Systém</p>
                         </>
                     ) : (
                         <>
-                            <div className={styles.feed_card_avatar}>
-                                <User size={20} color="white" />
+                            <div className={styles.author_avatar}>
+                                <User size={12} color="rgba(255,255,255,0.5)" />
                             </div>
                             <p>{feed.authorName || 'Lektor'}</p>
                         </>
                     )}
                 </div>
-                <p>{formatDate(feed.createdAt)}</p>
+                <span className={styles.feed_time}>{formatDate(feed.createdAt)}</span>
             </div>
             <p className={styles.feed_card_content}>{feed.message}</p>
         </div>
@@ -220,10 +242,13 @@ function FeedCard({ feed }) {
 
 function ShowMoreButton({ showMore, setShowMore }) {
     return (
-        <button onClick={() => setShowMore(!showMore)} className={`${styles.show_more_button} ${showMore ? styles.true : ''}`}>
-            <p>{showMore ? 'Sbalit' : 'Rozbalit'}</p>
-            <svg width="1.5rem" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M20.0306 9.53055L12.5306 17.0306C12.4609 17.1003 12.3782 17.1556 12.2871 17.1933C12.1961 17.2311 12.0985 17.2505 11.9999 17.2505C11.9014 17.2505 11.8038 17.2311 11.7127 17.1933C11.6217 17.1556 11.539 17.1003 11.4693 17.0306L3.9693 9.53055C3.82857 9.38982 3.74951 9.19895 3.74951 8.99993C3.74951 8.80091 3.82857 8.61003 3.9693 8.4693C4.11003 8.32857 4.30091 8.24951 4.49993 8.24951C4.69895 8.24951 4.88982 8.32857 5.03055 8.4693L11.9999 15.4396L18.9693 8.4693C19.039 8.39962 19.1217 8.34435 19.2128 8.30663C19.3038 8.26892 19.4014 8.24951 19.4999 8.24951C19.5985 8.24951 19.6961 8.26892 19.7871 8.30663C19.8781 8.34435 19.9609 8.39962 20.0306 8.4693C20.1002 8.53899 20.1555 8.62171 20.1932 8.71276C20.2309 8.8038 20.2503 8.90138 20.2503 8.99993C20.2503 9.09847 20.2309 9.19606 20.1932 9.2871C20.1555 9.37815 20.1002 9.46087 20.0306 9.53055Z" fill="#838383" />
+        <button
+            onClick={() => setShowMore(!showMore)}
+            className={`${styles.show_more_button} ${showMore ? styles.expanded : ''}`}
+        >
+            {showMore ? 'Sbalit' : 'Zobrazit více'}
+            <svg width="1rem" viewBox="0 0 24 24" fill="none">
+                <path d="M20.0306 9.53055L12.5306 17.0306C12.461 17.1003 12.3782 17.1556 12.2872 17.1933C12.1961 17.2311 12.0985 17.2505 12 17.2505C11.9015 17.2505 11.8038 17.2311 11.7128 17.1933C11.6218 17.1556 11.539 17.1003 11.4694 17.0306L3.96936 9.53055C3.82863 9.38982 3.74957 9.19895 3.74957 8.99993C3.74957 8.80091 3.82863 8.61003 3.96936 8.4693C4.11009 8.32857 4.30097 8.24951 4.49999 8.24951C4.69901 8.24951 4.88988 8.32857 5.03061 8.4693L12 15.4396L18.9694 8.4693C19.039 8.39962 19.1218 8.34435 19.2128 8.30663C19.3038 8.26892 19.4015 8.24951 19.5 8.24951C19.5985 8.24951 19.6962 8.26892 19.7872 8.30663C19.8782 8.34435 19.961 8.39962 20.0306 8.4693C20.1003 8.53899 20.1555 8.62171 20.1932 8.71276C20.231 8.8038 20.2504 8.90138 20.2504 8.99993C20.2504 9.09847 20.231 9.19606 20.1932 9.2871C20.1555 9.37815 20.1003 9.46087 20.0306 9.53055Z" fill="rgba(255,255,255,0.5)"/>
             </svg>
         </button>
     );

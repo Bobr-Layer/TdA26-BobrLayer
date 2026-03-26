@@ -7,12 +7,19 @@ import { User, LogOut } from 'lucide-react';
 function Header({ green, transparent, user, setUser, onlyMobile }) {
     const [showSidenav, setShowSidenav] = useState(false);
     const [showDropdown, setShowDropdown] = useState(false);
+    const [scrolled, setScrolled] = useState(() => window.scrollY > 10);
     const dropdownRef = useRef(null);
 
     useEffect(() => {
         document.body.style.overflow = showSidenav ? 'hidden' : '';
         return () => { document.body.style.overflow = ''; };
     }, [showSidenav]);
+
+    useEffect(() => {
+        const handleScroll = () => setScrolled(window.scrollY > 10);
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
     const handleLogout = async () => {
         try {
@@ -39,10 +46,10 @@ function Header({ green, transparent, user, setUser, onlyMobile }) {
 
     return (
         <>
-            <div className={`${styles.grad} ${green ? styles.green : ''} ${transparent ? styles.transparent : ''} ${onlyMobile ? styles.only_mobile : ''}`}></div>
-            <header className={`${styles.header} ${green ? styles.green : ''} ${transparent ? styles.transparent : ''} ${onlyMobile ? styles.only_mobile : ''}`}>
+            <div className={`${styles.grad} ${scrolled ? styles.scrolled : ''} ${green ? styles.green : ''} ${transparent ? styles.transparent : ''} ${onlyMobile ? styles.only_mobile : ''}`}></div>
+            <header className={`${styles.header} ${scrolled ? styles.scrolled : ''} ${green ? styles.green : ''} ${transparent ? styles.transparent : ''} ${onlyMobile ? styles.only_mobile : ''}`}>
                 <Link to={"/"}>
-                    <img src="/img/symbol-w.png" alt="Bile logo Think different academy" />
+                    <img src="/img/logo_horizontal_white.svg" alt="Think different Academy" />
                 </Link>
                 <nav>
                     <Link to={"/"}>Domov</Link>

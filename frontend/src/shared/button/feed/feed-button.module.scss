@@ -1,22 +1,15 @@
 @use "../../../index.scss" as *;
 
 .feed_button {
-    display: flex;
+    @include btn-solid;
+    display: inline-flex;
     align-items: center;
     gap: 1.875rem;
-    background-color: map-get($colors, action);
     padding-block: 0.25rem;
     padding-inline: 1rem;
-    color: map-get($colors, bck);
     font-size: 1rem;
-    border: 2px solid map-get($colors, action);
     height: 2.5rem;
     box-sizing: border-box;
-
-    &:hover {
-        background-color: map-get($colors, darkerAction);
-        border-color: map-get($colors, darkerAction);
-    }
 
     &.longer {
         justify-content: space-between;

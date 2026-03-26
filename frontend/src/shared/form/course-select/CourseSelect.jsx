@@ -21,8 +21,8 @@ export default function CourseSelect({ courseData, setCourseData, admin }) {
     };
 
     return (
-        <div className={styles.wrapper}>
-            <select 
+        <div className={`${styles.wrapper} ${state ? styles.active : ''}`}>
+            <select
                 className={styles.course_select}
                 value={state}
                 onChange={handleChange}

@@ -57,33 +57,51 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: rgba(26, 26, 26, 0.4);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    height: 6.25rem;
+    background: transparent;
     width: 100%;
     box-sizing: border-box;
-    padding-top: 3.75rem;
-    padding-inline: 7.5rem;
+    padding: 3rem 7.5rem;
     position: fixed;
     top: 0;
     left: 0;
     z-index: 99;
+
+    // Blur layer — extends below the nav bar so it doesn't hard-cut
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: -5rem;
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+        mask-image: linear-gradient(to bottom, black 0%, black 45%, transparent 100%);
+        -webkit-mask-image: linear-gradient(to bottom, black 0%, black 45%, transparent 100%);
+        z-index: -1;
+        opacity: 0;
+        transition: opacity 0.4s ease;
+        pointer-events: none;
+    }
+
+    &.scrolled::before {
+        opacity: 1;
+    }
 
     &.only_mobile {
         display: none !important;
     }
 
     @media (max-width: 1200px) {
-        padding-inline: 3rem;
-        padding-top: 3rem;
+        padding: 1.75rem 3rem;
     }
 
     img {
-        width: 3.438rem;
+        height: 3rem;
+        width: auto;
 
         @media (max-width: 900px) {
-            width: 3.7rem;
+            height: 1.75rem;
         }
     }
 
@@ -189,11 +207,24 @@
     top: 0;
     left: 0;
     width: 100%;
-    background: linear-gradient(0deg, rgba(26, 26, 26, 0) 0%, rgba(26, 26, 26, 0.8) 100%);
-    filter: blur(8px);
-    z-index: 98;
-    height: 12.5rem;
+    height: 16rem;
     pointer-events: none;
+    z-index: 97;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+
+    &.scrolled {
+        opacity: 1;
+    }
+
+    // Dark tint — pure smooth gradient, fully independent from blur
+    &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to bottom, rgba(0, 0, 0, 0.9) 0%, transparent 100%);
+    }
+
 
     &.only_mobile {
         display: none !important;

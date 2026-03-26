@@ -1,28 +1,14 @@
 @use "../../../index.scss" as *;
 
 .submit_button {
-    color: map-get($colors, txt);
-    background-color: map-get($colors, bck);
+    @include btn-solid;
     font-size: 1.25rem;
     padding-inline: 1.25rem;
     padding-block: 1rem;
-    border: 0;
-    outline: 0;
     width: 100%;
     height: 3.75rem;
     display: flex;
     align-items: center;
     justify-content: center;
     box-sizing: border-box;
-    cursor: pointer;
-
-    &:hover,
-    &:focus {
-        border: none;
-        outline: none;
-    }
-
-    &:hover {
-        background-color: map-get($colors, lighterAction);
-    }
 }

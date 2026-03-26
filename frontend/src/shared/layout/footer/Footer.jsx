@@ -16,7 +16,7 @@ export default function Footer({ user, setUser }) {
     return (
         <footer className={styles.footer}>
             <article>
-                <img src="/img/footer.png" alt="Logo Think Different Academy" />
+                <img src="/img/logo_erb_white.svg" alt="Logo Think Different Academy" />
                 <div className={styles.footer_list}>
                     <div className={styles.footer_list_block}>
                         <h3>Pro veřejnost</h3>
