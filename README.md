@@ -43,7 +43,7 @@ docker compose up --build
 
 ## 📁 Struktura projektu
 
-src/main/java/cz/projektantpata/tda26/ <br>
+src/main/java/cz/projektantpatvva/tda26/ <br>
 ├── caddy/ # Konfigurace Caddy (reverzní proxy) <br>
 ├── db/ # Databáze (PostgreSQL)<br>
 ├── frontend/ # Zdrojový kód frontendu (React) <br>
