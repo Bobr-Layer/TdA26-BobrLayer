@@ -10,6 +10,7 @@
     gap: 7.5rem;
     position: relative;
 
+
     @media (max-width: 1200px) {
         padding-inline: 3rem;
     }
@@ -119,11 +120,12 @@
         position: absolute;
         left: 0;
         bottom: 0;
-        background: radial-gradient(circle at bottom left, rgba(2, 87, 165, 0.5), map-get($colors, txt) 70%);
-        width: 30rem;
-        height: 30rem;
-        z-index: -1;
-        filter: blur(100px);
+        background: radial-gradient(circle at bottom left, rgba(2, 87, 165, 0.5), transparent 70%);
+        width: 20rem;
+        height: 20rem;
+        z-index: 0;
+        filter: blur(80px);
+        pointer-events: none;
 
         @media (max-width: 900px) {
             display: none;

@@ -62,7 +62,6 @@ function Courses({ user, setUser }) {
       </div>
 
       <Footer user={user} setUser={setUser} />
-
       <div className={styles.courses_ball}></div>
     </div>
   )

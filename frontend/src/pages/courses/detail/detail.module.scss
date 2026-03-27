@@ -2,13 +2,14 @@
 
 .wrapper {
     position: relative;
+    overflow: hidden;
     min-height: 100dvh;
     display: flex;
     flex-direction: column;
 }
 
 .detail_ball {
-    position: fixed;
+    position: absolute;
     top: 0;
     right: 0;
     background: radial-gradient(circle at top right, rgba(2, 87, 165, 0.28), transparent 65%);
@@ -17,6 +18,8 @@
     z-index: 0;
     pointer-events: none;
     filter: blur(80px);
+
+    @media (max-width: 900px) { display: none; }
 }
 
 /* ── REVEAL ── */
@@ -59,8 +62,6 @@
     letter-spacing: 0.06em;
     text-decoration: none;
     align-self: flex-start;
-
-    svg path { fill: #fff; }
 
     &:hover svg path { fill: #49B3B4; }
 }

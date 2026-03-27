@@ -33,16 +33,8 @@ function Index({ user, setUser }) {
   usePageTitle('Domů');
   const [courses, setCourses] = useState([]);
   const pillarsRef = useRef(null);
-  const [hideScrollBtn, setHideScrollBtn] = useState(false);
-
   useEffect(() => {
     getCourses().then(setCourses).catch(console.error);
-  }, []);
-
-  useEffect(() => {
-    const onScroll = () => setHideScrollBtn(window.scrollY > 50);
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   useEffect(() => {
@@ -66,24 +58,25 @@ function Index({ user, setUser }) {
 
       {/* ── HERO ──────────────────────────────────────── */}
       <section className={styles.hero}>
-        <div className={styles.hero_main}>
-          <div className={styles.hero_label}>
-            <span>VZDĚLÁVACÍ PLATFORMA</span>
-            <span className={styles.sep}>—</span>
-            <span>TDA 2026</span>
-          </div>
-          <h1 className={styles.hero_h1}>
-            <span>Naučte se</span>
-            <span className={styles.hero_accent}>cokoliv.</span>
-          </h1>
-          <div className={styles.hero_foot}>
+        <div className={styles.hero_label}>
+          <span>VZDĚLÁVACÍ PLATFORMA</span>
+          <span className={styles.sep}>—</span>
+          <span>TDA 2026</span>
+        </div>
+
+        <h1 className={styles.hero_h1}>
+          <span>Naučte se</span>
+          <span className={styles.hero_accent}>cokoliv.</span>
+        </h1>
+
+        <div className={styles.hero_rule} />
+
+        <div className={styles.hero_bottom}>
+          <div className={styles.hero_desc}>
             <p>Vzdělávání, které se přizpůsobí vám. Kurzy navržené tak, abyste skutečně pochopili problematiku — od základů po pokročilé koncepty.</p>
             <IndexButton text="Prohlédnout kurzy" link="/courses" />
           </div>
-        </div>
 
-        <div className={styles.hero_aside}>
-          <div className={styles.hero_aside_line} />
           <div className={styles.hero_stats}>
             {[
               { val: '∞', label: 'možností' },
@@ -98,17 +91,7 @@ function Index({ user, setUser }) {
           </div>
         </div>
 
-        <button
-          className={`${styles.scroll_btn} ${hideScrollBtn ? styles.hidden : ''}`}
-          onClick={() => pillarsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-          aria-label="Scrollovat dolů"
-        >
-          <svg width="3rem" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M40.0612 19.0612L25.0612 34.0612C24.9219 34.2007 24.7565 34.3113 24.5744 34.3868C24.3923 34.4623 24.1971 34.5012 24 34.5012C23.8029 34.5012 23.6077 34.4623 23.4256 34.3868C23.2435 34.3113 23.078 34.2007 22.9387 34.0612L7.93873 19.0612C7.65727 18.7798 7.49915 18.398 7.49915 18C7.49915 17.6019 7.65727 17.2202 7.93873 16.9387C8.22019 16.6573 8.60193 16.4991 8.99998 16.4991C9.39803 16.4991 9.77977 16.6573 10.0612 16.9387L24 30.8794L37.9387 16.9387C38.0781 16.7994 38.2435 16.6888 38.4256 16.6134C38.6077 16.538 38.8029 16.4991 39 16.4991C39.1971 16.4991 39.3922 16.538 39.5743 16.6134C39.7564 16.6888 39.9219 16.7994 40.0612 16.9387C40.2006 17.0781 40.3111 17.2435 40.3866 17.4256C40.462 17.6077 40.5008 17.8029 40.5008 18C40.5008 18.1971 40.462 18.3922 40.3866 18.5743C40.3111 18.7564 40.2006 18.9219 40.0612 19.0612Z" fill="white" />
-          </svg>
-        </button>
-
-        <div className={styles.hero_ball} />
+<div className={styles.hero_ball} />
       </section>
 
       {/* ── STATEMENT ─────────────────────────────────── */}
