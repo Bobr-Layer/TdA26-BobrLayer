@@ -1,9 +1,10 @@
+import { useEffect, useRef } from 'react';
 import Footer from '../../shared/layout/footer/Footer';
 import Header from '../../shared/layout/header/Header';
 import styles from './info.module.scss';
 import { usePageTitle } from '../../hooks/usePageTitle';
 
-function TeamPlaceholder({ name, role, color }) {
+function TeamCard({ name, role, color }) {
     return (
         <div className={styles.team_card}>
             <div className={styles.team_avatar} style={{ background: color }}>
@@ -20,143 +21,176 @@ function TeamPlaceholder({ name, role, color }) {
     );
 }
 
+const VALUES = [
+    {
+        label: 'Přístupnost',
+        text: 'Vzdělávání by mělo být dostupné každému — bez ohledu na zázemí nebo zkušenosti.',
+        color: '#0070BB',
+        bg: 'rgba(0,112,187,0.12)',
+        icon: (
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="#0070BB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+        ),
+    },
+    {
+        label: 'Efektivita',
+        text: 'Kvízy, materiály a strukturované moduly — vše navrženo tak, abyste se skutečně naučili.',
+        color: '#49B3B4',
+        bg: 'rgba(73,179,180,0.12)',
+        icon: (
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+                <path d="M9 11l3 3L22 4" stroke="#49B3B4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" stroke="#49B3B4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+        ),
+    },
+    {
+        label: 'Flexibilita',
+        text: 'Učte se svým tempem. Vaše vzdělávání, vaše podmínky, váš plán.',
+        color: '#91F5AD',
+        bg: 'rgba(145,245,173,0.10)',
+        icon: (
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="10" stroke="#91F5AD" strokeWidth="2" />
+                <path d="M12 8v4l3 3" stroke="#91F5AD" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+        ),
+    },
+    {
+        label: 'Komunita',
+        text: 'Věříme v sílu sdílení znalostí mezi lektory a studenty.',
+        color: '#0257A5',
+        bg: 'rgba(2,87,165,0.12)',
+        icon: (
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+                <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" stroke="#0257A5" strokeWidth="2" strokeLinecap="round" />
+                <circle cx="9" cy="7" r="4" stroke="#0257A5" strokeWidth="2" />
+                <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="#0257A5" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+        ),
+    },
+];
+
 export default function About({ user, setUser }) {
     usePageTitle('O nás');
+    const revealRefs = useRef([]);
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => entries.forEach(e => e.isIntersecting && e.target.classList.add(styles.revealed)),
+            { threshold: 0.12 }
+        );
+        revealRefs.current.forEach(el => el && observer.observe(el));
+        return () => observer.disconnect();
+    }, []);
+
+    const reveal = (delay = 0) => ({
+        ref: el => { if (el && !revealRefs.current.includes(el)) revealRefs.current.push(el); },
+        className: styles.reveal,
+        style: { '--delay': `${delay}s` },
+    });
+
     return (
         <div className={styles.about_wrapper}>
             <Header user={user} setUser={setUser} />
 
+            {/* ── Hero ── */}
             <section className={styles.about_hero}>
                 <div className={styles.about_hero_content}>
-                    <h1>O nás</h1>
-                    <p>
-                        Stavíme digitální vrstvu vzdělávání —<br />
-                        <span>pevnou a důmyslnou jako bobří hráz.</span>
-                    </p>
+                    <span className={styles.about_label}>Tým Bobr Layer · SPŠE Pardubice</span>
+                    <h1>Stavíme digitální<br />vrstvu vzdělávání</h1>
+                    <p>Pevnou a důmyslnou jako bobří hráz.</p>
                 </div>
-                <div className={styles.about_hero_img}>
-                    <div className={styles.placeholder_img}>
-                        <svg viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <rect width="400" height="300" rx="8" fill="rgba(255,255,255,0.04)" />
-                            <rect x="16" y="16" width="368" height="268" rx="4" stroke="rgba(255,255,255,0.08)" strokeWidth="1" strokeDasharray="6 4" />
-                            <circle cx="200" cy="120" r="40" fill="rgba(0,112,187,0.15)" />
-                            <circle cx="200" cy="120" r="25" fill="rgba(0,112,187,0.25)" />
-                            <path d="M185 120 L200 105 L215 120 L210 120 L210 135 L190 135 L190 120 Z" fill="rgba(0,112,187,0.6)" />
-                            <text x="200" y="200" textAnchor="middle" fill="rgba(255,255,255,0.2)" fontSize="13" fontFamily="Dosis, sans-serif">Foto týmu</text>
-                        </svg>
-                    </div>
-                </div>
-                <div className={styles.about_hero_ball}></div>
+                <div className={styles.about_hero_ball} />
             </section>
 
+            <hr className={styles.about_rule} />
+
+            {/* ── Stats ── */}
+            <section className={styles.about_stats}>
+                {[
+                    { num: '3', label: 'členové týmu' },
+                    { num: '2026', label: 'rok vzniku' },
+                    { num: '∞', label: 'vrstev vědomostí' },
+                ].map((s, i) => (
+                    <div key={i} {...reveal(i * 0.1)} className={`${styles.reveal} ${styles.stat}`} style={{ '--delay': `${i * 0.1}s` }} ref={el => { if (el && !revealRefs.current.includes(el)) revealRefs.current.push(el); }}>
+                        <span className={styles.stat_num}>{s.num}</span>
+                        <span className={styles.stat_label}>{s.label}</span>
+                    </div>
+                ))}
+            </section>
+
+            <hr className={styles.about_rule} />
+
+            {/* ── Story ── */}
             <section className={styles.about_story}>
-                <div className={styles.about_story_label}>Náš příběh</div>
+                <div {...reveal(0)} className={`${styles.reveal} ${styles.about_story_label}`} ref={el => { if (el && !revealRefs.current.includes(el)) revealRefs.current.push(el); }}>Náš příběh</div>
                 <div className={styles.about_story_content}>
-                    <h2>Jak to všechno začalo</h2>
+                    <div {...reveal(0.1)} className={`${styles.reveal}`} ref={el => { if (el && !revealRefs.current.includes(el)) revealRefs.current.push(el); }}>
+                        <h2>Jak to všechno začalo</h2>
+                    </div>
                     <div className={styles.about_story_text}>
-                        <p>
-                            Založení Teachers Digital Academy nebylo dílem náhody, ale ryzí potřeby. Vše začalo v malé univerzitní laboratoři,
-                            kde se parta nadšenců snažila najít způsob, jak efektivněji sdílet studijní materiály a testovat znalosti před
-                            nekonečnými zkouškami. Tradiční systémy byly nemotorné, pomalé a chyběla jim duše.
-                        </p>
-                        <p>
-                            A tak jsme se rozhodli vybudovat vlastní platformu. Název "Teachers Digital Academy" vznikl na jedné noční programovací
-                            seanci — stavíme <em>vrstvu vědomostí pevnou a důmyslnou jako bobří hráz.</em>
-                        </p>
-                        <p>
-                            Dnes je TdA nástrojem pro moderní lektory a studenty, kteří hledají přehlednost, rychlost a férové prostředí.
-                        </p>
+                        {[
+                            'Založení Teachers Digital Academy nebylo dílem náhody, ale ryzí potřeby. Vše začalo v malé univerzitní laboratoři, kde se parta nadšenců snažila najít způsob, jak efektivněji sdílet studijní materiály a testovat znalosti před nekonečnými zkouškami.',
+                            'Tradiční systémy byly nemotorné, pomalé a chyběla jim duše. A tak jsme se rozhodli vybudovat vlastní platformu — stavíme vrstvu vědomostí pevnou a důmyslnou jako bobří hráz.',
+                            'Dnes je TdA nástrojem pro moderní lektory a studenty, kteří hledají přehlednost, rychlost a férové prostředí.',
+                        ].map((p, i) => (
+                            <p key={i} {...reveal(0.1 + i * 0.1)} className={`${styles.reveal}`} ref={el => { if (el && !revealRefs.current.includes(el)) revealRefs.current.push(el); }}>{p}</p>
+                        ))}
                     </div>
                 </div>
             </section>
 
+            <hr className={styles.about_rule} />
+
+            {/* ── Values ── */}
             <section className={styles.about_values}>
-                <div className={styles.about_values_label}>Co nás pohání</div>
+                <span className={styles.about_story_label}>Co nás pohání</span>
                 <h2>Naše hodnoty</h2>
                 <div className={styles.about_values_grid}>
-                    <div className={styles.value_card}>
-                        <div className={styles.value_icon} style={{ background: 'linear-gradient(135deg, #0070BB22, #0070BB44)' }}>
-                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-                                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="#0070BB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                            </svg>
+                    {VALUES.map((v, i) => (
+                        <div
+                            key={i}
+                            className={`${styles.reveal} ${styles.value_card}`}
+                            style={{ '--delay': `${i * 0.08}s` }}
+                            ref={el => { if (el && !revealRefs.current.includes(el)) revealRefs.current.push(el); }}
+                        >
+                            <div className={styles.value_icon} style={{ background: v.bg }}>
+                                {v.icon}
+                            </div>
+                            <h3>{v.label}</h3>
+                            <p>{v.text}</p>
                         </div>
-                        <h3>Přístupnost</h3>
-                        <p>Vzdělávání by mělo být dostupné každému — bez ohledu na zázemí nebo zkušenosti.</p>
-                    </div>
-                    <div className={styles.value_card}>
-                        <div className={styles.value_icon} style={{ background: 'linear-gradient(135deg, #49B3B422, #49B3B444)' }}>
-                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-                                <path d="M9 11l3 3L22 4" stroke="#49B3B4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" stroke="#49B3B4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                            </svg>
-                        </div>
-                        <h3>Efektivita</h3>
-                        <p>Kvízy, materiály a strukturované moduly — vše navrženo tak, abyste se skutečně naučili.</p>
-                    </div>
-                    <div className={styles.value_card}>
-                        <div className={styles.value_icon} style={{ background: 'linear-gradient(135deg, #91F5AD22, #91F5AD44)' }}>
-                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-                                <circle cx="12" cy="12" r="10" stroke="#91F5AD" strokeWidth="2" />
-                                <path d="M12 8v4l3 3" stroke="#91F5AD" strokeWidth="2" strokeLinecap="round" />
-                            </svg>
-                        </div>
-                        <h3>Flexibilita</h3>
-                        <p>Učte se svým tempem. Vaše vzdělávání, vaše podmínky, váš plán.</p>
-                    </div>
-                    <div className={styles.value_card}>
-                        <div className={styles.value_icon} style={{ background: 'linear-gradient(135deg, #0257A522, #0257A544)' }}>
-                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-                                <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" stroke="#0257A5" strokeWidth="2" strokeLinecap="round" />
-                                <circle cx="9" cy="7" r="4" stroke="#0257A5" strokeWidth="2" />
-                                <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="#0257A5" strokeWidth="2" strokeLinecap="round" />
-                            </svg>
-                        </div>
-                        <h3>Komunita</h3>
-                        <p>Věříme v sílu sdílení znalostí mezi lektory a studenty.</p>
-                    </div>
+                    ))}
                 </div>
             </section>
 
+            <hr className={styles.about_rule} />
+
+            {/* ── Team ── */}
             <section className={styles.about_team}>
-                <div className={styles.about_team_label}>Tým</div>
+                <span className={styles.about_story_label}>Tým</span>
                 <h2>Kdo za tím stojí</h2>
                 <p className={styles.about_team_desc}>
-                    Jsme tým studentů SPŠE Pardubice, kteří se rozhodli vytvořit platformu,<br />
+                    Jsme tým studentů SPŠE Pardubice, kteří se rozhodli vytvořit platformu,
                     která by jim samotným pomáhala se učit.
                 </p>
                 <div className={styles.team_grid}>
-                    <TeamPlaceholder
-                        name="Richard Hývl"
-                        role="Backend developer"
-                        color="linear-gradient(135deg, #0070BB, #0257A5)"
-                    />
-                    <TeamPlaceholder
-                        name="Petr Machovec"
-                        role="Frontend developer"
-                        color="linear-gradient(135deg, #49B3B4, #0070BB)"
-                    />
-                    <TeamPlaceholder
-                        name="Nicolas Weiser"
-                        role="UI/UX designer"
-                        color="linear-gradient(135deg, #6DD4B1, #49B3B4)"
-                    />
-                </div>
-            </section>
-
-            <section className={styles.about_stats}>
-                <div className={styles.stat}>
-                    <span className={styles.stat_num}>3</span>
-                    <span className={styles.stat_label}>členové týmu</span>
-                </div>
-                <div className={styles.stat_divider}></div>
-                <div className={styles.stat}>
-                    <span className={styles.stat_num}>2026</span>
-                    <span className={styles.stat_label}>rok vzniku</span>
-                </div>
-                <div className={styles.stat_divider}></div>
-                <div className={styles.stat}>
-                    <span className={styles.stat_num}>∞</span>
-                    <span className={styles.stat_label}>vrstev vědomostí</span>
+                    {[
+                        { name: 'Richard Hývl', role: 'Backend developer', color: 'linear-gradient(135deg, #0070BB, #0257A5)' },
+                        { name: 'Petr Machovec', role: 'Frontend developer', color: 'linear-gradient(135deg, #49B3B4, #0070BB)' },
+                        { name: 'Nicolas Weiser', role: 'UI/UX designer', color: 'linear-gradient(135deg, #6DD4B1, #49B3B4)' },
+                    ].map((m, i) => (
+                        <div
+                            key={i}
+                            className={`${styles.reveal}`}
+                            style={{ '--delay': `${i * 0.1}s` }}
+                            ref={el => { if (el && !revealRefs.current.includes(el)) revealRefs.current.push(el); }}
+                        >
+                            <TeamCard {...m} />
+                        </div>
+                    ))}
                 </div>
             </section>
 

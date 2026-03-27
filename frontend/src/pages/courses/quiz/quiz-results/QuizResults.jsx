@@ -5,28 +5,35 @@ export default function QuizResults({ name, result, onShowReview }) {
     if (!result) {
         return (
             <section className={styles.quiz_results}>
-                <article className={styles.quiz_results_header}>
-                    <img src="/img/quiz.png" alt="" />
+                <div className={styles.quiz_results_header}>
                     <h1>{name}</h1>
-                </article>
-                <article className={styles.quiz_results_content}>
+                </div>
+                <div className={styles.quiz_results_content}>
                     <h3>Načítání výsledků...</h3>
-                </article>
+                </div>
             </section>
         );
     }
 
     const correct = result.correctPerQuestion.filter(Boolean).length;
     const total = result.correctPerQuestion.length;
+    const percentage = Math.round((correct / total) * 100);
 
     return (
         <section className={styles.quiz_results}>
-            <article className={styles.quiz_results_header}>
-                <img src="/img/quiz.png" alt="" />
+            <div className={styles.quiz_results_header}>
+                <span className={styles.quiz_results_label}>Výsledky kvízu</span>
                 <h1>{name}</h1>
-            </article>
-            <article className={styles.quiz_results_content}>
-                <p className={styles.quiz_results_score}>{correct} / {total}</p>
+            </div>
+
+            <div className={styles.quiz_results_score_block}>
+                <span className={styles.score_number}>{correct}/{total}</span>
+                <span className={styles.score_label}>{percentage} % správně</span>
+            </div>
+
+            <hr className={styles.quiz_results_divider} />
+
+            <div className={styles.quiz_results_content}>
                 <div className={styles.quiz_results_content_list}>
                     {result.correctPerQuestion.map((isCorrect, index) => (
                         <ResultCard
@@ -36,10 +43,11 @@ export default function QuizResults({ name, result, onShowReview }) {
                         />
                     ))}
                 </div>
-                <button className={styles.review_button} onClick={onShowReview}>
-                    Zobrazit opravený test
-                </button>
-            </article>
+            </div>
+
+            <button className={styles.review_button} onClick={onShowReview}>
+                Zobrazit opravený test
+            </button>
         </section>
-    )
+    );
 }
