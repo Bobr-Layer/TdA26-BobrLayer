@@ -2,45 +2,37 @@
 
 .quiz_question {
     display: flex;
-    align-items: flex-start;
-    gap: 3.75rem;
+    flex-direction: column;
+    gap: 2.5rem;
+    flex: 1;
 
-    @media (max-width: 900px) {
-        flex-direction: column-reverse;
-    }
-
-    .quiz_question_header {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1.25rem;
-
-        @media (max-width: 900px) {
-            grid-template-columns: 1fr 1fr 1fr;
-        }
+    .quiz_progress {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
     }
 
     .quiz_question_content {
         display: flex;
         flex-direction: column;
-        flex: 1;
-        gap: 3.75rem;
-
-        @media (max-width: 900px) {
-            flex: auto;
-            width: 100%;
-        }
+        gap: 2.5rem;
 
         .quiz_question_content_top {
             display: flex;
             flex-direction: column;
-            gap: 1.25rem;
+            gap: 1rem;
 
-            img {
-                width: 3.75rem;
+            .question_type_label {
+                @include section-label;
+                font-size: 0.8rem;
             }
 
             h1 {
-                font-size: 1.5rem;
+                font-size: 2rem;
+                font-weight: 700;
+                line-height: 1.3;
+
+                @media (max-width: 700px) { font-size: 1.5rem; }
             }
         }
 
@@ -48,32 +40,27 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
 
             button {
-                background-color: transparent;
-                border: 0;
-                outline: 0;
-                cursor: pointer;
+                @include btn-ghost;
                 display: flex;
                 align-items: center;
-                gap: 0.625rem;
+                gap: 0.5rem;
+                padding: 0.75rem 1.5rem;
+                font-size: 1rem;
+                font-weight: 700;
+                font-family: inherit;
+                letter-spacing: 0.03em;
 
-                span {
-                    font-size: 1.25rem;
+                svg { flex-shrink: 0; transition: transform 0.2s; }
 
-                    @media (max-width: 900px) {
-                        display: none;
-                    }
-                }
+                &.prev:hover svg { transform: translateX(-3px); }
+                &.next:hover svg { transform: translateX(3px); }
 
-                &:hover {
-                    span {
-                        color: map-get($colors, action2);
-                    }
-
-                    svg path {
-                        fill: map-get($colors, action2);
-                    }
+                &.submit {
+                    @include btn-solid;
                 }
             }
         }

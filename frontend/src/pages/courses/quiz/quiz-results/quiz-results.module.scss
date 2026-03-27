@@ -4,70 +4,82 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 3.75rem;
-    width: 100%;
-    height: 100%;
     justify-content: center;
+    gap: 4rem;
+    width: 100%;
+    min-height: 60vh;
+    text-align: center;
+
+    .quiz_results_label {
+        @include section-label;
+    }
 
     .quiz_results_header {
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 0.75rem;
-
-        img {
-            width: 5rem;
-        }
+        gap: 0.5rem;
 
         h1 {
-            font-size: 2.75rem;
+            font-size: 2.25rem;
             font-weight: 700;
         }
+    }
+
+    .quiz_results_score_block {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+
+        .score_number {
+            font-size: 6rem;
+            font-weight: 700;
+            line-height: 1;
+            color: #91F5AD;
+        }
+
+        .score_label {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.4);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+    }
+
+    .quiz_results_divider {
+        @include rule;
+        max-width: 40rem;
     }
 
     .quiz_results_content {
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 1.25rem;
+        gap: 2rem;
+        width: 100%;
 
         h3 {
             font-size: 1.5rem;
+            color: rgba(255, 255, 255, 0.5);
         }
 
         .quiz_results_content_list {
             display: flex;
-            gap: 1.25rem;
+            gap: 0.5rem;
             flex-wrap: wrap;
             justify-content: center;
-            align-items: center;
-            max-width: 50rem;
-
-            @media (max-width: 900px) {
-                max-width: 100%;
-            }
+            max-width: 48rem;
         }
     }
-}
 
-.quiz_results_score {
-    font-size: 3rem;
-    font-weight: 700;
-}
-
-.review_button {
-    margin-top: 1rem;
-    background-color: map-get($colors, action);
-    border: 0;
-    outline: 0;
-    cursor: pointer;
-    padding: 0.875rem 2.5rem;
-    font-size: 1.125rem;
-    font-weight: 700;
-    color: map-get($colors, bck);
-    transition: opacity 0.2s ease;
-
-    &:hover {
-        opacity: 0.8;
+    .review_button {
+        @include btn-solid;
+        padding: 0.9rem 2.5rem;
+        font-size: 1rem;
+        font-weight: 700;
+        font-family: inherit;
+        letter-spacing: 0.03em;
     }
 }

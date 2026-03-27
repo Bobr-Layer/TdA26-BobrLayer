@@ -1,39 +1,68 @@
 @use "../../../../../../index.scss" as *;
 
 .option_select {
-    padding: 1.25rem;
+    @include box;
+    padding: 1.1rem 1.5rem;
     width: 100%;
-    height: 3.75rem;
     box-sizing: border-box;
-    border: 2px solid map-get($colors, darkerTxt);
-    background-color: map-get($colors, darkerTxt);
     outline: none;
     cursor: pointer;
     border-radius: 0;
     display: flex;
     align-items: center;
-    font-size: 1.5rem;
-    color: map-get($colors, bck);
+    gap: 1rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    font-family: inherit;
+    color: rgba(255, 255, 255, 0.85);
+    transition: border-color 0.18s, background-color 0.18s, color 0.18s;
+    text-align: left;
 
-    &:focus {
-        outline: none;
+    &::before {
+        content: '';
+        flex-shrink: 0;
+        width: 1.1rem;
+        height: 1.1rem;
+        border: 2px solid rgba(255, 255, 255, 0.25);
+        box-sizing: border-box;
+        transition: border-color 0.18s, background-color 0.18s;
+        border-radius: 0;
     }
 
     &:hover {
-        border-color: map-get($colors, action2);
+        @include field-focus;
+        color: #fff;
+        &::before { border-color: rgba(255, 255, 255, 0.6); }
     }
 
     &.active {
-        border-color: map-get($colors, bck);
-        color: map-get($colors, txt);
-        background-color: map-get($colors, bck);
+        @include box-hover;
+        color: #fff;
+        &::before {
+            background-color: #49B3B4;
+            border-color: #49B3B4;
+        }
     }
 
     &.correct {
-        color: map-get($colors, success);
+        border-color: rgba(145, 245, 173, 0.5);
+        background-color: rgba(145, 245, 173, 0.06);
+        color: #91F5AD;
+        &::before {
+            background-color: #91F5AD;
+            border-color: #91F5AD;
+        }
     }
 
     &.wrong {
-        color: map-get($colors, warning);
+        border-color: rgba(255, 100, 100, 0.5);
+        background-color: rgba(255, 100, 100, 0.06);
+        color: #ff6464;
+        &::before {
+            background-color: #ff6464;
+            border-color: #ff6464;
+        }
     }
+
+    &:focus { outline: none; }
 }

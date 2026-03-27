@@ -1,32 +1,42 @@
 @use "../../../../../index.scss" as *;
 
 .result_card {
-    width: 4.375rem;
-    height: 2.5rem;
+    @include box;
+    min-width: 2.75rem;
+    height: 2.75rem;
+    padding: 0 0.75rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.25rem;
+    font-size: 0.95rem;
     font-weight: 700;
-    background-color: map-get($colors, darkerTxt);
-    color: map-get($colors, success);
-    border: 1px solid map-get($colors, darkerTxt);
+    color: rgba(255, 255, 255, 0.5);
     box-sizing: border-box;
     cursor: pointer;
+    transition: border-color 0.18s, background-color 0.18s, color 0.18s;
+    user-select: none;
 
-    &.incorrect {
-        color: map-get($colors, warning);
+    // during quiz (.info = true): always white
+    &.info {
+        color: rgba(255, 255, 255, 0.85);
     }
 
-    &.info {
-        color: map-get($colors, bck);
+    // review mode (no .info): green = correct, red = wrong
+    &:not(.info) {
+        color: #91F5AD;
+
+        &.incorrect {
+            color: #ff6464;
+        }
     }
 
     &:hover {
-        border-color: map-get($colors, action2);
+        @include field-focus;
+        color: #fff;
     }
 
     &.active {
-        border-color: map-get($colors, bck);
+        @include box-hover;
+        color: #49B3B4;
     }
 }
