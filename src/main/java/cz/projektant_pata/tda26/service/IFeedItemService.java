@@ -14,6 +14,6 @@ public interface IFeedItemService {
     List<FeedItem> find(UUID courseUuid);
     FeedItem create(UUID courseUuid, UUID authorUuid, String message);
     FeedItem create(UUID courseUuid, FeedType type, String message);
-    FeedItem update(UUID itemUuid, String newMessage);
-    void delete(UUID itemUuid);
+    FeedItem update(UUID courseUuid, UUID itemUuid, String newMessage);
+    void delete(UUID courseUuid, UUID itemUuid);
 }

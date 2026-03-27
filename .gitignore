@@ -54,3 +54,4 @@ uploads/
 *.bak
 *.swp
 *~
+caddy/Caddyfile

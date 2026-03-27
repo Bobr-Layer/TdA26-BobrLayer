@@ -1,5 +1,6 @@
 package cz.projektant_pata.tda26.service;
 
+import cz.projektant_pata.tda26.exception.ResourceNotFoundException;
 import cz.projektant_pata.tda26.model.course.Course;
 import cz.projektant_pata.tda26.model.course.StatusEnum;
 import cz.projektant_pata.tda26.model.course.feed.FeedItem;
@@ -8,10 +9,7 @@ import cz.projektant_pata.tda26.model.user.User;
 import cz.projektant_pata.tda26.repository.CourseRepository;
 import cz.projektant_pata.tda26.repository.FeedItemRepository;
 import cz.projektant_pata.tda26.repository.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,10 +53,10 @@ public class FeedItemServiceImpl implements IFeedItemService {
 
     @Override
     @Transactional
-    public FeedItem update(UUID itemUuid, String newMessage) {
+    public FeedItem update(UUID courseUuid, UUID itemUuid, String newMessage) {
         FeedItem item = getFeedItem(itemUuid);
-
-//        verifyAuthor(item, userUuid);
+        if (!item.getCourse().getUuid().equals(courseUuid))
+            throw new ResourceNotFoundException("Příspěvek nenalezen v kurzu " + courseUuid);
 
         item.setMessage(newMessage);
         item.setEdited(true);
@@ -69,27 +67,27 @@ public class FeedItemServiceImpl implements IFeedItemService {
 
     @Override
     @Transactional
-    public void delete(UUID itemUuid) {
+    public void delete(UUID courseUuid, UUID itemUuid) {
         FeedItem item = getFeedItem(itemUuid);
-
-//        verifyAuthor(item, userUuid);
+        if (!item.getCourse().getUuid().equals(courseUuid))
+            throw new ResourceNotFoundException("Příspěvek nenalezen v kurzu " + courseUuid);
 
         feedRepository.delete(item);
     }
 
     private Course getCourse(UUID uuid) {
         return courseRepository.findById(uuid)
-                .orElseThrow(() -> new EntityNotFoundException("Course not found: " + uuid));
+                .orElseThrow(() -> new ResourceNotFoundException("Kurz nenalezen: " + uuid));
     }
 
     private User getUser(UUID uuid) {
         return userRepository.findById(uuid)
-                .orElseThrow(() -> new EntityNotFoundException("User not found: " + uuid));
+                .orElseThrow(() -> new ResourceNotFoundException("Uživatel nenalezen: " + uuid));
     }
 
     private FeedItem getFeedItem(UUID uuid) {
         return feedRepository.findById(uuid)
-                .orElseThrow(() -> new EntityNotFoundException("Post not found: " + uuid));
+                .orElseThrow(() -> new ResourceNotFoundException("Příspěvek nenalezen: " + uuid));
     }
 
     private FeedItem saveFeedItem(Course course, User author, FeedType type, String message) {
