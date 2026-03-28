@@ -4,7 +4,7 @@ import { usePageTitle } from '../../../hooks/usePageTitle';
 import QuizQuestion from './quiz-question/QuizQuestion';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import QuizResults from './quiz-results/QuizResults';
-import { getQuizByUuid, submitQuiz } from '../../../services/QuizzService';
+import { getQuizByUuid, submitQuiz, getMyAttempt } from '../../../services/QuizzService';
 import Header from '../../../shared/layout/header/Header';
 
 export default function Quiz({ user, setUser }) {
@@ -25,6 +25,29 @@ export default function Quiz({ user, setUser }) {
             try {
                 const data = await getQuizByUuid(uuid, moduleUuid, quizzUuid);
                 setQuiz(data);
+                try {
+                    const attempt = await getMyAttempt(uuid, moduleUuid, quizzUuid);
+                    if (attempt) {
+                        const reconstructed = data.questions.map((q) => {
+                            const a = attempt.answers?.[q.uuid];
+                            if (!a) return undefined;
+                            if (q.type === 'singleChoice') return a.selectedIndex ?? null;
+                            if (q.type === 'multipleChoice') return a.selectedIndices ?? [];
+                            if (q.type === 'openQuestion') return a.textAnswer || '';
+                            return undefined;
+                        });
+                        setAnswers(reconstructed);
+                        setQuizResult({
+                            score: attempt.score,
+                            maxScore: attempt.maxScore,
+                            correctPerQuestion: attempt.correctPerQuestion,
+                            evaluations: attempt.evaluations,
+                        });
+                        setFinish(true);
+                    }
+                } catch (_) {
+                    // not authenticated or no attempt — proceed normally
+                }
             } catch (err) {
                 console.error(err);
                 navigate('/courses/' + uuid + '/modules/' + moduleUuid);
@@ -113,6 +136,7 @@ export default function Quiz({ user, setUser }) {
                                     submitting={submitting}
                                     currentQuestion={quiz.questions[currentStep]}
                                     quizResult={quizResult}
+                                    evaluations={quizResult?.evaluations}
                                 />
                             ) : (
                                 <QuizResults

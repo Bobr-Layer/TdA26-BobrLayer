@@ -21,4 +21,5 @@ public interface IQuizService {
 
     List<QuizAttempt> getAttempts(UUID moduleUuid, UUID quizUuid, String search, Boolean pendingReview);
     void evaluateAttempt(UUID moduleUuid, UUID quizUuid, UUID attemptUuid, EvaluateAttemptDTO dto);
+    java.util.Optional<QuizAttempt> getMyAttempt(UUID moduleUuid, UUID quizUuid);
 }

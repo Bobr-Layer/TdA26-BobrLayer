@@ -12,6 +12,8 @@ import cz.projektant_pata.tda26.dto.course.quiz.StudentAttemptDTO;
 import cz.projektant_pata.tda26.dto.user.UserResponseDTO;
 import cz.projektant_pata.tda26.mapper.CourseMapper;
 import cz.projektant_pata.tda26.mapper.UserMapper;
+import cz.projektant_pata.tda26.model.course.quiz.OpenQuestion;
+import cz.projektant_pata.tda26.model.course.quiz.Question;
 import cz.projektant_pata.tda26.model.course.quiz.QuizAttempt;
 import cz.projektant_pata.tda26.model.user.RoleEnum;
 import cz.projektant_pata.tda26.model.user.User;
@@ -177,6 +179,13 @@ public class AuthController {
                 dto.setEvaluations(objectMapper.readValue(a.getEvaluationsJson(), new TypeReference<>() {}));
             } catch (Exception ignored) {}
         }
+        java.util.Map<String, String> openTexts = new java.util.LinkedHashMap<>();
+        for (Question q : a.getQuiz().getQuestions()) {
+            if (q instanceof OpenQuestion) {
+                openTexts.put(q.getUuid().toString(), q.getQuestion());
+            }
+        }
+        if (!openTexts.isEmpty()) dto.setOpenQuestionTexts(openTexts);
         return dto;
     }
 

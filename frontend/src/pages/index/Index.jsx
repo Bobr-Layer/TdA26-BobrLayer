@@ -7,7 +7,6 @@ import { getCourses } from "../../services/CourseService";
 import Footer from "../../shared/layout/footer/Footer";
 import { usePageTitle } from "../../hooks/usePageTitle";
 import SectionHeading from "../../shared/ui/section-heading/SectionHeading";
-import SupportTicketForm from "../../shared/support-ticket-form/SupportTicketForm";
 
 const PILLARS = [
   {
@@ -150,9 +149,6 @@ function Index({ user, setUser }) {
         </div>
         <div className={styles.rule} />
       </section>
-
-      {/* ── SUPPORT TICKET ────────────────────────────── */}
-      <SupportTicketForm />
 
       <Footer user={user} setUser={setUser} />
       <div className={styles.bg_ball} />

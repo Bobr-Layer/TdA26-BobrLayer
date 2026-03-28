@@ -68,7 +68,7 @@ export default function QuizQuestion({
                             onAnswerChange={onAnswerChange}
                             disabled={!info}
                         />
-                        {info && evaluations?.[currentQuestion.uuid] && (
+                        {!info && evaluations?.[currentQuestion.uuid] && (
                             <div className={`${styles.teacher_note} ${evaluations[currentQuestion.uuid].isCorrect ? styles.teacher_note_correct : styles.teacher_note_wrong}`}>
                                 <span className={styles.teacher_note_label}>
                                     {evaluations[currentQuestion.uuid].isCorrect ? 'Správně' : 'Špatně'}

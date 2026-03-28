@@ -77,7 +77,7 @@ export default function Contact({ user, setUser }) {
                 </div>
             </section>
 
-            <SupportTicketForm />
+            <SupportTicketForm maxScreenshots={1} />
 
             <Footer user={user} setUser={setUser} />
         </div>

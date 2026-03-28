@@ -111,6 +111,17 @@ public class QuizController {
         return ResponseEntity.ok(attempts);
     }
 
+    @GetMapping("/{quizUuid}/my-attempt")
+    public ResponseEntity<QuizAttemptResponseDTO> getMyAttempt(
+            @PathVariable UUID courseUuid,
+            @PathVariable UUID moduleUuid,
+            @PathVariable UUID quizUuid
+    ) {
+        return quizService.getMyAttempt(moduleUuid, quizUuid)
+                .map(attempt -> ResponseEntity.ok(mapAttemptToDTO(attempt)))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @PutMapping("/{quizUuid}/attempts/{attemptUuid}/evaluate")
     public ResponseEntity<Void> evaluateAttempt(
             @PathVariable UUID courseUuid,
@@ -137,6 +148,13 @@ public class QuizController {
                 dto.setTextAnswers(objectMapper.readValue(attempt.getTextAnswersJson(), new TypeReference<>() {}));
             } catch (Exception e) {
                 dto.setTextAnswers(Map.of());
+            }
+        }
+        if (attempt.getAnswersJson() != null) {
+            try {
+                dto.setAnswers(objectMapper.readValue(attempt.getAnswersJson(), new TypeReference<>() {}));
+            } catch (Exception e) {
+                dto.setAnswers(Map.of());
             }
         }
         if (attempt.getEvaluationsJson() != null) {

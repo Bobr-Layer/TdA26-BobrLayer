@@ -1,13 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import styles from './profile.module.scss';
 import Header from '../../shared/layout/header/Header';
 import Footer from '../../shared/layout/footer/Footer';
 import Input from '../../shared/form/input/Input';
 import SubmitButton from '../../shared/button/submit/SubmitButton';
 import { updateProfile, getCurrentUser, getMyQuizAttempts } from '../../services/AuthService';
-import { getQuizByUuid } from '../../services/QuizzService';
-import QuizQuestion from '../courses/quiz/quiz-question/QuizQuestion';
 import { usePageTitle } from '../../hooks/usePageTitle';
 
 const ROLE_LABELS = {
@@ -45,8 +42,7 @@ function Profile({ user, setUser }) {
     const [success, setSuccess] = useState(null);
     const [loading, setLoading] = useState(false);
     const [quizAttempts, setQuizAttempts] = useState([]);
-    const [review, setReview] = useState(null); // { attempt, quiz, step }
-    const [loadingAttempt, setLoadingAttempt] = useState(null);
+    const [review, setReview] = useState(null); // attempt object
     const revealRefs = useRef([]);
 
     const xp = quizAttempts.reduce((sum, a) => sum + (a.score || 0), 0);
@@ -72,18 +68,6 @@ function Profile({ user, setUser }) {
         className: styles.reveal,
         style: { '--delay': `${delay}s` },
     });
-
-    const handleAttemptClick = async (attempt) => {
-        setLoadingAttempt(attempt.attemptUuid);
-        try {
-            const quiz = await getQuizByUuid(attempt.courseUuid, attempt.moduleUuid, attempt.quizUuid);
-            setReview({ attempt, quiz, step: 0 });
-        } catch {
-            // ignore
-        } finally {
-            setLoadingAttempt(null);
-        }
-    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -239,12 +223,12 @@ function Profile({ user, setUser }) {
                                     const correct = (a.correctPerQuestion || []).filter(Boolean).length;
                                     const total = (a.correctPerQuestion || []).filter(x => x !== null).length;
                                     const pct = total > 0 ? Math.round((correct / total) * 100) : 0;
-                                    const loading = loadingAttempt === a.attemptUuid;
+                                    const hasOpen = a.openQuestionTexts && Object.keys(a.openQuestionTexts).length > 0;
                                     return (
                                         <div
                                             key={a.attemptUuid}
-                                            className={`${styles.attempt_card} ${styles.attempt_card_clickable}`}
-                                            onClick={() => !loadingAttempt && handleAttemptClick(a)}
+                                            className={`${styles.attempt_card} ${hasOpen ? styles.attempt_card_clickable : ''}`}
+                                            onClick={hasOpen ? () => setReview(a) : undefined}
                                         >
                                             <div className={styles.attempt_card_top}>
                                                 <span className={styles.attempt_course}>{a.courseName}</span>
@@ -252,8 +236,8 @@ function Profile({ user, setUser }) {
                                             </div>
                                             <p className={styles.attempt_quiz}>{a.quizTitle}</p>
                                             <div className={styles.attempt_score_row}>
-                                                <span className={styles.attempt_score}>{loading ? '…' : `${correct}/${total}`}</span>
-                                                <span className={styles.attempt_pct}>{loading ? '' : `${pct} %`}</span>
+                                                <span className={styles.attempt_score}>{`${correct}/${total}`}</span>
+                                                <span className={styles.attempt_pct}>{`${pct} %`}</span>
                                             </div>
                                             <div className={styles.attempt_dots}>
                                                 {(a.correctPerQuestion || []).map((v, i) => (
@@ -276,31 +260,39 @@ function Profile({ user, setUser }) {
                     <div className={styles.review_modal} onClick={e => e.stopPropagation()}>
                         <div className={styles.review_modal_header}>
                             <div className={styles.review_modal_title}>
-                                <span className={styles.review_modal_course}>{review.attempt.courseName}</span>
-                                <span className={styles.review_modal_quiz}>{review.attempt.quizTitle}</span>
+                                <span className={styles.review_modal_course}>{review.courseName}</span>
+                                <span className={styles.review_modal_quiz}>{review.quizTitle}</span>
                             </div>
                             <button className={styles.review_close} onClick={() => setReview(null)} aria-label="Zavřít">
                                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M15 5L5 15M5 5l10 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
                             </button>
                         </div>
                         <div className={styles.review_modal_body}>
-                            <QuizQuestion
-                                quiz={review.quiz}
-                                currentStep={review.step}
-                                setCurrentStep={step => setReview(r => ({ ...r, step }))}
-                                length={review.quiz.questions.length}
-                                currentAnswer={
-                                    review.quiz.questions[review.step]?.type === 'openQuestion'
-                                        ? (review.attempt.textAnswers?.[review.quiz.questions[review.step]?.uuid] || '')
-                                        : null
-                                }
-                                onAnswerChange={() => {}}
-                                onSubmit={() => {}}
-                                currentQuestion={review.quiz.questions[review.step]}
-                                info={true}
-                                quizResult={{ correctPerQuestion: review.attempt.correctPerQuestion }}
-                                evaluations={review.attempt.evaluations}
-                            />
+                            <div className={styles.open_q_list}>
+                                {Object.entries(review.openQuestionTexts).map(([qUuid, qText]) => {
+                                    const eval_ = review.evaluations?.[qUuid];
+                                    const answer = review.textAnswers?.[qUuid];
+                                    return (
+                                        <div key={qUuid} className={styles.open_q_item}>
+                                            <p className={styles.open_q_question}>{qText}</p>
+                                            <div className={styles.open_q_answer_block}>
+                                                <span className={styles.open_q_block_label}>Tvoje odpověď</span>
+                                                <p className={styles.open_q_answer_text}>{answer || '—'}</p>
+                                            </div>
+                                            {eval_ ? (
+                                                <div className={`${styles.open_q_eval} ${eval_.isCorrect ? styles.open_q_eval_correct : styles.open_q_eval_wrong}`}>
+                                                    <span className={styles.open_q_eval_badge}>
+                                                        {eval_.isCorrect ? 'Správně' : 'Špatně'}
+                                                    </span>
+                                                    {eval_.comment && <p className={styles.open_q_eval_comment}>{eval_.comment}</p>}
+                                                </div>
+                                            ) : (
+                                                <p className={styles.open_q_pending}>Čeká na ohodnocení lektorem</p>
+                                            )}
+                                        </div>
+                                    );
+                                })}
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -44,6 +44,9 @@ public class QuizAttempt {
     private String textAnswersJson;
 
     @Column(columnDefinition = "TEXT")
+    private String answersJson;
+
+    @Column(columnDefinition = "TEXT")
     private String evaluationsJson;
 
     @Column(nullable = false)

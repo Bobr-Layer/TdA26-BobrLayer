@@ -15,6 +15,7 @@ public class QuizAttemptResponseDTO {
     private Double maxScore;
     private List<Boolean> correctPerQuestion;
     private Map<String, String> textAnswers;
+    private Map<String, Object> answers;
     private Map<String, OpenQuestionEvaluationDTO> evaluations;
     private boolean pendingReview;
     private LocalDateTime submittedAt;

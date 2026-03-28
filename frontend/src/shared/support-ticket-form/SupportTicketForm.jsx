@@ -3,7 +3,6 @@ import styles from './support-ticket-form.module.scss';
 import SectionHeading from '../ui/section-heading/SectionHeading';
 
 const API_BASE = '/api';
-const MAX_SCREENSHOTS = 3;
 
 function ScreenshotSlot({ index, file, previewUrl, onAdd, onRemove }) {
     const fileRef = useRef(null);
@@ -47,9 +46,9 @@ function ScreenshotSlot({ index, file, previewUrl, onAdd, onRemove }) {
     );
 }
 
-export default function SupportTicketForm() {
+export default function SupportTicketForm({ maxScreenshots = 3 }) {
     const [form, setForm] = useState({ title: '', branch: '', url: '', description: '' });
-    const [screenshots, setScreenshots] = useState([null, null, null]); // [{file, previewUrl}]
+    const [screenshots, setScreenshots] = useState(() => Array(maxScreenshots).fill(null));
     const [status, setStatus] = useState(null);
     const [loading, setLoading] = useState(false);
 
@@ -94,7 +93,7 @@ export default function SupportTicketForm() {
                 setForm({ title: '', branch: '', url: '', description: '' });
                 setScreenshots(prev => {
                     prev.forEach(s => { if (s?.previewUrl) URL.revokeObjectURL(s.previewUrl); });
-                    return [null, null, null];
+                    return Array(maxScreenshots).fill(null);
                 });
             } else {
                 setStatus('error');
@@ -188,7 +187,7 @@ export default function SupportTicketForm() {
 
                     {/* ── Right: screenshots ── */}
                     <div className={styles.ticket_screenshot}>
-                        <span className={styles.screenshot_label}>Screenshoty (volitelné, max 3)</span>
+                        <span className={styles.screenshot_label}>Screenshoty (volitelné{maxScreenshots > 1 ? `, max ${maxScreenshots}` : ''})</span>
                         <div className={styles.slots_grid}>
                             {screenshots.map((s, i) => (
                                 <ScreenshotSlot

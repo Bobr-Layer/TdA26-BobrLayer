@@ -109,6 +109,16 @@ export async function getQuizAttempts(courseUuid, moduleUuid, quizUuid, { search
   return await res.json();
 }
 
+export async function getMyAttempt(courseUuid, moduleUuid, quizUuid) {
+  const res = await fetch(
+    `${Api}/courses/${courseUuid}/modules/${moduleUuid}/quizzes/${quizUuid}/my-attempt`,
+    { credentials: 'include' }
+  );
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error('Nepodařilo se načíst pokus');
+  return await res.json();
+}
+
 export async function evaluateAttempt(courseUuid, moduleUuid, quizUuid, attemptUuid, evaluations) {
   const res = await fetch(
     `${Api}/courses/${courseUuid}/modules/${moduleUuid}/quizzes/${quizUuid}/attempts/${attemptUuid}/evaluate`,

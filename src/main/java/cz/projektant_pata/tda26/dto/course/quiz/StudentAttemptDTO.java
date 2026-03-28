@@ -21,5 +21,6 @@ public class StudentAttemptDTO {
     private List<Boolean> correctPerQuestion;
     private Map<String, String> textAnswers;
     private Map<String, OpenQuestionEvaluationDTO> evaluations;
+    private Map<String, String> openQuestionTexts;
     private LocalDateTime submittedAt;
 }

@@ -121,6 +121,7 @@ public class QuizServiceImpl implements IQuizService {
         int correctCount = 0;
         List<Boolean> correctPerQuestion = new ArrayList<>();
         Map<String, String> textAnswers = new HashMap<>();
+        Map<String, Object> allAnswers = new HashMap<>();
 
         for (Question question : quiz.getQuestions()) {
             SubmitAnswerDTO userAnswer = userAnswersMap.get(question.getUuid());
@@ -130,6 +131,7 @@ public class QuizServiceImpl implements IQuizService {
                 correctPerQuestion.add(null);
                 if (userAnswer != null && userAnswer.textAnswer() != null) {
                     textAnswers.put(question.getUuid().toString(), userAnswer.textAnswer());
+                    allAnswers.put(question.getUuid().toString(), Map.of("textAnswer", userAnswer.textAnswer()));
                 }
             } else {
                 totalGradable++;
@@ -137,8 +139,14 @@ public class QuizServiceImpl implements IQuizService {
                 if (userAnswer != null) {
                     if (question instanceof SingleChoiceQuestion sq) {
                         isCorrect = Objects.equals(userAnswer.selectedIndex(), sq.getCorrectIndex());
+                        if (userAnswer.selectedIndex() != null) {
+                            allAnswers.put(question.getUuid().toString(), Map.of("selectedIndex", userAnswer.selectedIndex()));
+                        }
                     } else if (question instanceof MultipleChoiceQuestion mq) {
                         isCorrect = validateMultipleChoice(mq, userAnswer.selectedIndices());
+                        if (userAnswer.selectedIndices() != null) {
+                            allAnswers.put(question.getUuid().toString(), Map.of("selectedIndices", userAnswer.selectedIndices()));
+                        }
                     }
                 }
                 if (isCorrect) {
@@ -167,6 +175,14 @@ public class QuizServiceImpl implements IQuizService {
             }
         }
 
+        String answersJson = null;
+        if (!allAnswers.isEmpty()) {
+            try {
+                answersJson = objectMapper.writeValueAsString(allAnswers);
+            } catch (Exception ignored) {
+            }
+        }
+
         boolean hasPendingOpen = correctPerQuestion.stream().anyMatch(x -> x == null);
 
         // Save attempt
@@ -177,6 +193,7 @@ public class QuizServiceImpl implements IQuizService {
         attempt.setMaxScore((double) quiz.getQuestions().size());
         attempt.setCorrectPerQuestion(correctPerQuestion);
         attempt.setTextAnswersJson(textAnswersJson);
+        attempt.setAnswersJson(answersJson);
         attempt.setPendingReview(hasPendingOpen);
         attempt.setSubmittedAt(LocalDateTime.now());
         quizAttemptRepository.save(attempt);
@@ -253,6 +270,18 @@ public class QuizServiceImpl implements IQuizService {
         } catch (Exception ignored) {}
 
         quizAttemptRepository.save(attempt);
+    }
+
+    @Override
+    public java.util.Optional<QuizAttempt> getMyAttempt(UUID moduleUuid, UUID quizUuid) {
+        getQuizOrThrow(moduleUuid, quizUuid);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !(auth.getPrincipal() instanceof User student)) {
+            return java.util.Optional.empty();
+        }
+        return quizAttemptRepository.findByQuizUuidAndStudentUuid(quizUuid, student.getUuid())
+                .stream()
+                .max(java.util.Comparator.comparing(QuizAttempt::getSubmittedAt));
     }
 
     // ── private helpers ───────────────────────────────────────────────────────

@@ -53,14 +53,13 @@ export default function QuizResults({ name, result, onShowReview }) {
                 </div>
             </div>
 
-            {openCount > 0 ? (
+            <button className={styles.review_button} onClick={onShowReview}>
+                Zobrazit opravený test
+            </button>
+            {openCount > 0 && (
                 <p className={styles.pending_message}>
                     {openCount === 1 ? 'Otevřená otázka' : `${openCount} otevřené otázky`} čeká na ohodnocení lektorem.
                 </p>
-            ) : (
-                <button className={styles.review_button} onClick={onShowReview}>
-                    Zobrazit opravený test
-                </button>
             )}
         </section>
     );
