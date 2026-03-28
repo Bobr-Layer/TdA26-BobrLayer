@@ -1,0 +1,281 @@
+@use "../../index.scss" as *;
+
+// ── Section wrapper ───────────────────────────────────────────────────────────
+
+.ticket_section {
+    padding-inline: 7.5rem;
+    padding-block: 9rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+    background: linear-gradient(135deg, rgba(0, 112, 187, 0.07) 0%, rgba(73, 179, 180, 0.04) 100%);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+
+    @media (max-width: 1200px) { padding-inline: 3rem; }
+    @media (max-width: 900px)  { padding-block: 6rem; gap: 2rem; }
+}
+
+.ticket_subtitle {
+    font-size: 1.125rem;
+    color: rgba(255, 255, 255, 0.5);
+    line-height: 1.65;
+    max-width: 44rem;
+    margin-top: -0.75rem;
+}
+
+// ── Form ─────────────────────────────────────────────────────────────────────
+
+.ticket_form {
+    width: 100%;
+}
+
+.ticket_layout {
+    display: grid;
+    grid-template-columns: 1fr 20rem;
+    gap: 3rem;
+    align-items: start;
+
+    @media (max-width: 1100px) { grid-template-columns: 1fr 16rem; gap: 2rem; }
+    @media (max-width: 800px)  { grid-template-columns: 1fr; }
+}
+
+// ── Left column ───────────────────────────────────────────────────────────────
+
+.ticket_fields {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.fields_row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+
+    @media (max-width: 600px) { grid-template-columns: 1fr; }
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    &.grow {
+        flex: 1;
+
+        .textarea {
+            flex: 1;
+            min-height: 10rem;
+        }
+    }
+
+    label {
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.4);
+    }
+}
+
+.input {
+    @include box;
+    color: #fff;
+    background-color: transparent;
+    font-size: 1rem;
+    padding: 0.875rem 1.25rem;
+    width: 100%;
+    box-sizing: border-box;
+    outline: none;
+    font-family: "Dosis", sans-serif;
+    font-weight: 500;
+
+    &::placeholder { color: rgba(255, 255, 255, 0.22); }
+
+    &:hover {
+        border-color: rgba(255, 255, 255, 0.35);
+        background-color: rgba(255, 255, 255, 0.02);
+    }
+
+    &:focus {
+        @include box-hover;
+        outline: none;
+    }
+
+    &:-webkit-autofill,
+    &:-webkit-autofill:hover,
+    &:-webkit-autofill:focus {
+        box-shadow: 0 0 0 1000px #1A1A1A inset !important;
+        -webkit-text-fill-color: #fff !important;
+    }
+}
+
+.textarea {
+    @include box;
+    color: #fff;
+    background-color: transparent;
+    font-size: 1rem;
+    padding: 0.875rem 1.25rem;
+    width: 100%;
+    min-height: 12rem;
+    box-sizing: border-box;
+    outline: none;
+    resize: vertical;
+    font-family: "Dosis", sans-serif;
+    font-weight: 500;
+    line-height: 1.6;
+
+    &::placeholder { color: rgba(255, 255, 255, 0.22); }
+
+    &:hover {
+        border-color: rgba(255, 255, 255, 0.35);
+        background-color: rgba(255, 255, 255, 0.02);
+    }
+
+    &:focus {
+        @include box-hover;
+        outline: none;
+    }
+}
+
+// ── Right column — screenshot ─────────────────────────────────────────────────
+
+.ticket_screenshot {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    position: sticky;
+    top: 2rem;
+}
+
+.screenshot_label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.dropzone {
+    @include box;
+    border-style: dashed;
+    cursor: pointer;
+    transition: border-color 0.2s, background-color 0.2s;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+        border-color: rgba(73, 179, 180, 0.5);
+        background-color: rgba(73, 179, 180, 0.04);
+    }
+
+    &.has_file {
+        border-style: solid;
+        border-color: rgba(73, 179, 180, 0.3);
+        padding: 0;
+    }
+}
+
+.file_hidden {
+    display: none;
+}
+
+.dropzone_inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 2rem 1.5rem;
+    text-align: center;
+
+    svg { color: rgba(255, 255, 255, 0.25); }
+
+    span {
+        font-size: 0.95rem;
+        color: rgba(255, 255, 255, 0.4);
+    }
+}
+
+.dropzone_formats {
+    font-size: 0.78rem !important;
+    color: rgba(255, 255, 255, 0.22) !important;
+}
+
+.preview_img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.file_info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.file_name {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.45);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.remove_file {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.82rem;
+    color: rgba(220, 80, 80, 0.6);
+    padding: 0;
+    font-family: "Dosis", sans-serif;
+    font-weight: 600;
+    flex-shrink: 0;
+    white-space: nowrap;
+
+    &:hover { color: rgba(220, 80, 80, 0.9); }
+}
+
+// ── Feedback messages ─────────────────────────────────────────────────────────
+
+.msg_success {
+    font-size: 0.95rem;
+    color: #91F5AD;
+    font-weight: 600;
+    padding: 0.875rem 1.25rem;
+    background: rgba(145, 245, 173, 0.06);
+    border: 1px solid rgba(145, 245, 173, 0.2);
+}
+
+.msg_error {
+    font-size: 0.95rem;
+    color: rgba(220, 80, 80, 0.9);
+    font-weight: 600;
+    padding: 0.875rem 1.25rem;
+    background: rgba(220, 80, 80, 0.06);
+    border: 1px solid rgba(220, 80, 80, 0.2);
+}
+
+// ── Submit button ─────────────────────────────────────────────────────────────
+
+.submit_btn {
+    @include btn-solid;
+    align-self: flex-start;
+    padding: 0.875rem 2.5rem;
+    font-size: 1rem;
+    font-family: "Dosis", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+
+    &:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+        pointer-events: none;
+    }
+}

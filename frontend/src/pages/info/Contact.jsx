@@ -3,6 +3,7 @@ import Footer from '../../shared/layout/footer/Footer';
 import Header from '../../shared/layout/header/Header';
 import styles from './info.module.scss';
 import { usePageTitle } from '../../hooks/usePageTitle';
+import SupportTicketForm from '../../shared/support-ticket-form/SupportTicketForm';
 
 export default function Contact({ user, setUser }) {
     usePageTitle('Kontakt');
@@ -55,7 +56,7 @@ export default function Contact({ user, setUser }) {
                         </div>
                         <span className={styles.info_contact_label}>E-mail</span>
                         <span className={styles.info_contact_value}>
-                            <a href="mailto:email@email.email">email@email.email</a>
+                            <a href="mailto:support@tda-hq.com">support@tda-hq.com</a>
                         </span>
                     </div>
                     <div
@@ -75,6 +76,8 @@ export default function Contact({ user, setUser }) {
                     </div>
                 </div>
             </section>
+
+            <SupportTicketForm />
 
             <Footer user={user} setUser={setUser} />
         </div>
