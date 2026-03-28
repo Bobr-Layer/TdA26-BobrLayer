@@ -126,6 +126,13 @@
     flex-wrap: wrap;
 }
 
+.hero_actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
 .share_button {
     @include btn-ghost;
     display: inline-flex;
@@ -192,9 +199,8 @@
 
 .enroll_button {
     @include btn-solid;
-    width: 100%;
-    padding: 0.9rem 2rem;
-    font-size: 1rem;
+    padding: 0.45rem 1.25rem;
+    font-size: 0.875rem;
     font-weight: 700;
     display: flex;
     align-items: center;

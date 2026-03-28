@@ -54,7 +54,6 @@
     gap: 1.25rem;
     padding: 3rem 3.75rem 2rem;
     background-color: map-get($colors, txt);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 
     @media (max-width: 900px) {
         padding: 12rem 2rem 1.5rem;
@@ -101,12 +100,11 @@
 
 .feed_page_footer {
     flex-shrink: 0;
-    padding: 0 3.75rem 2rem;
+    padding: 1.25rem 3.75rem 1.75rem;
     background-color: map-get($colors, txt);
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
 
     @media (max-width: 900px) {
-        padding: 0 2rem 2rem;
+        padding: 1.25rem 2rem 1.75rem;
     }
 }
 
@@ -210,6 +208,7 @@
 .feed_header_back {
     @include btn-ghost;
     display: inline-flex;
+    align-self: flex-start;
     align-items: center;
     gap: 0.6rem;
     padding: 0.6rem 1.25rem;

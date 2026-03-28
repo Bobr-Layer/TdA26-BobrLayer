@@ -179,10 +179,40 @@ export default function Detail({ user, setUser }) {
                             <span className={styles.lector_label}>Lektor</span>
                             <span className={styles.lector_name}>{course.lectorName || 'lecturer'}</span>
                         </div>
-                        <button className={styles.share_button} onClick={() => setShareOpen(true)} title="Sdílet kurz">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/></svg>
-                            Sdílet
-                        </button>
+                        <div className={styles.hero_actions}>
+                            {isStudent && (
+                                <button
+                                    className={`${styles.enroll_button} ${enrolled ? styles.enrolled : ''}`}
+                                    onClick={async () => {
+                                        setEnrollLoading(true);
+                                        try {
+                                            if (enrolled) {
+                                                await unenrollCourse(uuid);
+                                                setEnrolled(false);
+                                            } else {
+                                                await enrollCourse(uuid);
+                                                setEnrolled(true);
+                                            }
+                                        } catch (err) {
+                                            console.error(err);
+                                        } finally {
+                                            setEnrollLoading(false);
+                                        }
+                                    }}
+                                    disabled={enrollLoading}
+                                >
+                                    {enrollLoading
+                                        ? 'Zpracování...'
+                                        : enrolled
+                                            ? 'Odhlásit se z kurzu'
+                                            : 'Přihlásit se na kurz'}
+                                </button>
+                            )}
+                            <button className={styles.share_button} onClick={() => setShareOpen(true)} title="Sdílet kurz">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/></svg>
+                                Sdílet
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -192,35 +222,6 @@ export default function Detail({ user, setUser }) {
                     {/* Left column */}
                     <div className={`${styles.left_col} ${styles.reveal}`} style={{ '--delay': '0.2s' }}>
                         <p className={styles.description}>{course.description}</p>
-
-                        {isStudent && (
-                            <button
-                                className={`${styles.enroll_button} ${enrolled ? styles.enrolled : ''}`}
-                                onClick={async () => {
-                                    setEnrollLoading(true);
-                                    try {
-                                        if (enrolled) {
-                                            await unenrollCourse(uuid);
-                                            setEnrolled(false);
-                                        } else {
-                                            await enrollCourse(uuid);
-                                            setEnrolled(true);
-                                        }
-                                    } catch (err) {
-                                        console.error(err);
-                                    } finally {
-                                        setEnrollLoading(false);
-                                    }
-                                }}
-                                disabled={enrollLoading}
-                            >
-                                {enrollLoading
-                                    ? 'Zpracování...'
-                                    : enrolled
-                                        ? 'Odhlásit se z kurzu'
-                                        : 'Přihlásit se na kurz'}
-                            </button>
-                        )}
 
                         <div className={styles.modules_section}>
                             <span className={styles.modules_label}>Moduly</span>

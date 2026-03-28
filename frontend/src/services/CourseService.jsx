@@ -138,6 +138,16 @@ export async function enrollCourse(uuid) {
   return res.json();
 }
 
+export async function removeStudentFromCourse(courseUuid, studentUuid) {
+  const res = await fetch(`${Api}/courses/${courseUuid}/users/${studentUuid}`, {
+    ...defaultOptions,
+    method: 'DELETE',
+  });
+
+  if (!res.ok) throw new Error('Nepodařilo se odebrat studenta z kurzu');
+  return res.json();
+}
+
 export async function unenrollCourse(uuid) {
   const res = await fetch(`${Api}/courses/${uuid}/enroll`, {
     ...defaultOptions,

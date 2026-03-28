@@ -71,8 +71,7 @@
             @media (max-width: 900px) { width: 100%; }
         }
 
-        .activate_btn,
-        .deactivate_btn {
+        .activate_btn {
             @include btn-ghost;
             display: flex;
             align-items: center;
@@ -86,12 +85,9 @@
             border-color: rgba(73, 179, 180, 0.4);
             color: #49B3B4;
 
-            svg path { fill: #49B3B4; }
-
             &:hover {
                 border-color: #49B3B4;
                 color: #49B3B4;
-                svg path { fill: #49B3B4; }
             }
 
             @media (max-width: 900px) {
@@ -101,15 +97,30 @@
         }
 
         .deactivate_btn {
+            @include btn-ghost;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.25rem;
+            font-size: 0.875rem;
+            font-weight: 700;
+            font-family: inherit;
+            white-space: nowrap;
+            box-sizing: border-box;
             border-color: rgba(220, 51, 51, 0.3);
             color: rgba(220, 51, 51, 0.7);
 
-            svg path { fill: rgba(220, 51, 51, 0.7); }
+            svg path, svg circle, svg line, svg rect { stroke: rgba(220, 51, 51, 0.7) !important; }
 
             &:hover {
-                border-color: #DC3333;
-                color: #DC3333;
-                svg path { fill: #DC3333; }
+                border-color: #DC3333 !important;
+                color: #DC3333 !important;
+                svg path, svg circle, svg line, svg rect { stroke: #DC3333 !important; }
+            }
+
+            @media (max-width: 900px) {
+                width: 100%;
+                justify-content: center;
             }
         }
 
@@ -166,15 +177,35 @@
         display: flex;
         align-items: center;
         gap: 0.625rem;
-        padding: 0.6rem 0.875rem;
-        background: rgba(255, 255, 255, 0.04);
-        border: 1px solid rgba(255, 255, 255, 0.07);
-        border-radius: 0.5rem;
+        padding: 0.75rem 1rem;
+        @include box;
         font-size: 0.875rem;
         font-weight: 600;
         color: rgba(255, 255, 255, 0.8);
 
-        svg { opacity: 0.45; flex-shrink: 0; }
+        & > svg { opacity: 0.45; flex-shrink: 0; }
+
+        span { flex: 1; }
+    }
+
+    .student_remove_btn {
+        @include btn-ghost;
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        padding: 0.3rem;
+        border-color: rgba(220, 51, 51, 0.3) !important;
+        color: rgba(220, 51, 51, 0.7) !important;
+
+        svg path { fill: rgba(220, 51, 51, 0.7); stroke: none !important; transition: fill 0.2s; }
+
+        &:hover {
+            border-color: #DC3333 !important;
+            color: #DC3333 !important;
+            svg path { fill: #DC3333; stroke: none !important; }
+        }
     }
 }
 

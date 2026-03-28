@@ -17,15 +17,12 @@ export default function FeedCard({ feed, admin, courseId }) {
         minute: '2-digit',
     }).format(new Date(date));
 
-    const formattedDate = formatDate(feed.createdAt);
-    const formattedUpdatedDate = feed.edited ? formatDate(feed.updatedAt) : null;
+    const isSystem = feed.type === 'SYSTEM' || feed.type === 'system';
 
     async function handleSave() {
         try {
             setLoading(true);
-            const updated = await updateFeedPost(courseId, feed.uuid, { 
-                message: editedMessage 
-            });
+            const updated = await updateFeedPost(courseId, feed.uuid, { message: editedMessage });
             feed.message = updated.message;
             setShowEdit(false);
         } catch (err) {
@@ -47,25 +44,25 @@ export default function FeedCard({ feed, admin, courseId }) {
     }
 
     return (
-        <div className={styles.feed_card}>
+        <div className={`${styles.feed_card} ${isSystem ? styles.system_card : ''}`}>
             <div className={styles.feed_card_header}>
                 <div className={styles.feed_card_header_author}>
-                    {feed.type === 'system' ? (
+                    {isSystem ? (
                         <>
-                            <img src="/img/symbol.png" alt="" />
-                            <p>Oznámení</p>
+                            <img src="/img/symbol-w.png" alt="" />
+                            <p>Systém</p>
                         </>
                     ) : (
                         <>
-                            <div className={styles.img_container} style={{ width: '2.5rem', height: '2.5rem', borderRadius: '50%', backgroundColor: 'rgba(0,0,0,0.1)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary-color, black)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            <div className={styles.author_avatar}>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                             </div>
-                            <p>lecturer</p>
+                            <p>{feed.authorName || 'Lektor'}</p>
                         </>
                     )}
                 </div>
                 <div className={styles.feed_card_header_date}>
-                    <p>{formattedDate}</p>
+                    <p>{formatDate(feed.createdAt)}</p>
                 </div>
             </div>
             <div className={styles.feed_card_content}>
@@ -81,7 +78,7 @@ export default function FeedCard({ feed, admin, courseId }) {
                         </button>
                     </>
                 ) : (
-                    <h4>{feed.message}</h4>
+                    <p>{feed.message}{feed.edited && <span> (upraveno)</span>}</p>
                 )}
             </div>
         </div>
