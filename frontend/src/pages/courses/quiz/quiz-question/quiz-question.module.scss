@@ -75,34 +75,43 @@
 
 .open_answer_input {
     width: 100%;
-    min-height: 120px;
-    padding: 0.875rem 1rem;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1.5px solid rgba(255, 255, 255, 0.15);
-    border-radius: 0.75rem;
+    min-height: 160px;
+    padding: 1rem 1.25rem;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 0;
     color: #fff;
     font-family: 'Dosis', sans-serif;
-    font-size: 1rem;
+    font-size: 1.1rem;
+    font-weight: 500;
+    line-height: 1.6;
     resize: vertical;
-    transition: border-color 0.2s;
+    transition: border-color 0.2s, background-color 0.2s;
     box-sizing: border-box;
+
+    &::placeholder {
+        color: rgba(255, 255, 255, 0.25);
+        font-style: italic;
+    }
 
     &:focus {
         outline: none;
-        border-color: #91F5AD;
+        border-color: rgba(255, 255, 255, 0.5);
+        background-color: rgba(255, 255, 255, 0.03);
     }
 
     &:disabled {
         opacity: 0.7;
         cursor: not-allowed;
+        resize: none;
     }
 }
 
 .open_answer_correct {
-    padding: 0.75rem 1rem;
-    background: rgba(145, 245, 173, 0.1);
-    border: 1px solid rgba(145, 245, 173, 0.3);
-    border-radius: 0.75rem;
+    padding: 0.875rem 1.25rem;
+    background: rgba(145, 245, 173, 0.07);
+    border: 1px solid rgba(145, 245, 173, 0.25);
+    border-radius: 0;
 
     span {
         font-size: 0.75rem;

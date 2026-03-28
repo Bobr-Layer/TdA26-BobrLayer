@@ -2,15 +2,13 @@
 
 .quizz_detail {
     display: flex;
+    flex-direction: column;
     gap: 3rem;
-
-    @media (max-width: 900px) { flex-direction: column; }
 
     .quizz_detail_info {
         display: flex;
         flex-direction: column;
-        gap: 3rem;
-        flex: 1;
+        gap: 2rem;
 
         .quizz_detail_info_header {
             display: flex;
@@ -42,22 +40,23 @@
     }
 
     .quizz_detail_results {
-        width: 22rem;
+        display: flex;
+        gap: 3rem;
+        align-items: flex-start;
 
-        @media (max-width: 900px) { width: 100%; }
+        @media (max-width: 900px) {
+            flex-direction: column;
+            gap: 2rem;
+        }
 
         .quizz_detail_content_res {
             display: flex;
             flex-direction: column;
-            gap: 2rem;
+            gap: 1.5rem;
+            flex-shrink: 0;
+            min-width: 18rem;
 
-            h3 {
-                font-size: 1.25rem;
-                font-weight: 700;
-                letter-spacing: 0.12em;
-                text-transform: uppercase;
-                color: rgba(255, 255, 255, 0.4);
-            }
+            h3 { @include section-label; }
 
             .quizz_detail_content_result {
                 display: flex;
@@ -118,12 +117,11 @@
 }
 
 .quizz_detail_attempts_section {
-    margin-top: 1.5rem;
+    flex: 1;
+    min-width: 0;
 
     h3 {
-        font-size: 1rem;
-        font-weight: 600;
-        color: rgba(255, 255, 255, 0.7);
+        @include section-label;
         margin-bottom: 0.75rem;
     }
 }
@@ -143,26 +141,26 @@
 
 .search_input {
     flex: 1;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 0.5rem;
-    padding: 0.4rem 0.75rem;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 0;
+    padding: 0.6rem 0.875rem;
     color: white;
     font-family: inherit;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
 
     &::placeholder { color: rgba(255, 255, 255, 0.3); }
-    &:focus { outline: none; border-color: rgba(255, 255, 255, 0.25); }
+    &:focus { outline: none; border-color: rgba(255, 255, 255, 0.5); background-color: rgba(255, 255, 255, 0.03); }
 }
 
 .filter_btn {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 0.5rem;
-    padding: 0.4rem 0.75rem;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 0;
+    padding: 0.6rem 0.875rem;
     color: rgba(255, 255, 255, 0.55);
     font-family: inherit;
-    font-size: 0.8rem;
+    font-size: 0.875rem;
     cursor: pointer;
     white-space: nowrap;
     transition: all 0.15s;
@@ -190,7 +188,7 @@
 .attempt_card {
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.07);
-    border-radius: 0.6rem;
+    border-radius: 0;
     overflow: hidden;
     transition: background 0.15s;
 
@@ -204,47 +202,47 @@
 .attempt_card_header {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    padding: 0.6rem 0.875rem;
+    gap: 1rem;
+    padding: 0.875rem 1.25rem;
     cursor: pointer;
 }
 
 .attempt_student {
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: rgba(255, 255, 255, 0.8);
+    font-size: 1rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.9);
     flex: 1;
 }
 
 .attempt_score {
-    font-size: 0.85rem;
+    font-size: 0.95rem;
     font-weight: 700;
     color: #91F5AD;
     background: rgba(145, 245, 173, 0.1);
-    padding: 0.15rem 0.5rem;
-    border-radius: 0.35rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 0;
 }
 
 .attempt_date {
-    font-size: 0.75rem;
+    font-size: 0.825rem;
     color: rgba(255, 255, 255, 0.3);
 }
 
 .attempt_detail {
     display: flex;
     flex-direction: column;
-    gap: 0.3rem;
-    padding: 0.5rem 0.875rem 0.75rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    gap: 0.4rem;
+    padding: 0.75rem 1.25rem 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .attempt_question {
     display: flex;
     align-items: baseline;
-    gap: 0.5rem;
-    padding: 0.3rem 0.5rem;
-    border-radius: 0.4rem;
-    font-size: 0.8rem;
+    gap: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0;
+    font-size: 0.9rem;
 
     &.correct {
         background: rgba(145, 245, 173, 0.07);
@@ -266,18 +264,19 @@
 }
 
 .attempt_q_text {
-    color: rgba(255, 255, 255, 0.65);
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 0.9rem;
     flex: 1;
 }
 
 .pending_badge {
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     font-weight: 600;
     color: rgba(255, 100, 100, 0.9);
     background: rgba(255, 80, 80, 0.1);
     border: 1px solid rgba(255, 80, 80, 0.3);
-    border-radius: 0.3rem;
-    padding: 0.1rem 0.4rem;
+    border-radius: 0;
+    padding: 0.15rem 0.5rem;
 }
 
 .attempt_q_body {
@@ -309,9 +308,9 @@
     display: flex;
     align-items: center;
     gap: 0.3rem;
-    padding: 0.2rem 0.6rem;
-    border-radius: 0.35rem;
-    font-size: 0.75rem;
+    padding: 0.3rem 0.75rem;
+    border-radius: 0;
+    font-size: 0.85rem;
     cursor: pointer;
     border: 1px solid rgba(255, 255, 255, 0.1);
     color: rgba(255, 255, 255, 0.5);
@@ -336,16 +335,16 @@
 .eval_comment {
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 0.4rem;
-    padding: 0.3rem 0.6rem;
+    border-radius: 0;
+    padding: 0.4rem 0.75rem;
     color: white;
     font-family: inherit;
-    font-size: 0.78rem;
+    font-size: 0.875rem;
     width: 100%;
     box-sizing: border-box;
 
     &::placeholder { color: rgba(255, 255, 255, 0.25); }
-    &:focus { outline: none; border-color: rgba(255, 255, 255, 0.18); }
+    &:focus { outline: none; border-color: rgba(255, 255, 255, 0.5); background-color: rgba(255, 255, 255, 0.03); }
 }
 
 .save_eval_btn {
@@ -353,12 +352,12 @@
     margin-top: 0.5rem;
     background: rgba(145, 245, 173, 0.1);
     border: 1px solid rgba(145, 245, 173, 0.3);
-    border-radius: 0.5rem;
-    padding: 0.4rem 1rem;
+    border-radius: 0;
+    padding: 0.5rem 1.25rem;
     color: #91F5AD;
     font-family: inherit;
-    font-size: 0.82rem;
-    font-weight: 600;
+    font-size: 0.9rem;
+    font-weight: 700;
     cursor: pointer;
     transition: all 0.15s;
 
