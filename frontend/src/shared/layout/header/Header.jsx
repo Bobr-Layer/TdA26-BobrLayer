@@ -2,7 +2,6 @@ import { Link } from 'react-router-dom';
 import styles from './header.module.scss';
 import { logout } from '../../../services/AuthService';
 import { useState, useRef, useEffect } from 'react';
-import { User, LogOut, X, Menu } from 'lucide-react';
 
 function Header({ green, transparent, user, setUser, onlyMobile }) {
     const [showSidenav, setShowSidenav] = useState(false);
@@ -68,16 +67,16 @@ function Header({ green, transparent, user, setUser, onlyMobile }) {
                                     onClick={() => setShowDropdown(prev => !prev)}
                                     aria-label="Uživatelské menu"
                                 >
-                                    <User size={24} color="white" />
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                                 </button>
                                 {showDropdown && (
                                     <div className={styles.dropdown}>
                                         <Link to={"/profile"} onClick={() => setShowDropdown(false)}>
-                                            <User size={20} color="white" />
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                                             Profil
                                         </Link>
                                         <button onClick={handleLogout} className={styles.logout_button}>
-                                            <LogOut size={20} color="#e53e3e" />
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e53e3e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/></svg>
                                             <span>Odhlásit se</span>
                                         </button>
                                     </div>
@@ -87,7 +86,7 @@ function Header({ green, transparent, user, setUser, onlyMobile }) {
                     )}
                 </nav>
                 <button className={styles.sidenav_button} onClick={() => setShowSidenav(!showSidenav)} aria-label="Otevřít menu">
-                    <Menu size={28} color="white" />
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h16"/></svg>
                 </button>
             </header>
 
@@ -95,7 +94,7 @@ function Header({ green, transparent, user, setUser, onlyMobile }) {
                 <div className={styles.sidenav_header}>
                     <img src="/img/symbol-w.png" alt="Bile logo Think different academy" />
                     <button onClick={() => setShowSidenav(false)} aria-label="Zavřít menu">
-                        <X size={28} color="white" />
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                     </button>
                 </div>
                 <div className={styles.sidenav_content}>

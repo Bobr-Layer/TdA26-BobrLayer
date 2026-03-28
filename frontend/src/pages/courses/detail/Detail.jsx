@@ -9,9 +9,9 @@ import { useRef, useCallback } from 'react';
 import { getCourseFeed } from '../../../services/FeedService'
 import ModuleCard from '../../../shared/courses/module-card/ModuleCard';
 import Api from '../../../services/Api';
-import { User } from 'lucide-react';
 import NotFound from '../../not-found/NotFound';
 import Footer from '../../../shared/layout/footer/Footer';
+import { QRCodeSVG } from 'qrcode.react';
 
 const STATUS_LABELS = {
     Draft: 'Koncept',
@@ -33,6 +33,10 @@ export default function Detail({ user, setUser }) {
     const [loading, setLoading] = useState(false);
     const [enrolled, setEnrolled] = useState(false);
     const [enrollLoading, setEnrollLoading] = useState(false);
+    const [shareOpen, setShareOpen] = useState(false);
+    const [copied, setCopied] = useState(false);
+
+    const courseUrl = `${window.location.origin}/courses/${uuid}`;
 
     const isStudent = user && user.role === 'STUDENT';
 
@@ -167,12 +171,18 @@ export default function Detail({ user, setUser }) {
 
                     <div className={styles.hero_rule} />
 
-                    <div className={styles.lector_row}>
-                        <div className={styles.lector_avatar}>
-                            <User size={14} color="rgba(255,255,255,0.5)" />
+                    <div className={styles.hero_bottom_row}>
+                        <div className={styles.lector_row}>
+                            <div className={styles.lector_avatar}>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            </div>
+                            <span className={styles.lector_label}>Lektor</span>
+                            <span className={styles.lector_name}>{course.lectorName || 'lecturer'}</span>
                         </div>
-                        <span className={styles.lector_label}>Lektor</span>
-                        <span className={styles.lector_name}>{course.lectorName || 'lecturer'}</span>
+                        <button className={styles.share_button} onClick={() => setShareOpen(true)} title="Sdílet kurz">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/></svg>
+                            Sdílet
+                        </button>
                     </div>
                 </div>
 
@@ -237,6 +247,44 @@ export default function Detail({ user, setUser }) {
 
             <Footer user={user} setUser={setUser} />
             <div className={styles.detail_ball} />
+
+            {shareOpen && (
+                <div className={styles.share_overlay} onClick={() => setShareOpen(false)}>
+                    <div className={styles.share_modal} onClick={e => e.stopPropagation()}>
+                        <button className={styles.share_close} onClick={() => setShareOpen(false)}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                        </button>
+                        <span className={styles.share_title}>Sdílet kurz</span>
+                        <p className={styles.share_subtitle}>Naskenuj QR kód nebo zkopíruj odkaz</p>
+                        <div className={styles.qr_wrapper}>
+                            <QRCodeSVG
+                                value={courseUrl}
+                                size={200}
+                                bgColor="transparent"
+                                fgColor="#ffffff"
+                                level="M"
+                            />
+                        </div>
+                        <div className={styles.share_url_row}>
+                            <span className={styles.share_url}>{courseUrl}</span>
+                            <button
+                                className={styles.copy_button}
+                                onClick={() => {
+                                    navigator.clipboard.writeText(courseUrl);
+                                    setCopied(true);
+                                    setTimeout(() => setCopied(false), 2000);
+                                }}
+                            >
+                                {copied
+                                    ? <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                                    : <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                                }
+                                {copied ? 'Zkopírováno' : 'Kopírovat'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
@@ -284,7 +332,7 @@ function FeedCard({ feed }) {
                     ) : (
                         <>
                             <div className={styles.author_avatar}>
-                                <User size={12} color="rgba(255,255,255,0.5)" />
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                             </div>
                             <p>{feed.authorName || 'Lektor'}</p>
                         </>

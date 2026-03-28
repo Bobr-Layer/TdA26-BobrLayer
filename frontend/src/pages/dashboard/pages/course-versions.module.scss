@@ -37,16 +37,8 @@
     border-color: rgba(145, 245, 173, 0.3);
     color: rgba(145, 245, 173, 0.8);
 
-    svg path, svg circle {
-        stroke: rgba(145, 245, 173, 0.7);
-    }
-
     &:hover {
         border-color: #91F5AD;
         color: #91F5AD;
-
-        svg path, svg circle {
-            stroke: #91F5AD;
-        }
     }
 }

@@ -3,7 +3,6 @@ import Sidenav from '../../shared/layout/sidenav/Sidenav';
 import Header from '../../shared/layout/header/Header';
 import styles from './adminusers.module.scss';
 import { getUsers, updateUserRole, deleteUser } from '../../services/UserService';
-import { User } from 'lucide-react';
 import { usePageTitle } from '../../hooks/usePageTitle';
 
 function AdminUsers({ user, setUser }) {
@@ -106,7 +105,7 @@ function AdminUsers({ user, setUser }) {
               <li key={u.uuid} className={styles.user_card}>
                 <div className={styles.user_card_info}>
                   <div className={styles.user_avatar}>
-                    <User size={24} color="white" />
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                   </div>
                   <div className={styles.user_details}>
                     <span className={styles.user_name}>{u.username}</span>

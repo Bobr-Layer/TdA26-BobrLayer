@@ -14,6 +14,7 @@ import { getCourseFeed } from '../../../services/FeedService';
 import CourseDetail from '../courses/course-detail/CourseDetail';
 import CourseVersionView from '../courses/course-version-view/CourseVersionView';
 import StatusSetterSelect from '../../../shared/form/course-select/StatusSetterSelect';
+import DashboardButton from '../../../shared/button/dashboard/DashboardButton';
 import Header from '../../../shared/layout/header/Header';
 import NotFound from '../../not-found/NotFound';
 import { usePageTitle } from '../../../hooks/usePageTitle';
@@ -182,87 +183,84 @@ export default function Course({ user, setUser }) {
                     <DashboardNav
                         link={'/dashboard'}
                         textLink={'Vrátit se zpět'}
-                        buttonText={'Upravit kurz'}
-                        buttonLink={'edit'}
-                        buttonIcon={
-                            <svg width="1.75rem" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M24.862 8.02494L19.9752 3.13697C19.8127 2.97443 19.6197 2.84549 19.4074 2.75752C19.195 2.66955 18.9674 2.62427 18.7376 2.62427C18.5077 2.62427 18.2801 2.66955 18.0678 2.75752C17.8555 2.84549 17.6625 2.97443 17.5 3.13697L4.01298 16.6251C3.84977 16.787 3.72037 16.9798 3.63231 17.1921C3.54425 17.4045 3.49927 17.6322 3.50001 17.8621V22.7501C3.50001 23.2142 3.68438 23.6593 4.01257 23.9875C4.34076 24.3157 4.78588 24.5001 5.25001 24.5001H10.138C10.3679 24.5008 10.5956 24.4559 10.808 24.3678C11.0204 24.2797 11.2131 24.1503 11.375 23.9871L24.862 10.5001C25.0246 10.3376 25.1535 10.1447 25.2415 9.93231C25.3295 9.71996 25.3747 9.49237 25.3747 9.26252C25.3747 9.03267 25.3295 8.80508 25.2415 8.59273C25.1535 8.38038 25.0246 8.18745 24.862 8.02494ZM10.138 22.7501H5.25001V17.8621L14.875 8.23713L19.763 13.1251L10.138 22.7501ZM21 11.887L16.112 7.0001L18.737 4.3751L23.625 9.26197L21 11.887Z" fill="#1A1A1A" />
-                            </svg>
-                        }
-                        showButton={course.status === 'Draft' && !viewedVersionId}
                         otherComponent={
                             <>
-                                <StatusSetterSelect
-                                    course={course}
-                                    setCourse={setCourse}
-                                    onRefresh={loadCourse}
-                                />
+                                {/* ── Primary group: state management + edit ── */}
+                                <div className={styles.action_group_primary}>
+                                    <StatusSetterSelect
+                                        course={course}
+                                        setCourse={setCourse}
+                                        onRefresh={loadCourse}
+                                    />
+                                    {course.status === 'Draft' && !viewedVersionId && (
+                                        <DashboardButton
+                                            text="Upravit kurz"
+                                            link="edit"
+                                            icon={<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg>}
+                                        />
+                                    )}
+                                </div>
 
-                                {course.status === 'Draft' && (
-                                <button
-                                    className={styles.course_button}
-                                    onClick={handleCreateVersion}
-                                    disabled={savingVersion}
-                                    title="Uložit aktuální stav jako verzi"
-                                >
-                                    <svg width="1rem" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M17.5 2.5H5C4.33696 2.5 3.70107 2.76339 3.23223 3.23223C2.76339 3.70107 2.5 4.33696 2.5 5V17.5L6.25 15.625L10 17.5L13.75 15.625L17.5 17.5V5C17.5 4.33696 17.2366 3.70107 16.7678 3.23223C16.2989 2.76339 15.6630 2.5 15 2.5H17.5Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                                        <path d="M7.5 7.5H12.5M7.5 10.5H10.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                                    </svg>
-                                    {savingVersion ? 'Ukládám...' : 'Uložit verzi'}
-                                </button>
-                                )}
+                                {/* ── Divider ── */}
+                                <div className={styles.action_divider} />
 
-                                {versions.length > 0 && (course.status === 'Draft' || course.status === 'Archived') && (
-                                    <select
-                                        className={versionStyles.version_select}
-                                        value={viewedVersionId ?? ''}
-                                        onChange={(e) => handleSelectVersion(e.target.value || null)}
-                                    >
-                                        <option value="">Aktuální verze</option>
-                                        {versions.map((v) => (
-                                            <option key={v.shortId} value={v.shortId}>
-                                                {v.shortId} · {new Date(v.createdAt).toLocaleString('cs-CZ', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                                            </option>
-                                        ))}
-                                    </select>
-                                )}
+                                {/* ── Secondary group: utility actions (icon-only) ── */}
+                                <div className={styles.action_group_secondary}>
+                                    {course.status === 'Draft' && (
+                                        <button
+                                            className={`${styles.course_button} ${styles.course_button_icon}`}
+                                            onClick={handleCreateVersion}
+                                            disabled={savingVersion}
+                                            title={savingVersion ? 'Ukládám...' : 'Uložit verzi'}
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2 2 0 0 1 2 2v15a1 1 0 0 1-1.496.868l-4.512-2.578a2 2 0 0 0-1.984 0l-4.512 2.578A1 1 0 0 1 5 20V5a2 2 0 0 1 2-2z"/></svg>
+                                        </button>
+                                    )}
 
-                                {viewedVersionId && course.status === 'Draft' && (
+                                    {versions.length > 0 && (course.status === 'Draft' || course.status === 'Archived') && (
+                                        <select
+                                            className={versionStyles.version_select}
+                                            value={viewedVersionId ?? ''}
+                                            onChange={(e) => handleSelectVersion(e.target.value || null)}
+                                        >
+                                            <option value="">Aktuální verze</option>
+                                            {versions.map((v) => (
+                                                <option key={v.shortId} value={v.shortId}>
+                                                    {v.shortId} · {new Date(v.createdAt).toLocaleString('cs-CZ', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    )}
+
+                                    {viewedVersionId && course.status === 'Draft' && (
+                                        <button
+                                            className={`${styles.course_button} ${styles.course_button_icon} ${versionStyles.rollback_button}`}
+                                            onClick={handleRollback}
+                                            title="Obnovit tuto verzi"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                                        </button>
+                                    )}
+
                                     <button
-                                        className={`${styles.course_button} ${versionStyles.rollback_button}`}
-                                        onClick={handleRollback}
+                                        className={`${styles.course_button} ${styles.course_button_icon}`}
+                                        onClick={handleDuplicate}
+                                        disabled={duplicating}
+                                        title={duplicating ? 'Duplikuji...' : 'Duplikovat kurz'}
                                     >
-                                        <svg width="1rem" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M3.33 7S5.45 4.167 10 4.167c4.142 0 7.5 3.358 7.5 7.5s-3.358 7.5-7.5 7.5S2.5 15.809 2.5 11.667" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                                            <path d="M3.333 3.333v3.334h3.334" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                                        </svg>
-                                        Obnovit tuto verzi
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
                                     </button>
-                                )}
 
-                                <button
-                                    className={styles.course_button}
-                                    onClick={handleDuplicate}
-                                    disabled={duplicating}
-                                >
-                                    <svg width="1rem" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M16.875 2.5H6.875C6.70924 2.5 6.55027 2.56585 6.43306 2.68306C6.31585 2.80027 6.25 2.95924 6.25 3.125V6.25H3.125C2.95924 6.25 2.80027 6.31585 2.68306 6.43306C2.56585 6.55027 2.5 6.70924 2.5 6.875V16.875C2.5 17.0408 2.56585 17.1997 2.68306 17.3169C2.80027 17.4342 2.95924 17.5 3.125 17.5H13.125C13.2908 17.5 13.4497 17.4342 13.5669 17.3169C13.6842 17.1997 13.75 17.0408 13.75 16.875V13.75H16.875C17.0408 13.75 17.1997 13.6842 17.3169 13.5669C17.4342 13.4497 17.5 13.2908 17.5 13.125V3.125C17.5 2.95924 17.4342 2.80027 17.3169 2.68306C17.1997 2.56585 17.0408 2.5 16.875 2.5ZM12.5 16.25H3.75V7.5H12.5V16.25ZM16.25 12.5H13.75V6.875C13.75 6.70924 13.6842 6.55027 13.5669 6.43306C13.4497 6.31585 13.2908 6.25 13.125 6.25H7.5V3.75H16.25V12.5Z" fill="currentColor" />
-                                    </svg>
-                                    {duplicating ? 'Duplikuji...' : 'Duplikovat kurz'}
-                                </button>
-
-                                {course.status === 'Draft' && !viewedVersionId && (
-                                    <button
-                                        className={`${styles.course_button} ${styles.course_button_delete}`}
-                                        onClick={handleDelete}
-                                    >
-                                        <svg width="1.75rem" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M20.25 4.5H16.5V3.75C16.5 3.15326 16.2629 2.58097 15.841 2.15901C15.419 1.73705 14.8467 1.5 14.25 1.5H9.75C9.15326 1.5 8.58097 1.73705 8.15901 2.15901C7.73705 2.58097 7.5 3.15326 7.5 3.75V4.5H3.75C3.55109 4.5 3.36032 4.57902 3.21967 4.71967C3.07902 4.86032 3 5.05109 3 5.25C3 5.44891 3.07902 5.63968 3.21967 5.78033C3.36032 5.92098 3.55109 6 3.75 6H4.5V19.5C4.5 19.8978 4.65804 20.2794 4.93934 20.5607C5.22064 20.842 5.60218 21 6 21H18C18.3978 21 18.7794 20.842 19.0607 20.5607C19.342 20.2794 19.5 19.8978 19.5 19.5V6H20.25C20.4489 6 20.6397 5.92098 20.7803 5.78033C20.921 5.63968 21 5.44891 21 5.25C21 5.05109 20.921 4.86032 20.7803 4.71967C20.6397 4.57902 20.4489 4.5 20.25 4.5ZM9 3.75C9 3.55109 9.07902 3.36032 9.21967 3.21967C9.36032 3.07902 9.55109 3 9.75 3H14.25C14.4489 3 14.6397 3.07902 14.7803 3.21967C14.921 3.36032 15 3.55109 15 3.75V4.5H9V3.75ZM18 19.5H6V6H18V19.5Z" fill="white" />
-                                        </svg>
-                                        Smazat kurz
-                                    </button>
-                                )}
+                                    {course.status === 'Draft' && !viewedVersionId && (
+                                        <button
+                                            className={`${styles.course_button} ${styles.course_button_icon} ${styles.course_button_delete}`}
+                                            onClick={handleDelete}
+                                            title="Smazat kurz"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                                        </button>
+                                    )}
+                                </div>
                             </>
                         } />
 

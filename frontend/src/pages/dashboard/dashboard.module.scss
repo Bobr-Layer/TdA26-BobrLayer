@@ -242,10 +242,48 @@
     pointer-events: none;
 }
 
+/* ── Action bar groups ── */
+.action_group_primary {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+
+    @media (max-width: 900px) {
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
+
+.action_divider {
+    width: 1px;
+    height: 2rem;
+    background: rgba(255, 255, 255, 0.1);
+    flex-shrink: 0;
+
+    @media (max-width: 900px) {
+        width: 100%;
+        height: 1px;
+    }
+}
+
+.action_group_secondary {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+
+    @media (max-width: 900px) {
+        align-self: flex-start;
+    }
+}
+
+/* ── Course action buttons ── */
 .course_button {
     @include btn-ghost;
     display: flex;
     align-items: center;
+    justify-content: center;
     padding: 0.65rem 1.5rem;
     gap: 0.5rem;
     font-size: 0.95rem;
@@ -258,16 +296,28 @@
     }
 }
 
+/* Icon-only variant — square, no label */
+.course_button_icon {
+    padding: 0.6rem;
+    width: 2.55rem;
+    height: 2.55rem;
+    flex-shrink: 0;
+
+    @media (max-width: 900px) {
+        width: 2.55rem;
+        height: 2.55rem;
+    }
+}
+
 .course_button_delete {
     border-color: rgba(220, 51, 51, 0.3);
     color: rgba(220, 51, 51, 0.7);
-
-    svg path { fill: rgba(220, 51, 51, 0.6); }
+    svg path, svg circle, svg line, svg rect { stroke: rgba(220, 51, 51, 0.7); }
 
     &:hover {
         border-color: #DC3333;
         color: #DC3333;
-        svg path { fill: #DC3333; }
+        svg path, svg circle, svg line, svg rect { stroke: #DC3333; }
     }
 }
 

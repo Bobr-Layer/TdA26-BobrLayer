@@ -118,6 +118,25 @@
     margin-bottom: 1.5rem;
 }
 
+.hero_bottom_row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.share_button {
+    @include btn-ghost;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.45rem 1rem;
+    font-size: 0.8rem;
+    letter-spacing: 0.06em;
+    flex-shrink: 0;
+}
+
 .lector_row {
     display: flex;
     align-items: center;
@@ -317,4 +336,110 @@
     color: rgba(255, 255, 255, 0.2);
     letter-spacing: 0.06em;
     text-transform: uppercase;
+}
+
+/* ── SHARE MODAL ── */
+.share_overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(6px);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.share_modal {
+    @include box;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 2.25rem 2rem 2rem;
+    width: 100%;
+    max-width: 22rem;
+}
+
+.share_close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.4);
+    cursor: pointer;
+    padding: 0.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s;
+
+    &:hover { color: #fff; }
+}
+
+.share_title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: #fff;
+}
+
+.share_subtitle {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.4);
+    letter-spacing: 0.04em;
+    text-align: center;
+    margin-top: -0.5rem;
+}
+
+.qr_wrapper {
+    padding: 1.25rem;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.share_url_row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.04);
+    padding: 0.5rem 0.75rem;
+    box-sizing: border-box;
+}
+
+.share_url {
+    flex: 1;
+    font-size: 0.72rem;
+    color: rgba(255, 255, 255, 0.45);
+    letter-spacing: 0.02em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.copy_button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: none;
+    border: none;
+    color: #49B3B4;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.04em;
+    flex-shrink: 0;
+    padding: 0;
+    font-family: inherit;
+    transition: color 0.2s;
+
+    &:hover { color: #91F5AD; }
 }

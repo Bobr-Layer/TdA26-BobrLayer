@@ -9,7 +9,6 @@ import MaterialCard from '../../../shared/courses/material-card/MaterialCard';
 import { getMaterials } from '../../../services/MaterialService';
 import { getCourseFeed } from '../../../services/FeedService';
 import Api from '../../../services/Api';
-import { User } from 'lucide-react';
 import { usePageTitle } from '../../../hooks/usePageTitle';
 import Footer from '../../../shared/layout/footer/Footer';
 
@@ -243,7 +242,7 @@ function FeedCard({ feed }) {
                     ) : (
                         <>
                             <div className={styles.author_avatar}>
-                                <User size={12} color="rgba(255,255,255,0.5)" />
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                             </div>
                             <p>{feed.authorName || 'Lektor'}</p>
                         </>

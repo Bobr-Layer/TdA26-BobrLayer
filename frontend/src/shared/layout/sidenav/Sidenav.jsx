@@ -2,7 +2,6 @@ import { Link } from 'react-router-dom';
 import styles from './sidenav.module.scss';
 import { useState, useEffect } from 'react';
 import { logout } from '../../../services/AuthService';
-import { User } from 'lucide-react';
 
 function Sidenav({ user, setUser, current, showMore, uuid, modules = [], feedNotification = false }) {
     const [showMobileMenu, setShowMobileMenu] = useState(false);
@@ -160,7 +159,7 @@ function UserMenu({ user, setUser }) {
             <div className={`${styles.user_menu_content} ${showMore ? styles.more : ''}`} onClick={() => setShowMore(!showMore)} role="button">
                 <div>
                     <div className={styles.img_container} style={{ width: '2.5rem', height: '2.5rem', borderRadius: '50%', backgroundColor: 'rgba(255,255,255,0.1)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                        <User size={24} color="white" />
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                     </div>
                     <p>{user.username}</p>
                 </div>

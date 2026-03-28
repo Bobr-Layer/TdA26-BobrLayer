@@ -6,7 +6,6 @@ import Footer from '../../shared/layout/footer/Footer';
 import Input from '../../shared/form/input/Input';
 import SubmitButton from '../../shared/button/submit/SubmitButton';
 import { updateProfile, getCurrentUser } from '../../services/AuthService';
-import { User } from 'lucide-react';
 import { usePageTitle } from '../../hooks/usePageTitle';
 
 const ROLE_LABELS = {
@@ -82,7 +81,7 @@ function Profile({ user, setUser }) {
             <section className={styles.hero}>
                 <div className={styles.hero_content}>
                     <div className={styles.hero_avatar}>
-                        <User size={36} color="rgba(255,255,255,0.6)" />
+                        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                     </div>
                     <div className={styles.hero_meta}>
                         <span className={styles.hero_role}>{ROLE_LABELS[user?.role] ?? user?.role}</span>

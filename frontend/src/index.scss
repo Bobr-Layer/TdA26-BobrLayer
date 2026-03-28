@@ -114,7 +114,7 @@ a {
     border: none;
 }
 
-// Primary button — solid white, green on hover
+// Primary button — solid white, teal on hover
 @mixin btn-solid {
     background-color: #fff;
     color: #1A1A1A;
@@ -123,16 +123,18 @@ a {
     outline: none;
 
     span { color: #1A1A1A; }
+    svg { color: #1A1A1A; }
 
     &:hover {
         background-color: #49B3B4;
         border-color: #49B3B4;
         color: #1A1A1A;
         span { color: #1A1A1A; }
+        svg { color: #fff; }
     }
 }
 
-// Secondary button — ghost, green border + text on hover
+// Secondary button — ghost, teal border + text on hover
 @mixin btn-ghost {
     background-color: transparent;
     color: #fff;
@@ -141,18 +143,16 @@ a {
     outline: none;
     transition: opacity 0.55s ease, transform 0.55s ease, border-color 0.3s ease-in-out, color 0.3s ease-in-out !important;
 
-    svg path {
-        fill: #fff;
-        transition: fill 0.3s ease-in-out;
-    }
-
     span { color: #fff; }
+    svg { color: #fff; }
+    svg path, svg circle, svg line, svg rect { stroke: #fff; }
 
     &:hover {
         background-color: transparent;
         border-color: #49B3B4;
         color: #49B3B4;
         span { color: #49B3B4; }
-        svg path { fill: #49B3B4; }
+        svg { color: #49B3B4; }
+        svg path, svg circle, svg line, svg rect { stroke: #49B3B4; }
     }
 }
