@@ -28,7 +28,8 @@ export default function QuizQuestion({
     currentQuestion,
     info,
     quizResult,
-    submitting
+    submitting,
+    evaluations,
 }) {
     const isOpen = currentQuestion.type === 'openQuestion';
     const isMulti = currentQuestion.type === 'multipleChoice';
@@ -60,12 +61,24 @@ export default function QuizQuestion({
                 </div>
 
                 {isOpen ? (
-                    <OpenAnswerInput
-                        questionId={currentStep}
-                        currentAnswer={currentAnswer}
-                        onAnswerChange={onAnswerChange}
-                        disabled={!info}
-                    />
+                    <>
+                        <OpenAnswerInput
+                            questionId={currentStep}
+                            currentAnswer={currentAnswer}
+                            onAnswerChange={onAnswerChange}
+                            disabled={!info}
+                        />
+                        {info && evaluations?.[currentQuestion.uuid] && (
+                            <div className={`${styles.teacher_note} ${evaluations[currentQuestion.uuid].isCorrect ? styles.teacher_note_correct : styles.teacher_note_wrong}`}>
+                                <span className={styles.teacher_note_label}>
+                                    {evaluations[currentQuestion.uuid].isCorrect ? 'Správně' : 'Špatně'}
+                                </span>
+                                {evaluations[currentQuestion.uuid].comment && (
+                                    <p className={styles.teacher_note_text}>{evaluations[currentQuestion.uuid].comment}</p>
+                                )}
+                            </div>
+                        )}
+                    </>
                 ) : (
                     <OptionList
                         multi={isMulti}

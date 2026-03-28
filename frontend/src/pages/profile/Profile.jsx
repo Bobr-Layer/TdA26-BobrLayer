@@ -6,6 +6,8 @@ import Footer from '../../shared/layout/footer/Footer';
 import Input from '../../shared/form/input/Input';
 import SubmitButton from '../../shared/button/submit/SubmitButton';
 import { updateProfile, getCurrentUser, getMyQuizAttempts } from '../../services/AuthService';
+import { getQuizByUuid } from '../../services/QuizzService';
+import QuizQuestion from '../courses/quiz/quiz-question/QuizQuestion';
 import { usePageTitle } from '../../hooks/usePageTitle';
 
 const ROLE_LABELS = {
@@ -43,6 +45,8 @@ function Profile({ user, setUser }) {
     const [success, setSuccess] = useState(null);
     const [loading, setLoading] = useState(false);
     const [quizAttempts, setQuizAttempts] = useState([]);
+    const [review, setReview] = useState(null); // { attempt, quiz, step }
+    const [loadingAttempt, setLoadingAttempt] = useState(null);
     const revealRefs = useRef([]);
 
     const xp = quizAttempts.reduce((sum, a) => sum + (a.score || 0), 0);
@@ -68,6 +72,18 @@ function Profile({ user, setUser }) {
         className: styles.reveal,
         style: { '--delay': `${delay}s` },
     });
+
+    const handleAttemptClick = async (attempt) => {
+        setLoadingAttempt(attempt.attemptUuid);
+        try {
+            const quiz = await getQuizByUuid(attempt.courseUuid, attempt.moduleUuid, attempt.quizUuid);
+            setReview({ attempt, quiz, step: 0 });
+        } catch {
+            // ignore
+        } finally {
+            setLoadingAttempt(null);
+        }
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -221,22 +237,27 @@ function Profile({ user, setUser }) {
                             <div {...r(0.1)} className={styles.attempts_grid}>
                                 {quizAttempts.map(a => {
                                     const correct = (a.correctPerQuestion || []).filter(Boolean).length;
-                                    const total = (a.correctPerQuestion || []).length;
+                                    const total = (a.correctPerQuestion || []).filter(x => x !== null).length;
                                     const pct = total > 0 ? Math.round((correct / total) * 100) : 0;
+                                    const loading = loadingAttempt === a.attemptUuid;
                                     return (
-                                        <div key={a.attemptUuid} className={styles.attempt_card}>
+                                        <div
+                                            key={a.attemptUuid}
+                                            className={`${styles.attempt_card} ${styles.attempt_card_clickable}`}
+                                            onClick={() => !loadingAttempt && handleAttemptClick(a)}
+                                        >
                                             <div className={styles.attempt_card_top}>
                                                 <span className={styles.attempt_course}>{a.courseName}</span>
                                                 <span className={styles.attempt_date}>{new Date(a.submittedAt).toLocaleDateString('cs-CZ')}</span>
                                             </div>
                                             <p className={styles.attempt_quiz}>{a.quizTitle}</p>
                                             <div className={styles.attempt_score_row}>
-                                                <span className={styles.attempt_score}>{correct}/{total}</span>
-                                                <span className={styles.attempt_pct}>{pct} %</span>
+                                                <span className={styles.attempt_score}>{loading ? '…' : `${correct}/${total}`}</span>
+                                                <span className={styles.attempt_pct}>{loading ? '' : `${pct} %`}</span>
                                             </div>
                                             <div className={styles.attempt_dots}>
                                                 {(a.correctPerQuestion || []).map((v, i) => (
-                                                    <span key={i} className={`${styles.dot} ${v ? styles.dot_correct : styles.dot_wrong}`} />
+                                                    <span key={i} className={`${styles.dot} ${v === null ? styles.dot_open : v ? styles.dot_correct : styles.dot_wrong}`} />
                                                 ))}
                                             </div>
                                         </div>
@@ -249,6 +270,41 @@ function Profile({ user, setUser }) {
             )}
 
             <Footer user={user} setUser={setUser} />
+
+            {review && (
+                <div className={styles.review_overlay} onClick={() => setReview(null)}>
+                    <div className={styles.review_modal} onClick={e => e.stopPropagation()}>
+                        <div className={styles.review_modal_header}>
+                            <div className={styles.review_modal_title}>
+                                <span className={styles.review_modal_course}>{review.attempt.courseName}</span>
+                                <span className={styles.review_modal_quiz}>{review.attempt.quizTitle}</span>
+                            </div>
+                            <button className={styles.review_close} onClick={() => setReview(null)} aria-label="Zavřít">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M15 5L5 15M5 5l10 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
+                            </button>
+                        </div>
+                        <div className={styles.review_modal_body}>
+                            <QuizQuestion
+                                quiz={review.quiz}
+                                currentStep={review.step}
+                                setCurrentStep={step => setReview(r => ({ ...r, step }))}
+                                length={review.quiz.questions.length}
+                                currentAnswer={
+                                    review.quiz.questions[review.step]?.type === 'openQuestion'
+                                        ? (review.attempt.textAnswers?.[review.quiz.questions[review.step]?.uuid] || '')
+                                        : null
+                                }
+                                onAnswerChange={() => {}}
+                                onSubmit={() => {}}
+                                currentQuestion={review.quiz.questions[review.step]}
+                                info={true}
+                                quizResult={{ correctPerQuestion: review.attempt.correctPerQuestion }}
+                                evaluations={review.attempt.evaluations}
+                            />
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

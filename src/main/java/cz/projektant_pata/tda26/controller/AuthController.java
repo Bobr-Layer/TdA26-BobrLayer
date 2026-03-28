@@ -4,7 +4,10 @@ import cz.projektant_pata.tda26.dto.auth.LoginRequestDTO;
 import cz.projektant_pata.tda26.dto.auth.ProfileUpdateDTO;
 import cz.projektant_pata.tda26.dto.auth.RegisterRequestDTO;
 import cz.projektant_pata.tda26.dto.auth.ResetPasswordDTO;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.projektant_pata.tda26.dto.course.CourseResponseDTO;
+import cz.projektant_pata.tda26.dto.course.quiz.OpenQuestionEvaluationDTO;
 import cz.projektant_pata.tda26.dto.course.quiz.StudentAttemptDTO;
 import cz.projektant_pata.tda26.dto.user.UserResponseDTO;
 import cz.projektant_pata.tda26.mapper.CourseMapper;
@@ -42,6 +45,7 @@ public class AuthController {
     private final UserMapper mapper;
     private final CourseMapper courseMapper;
     private final QuizAttemptRepository quizAttemptRepository;
+    private final ObjectMapper objectMapper;
 
     // Registrace — vždy STUDENT, učitel/admin se registrovat nemůže
     @PostMapping("/register")
@@ -163,6 +167,16 @@ public class AuthController {
         dto.setMaxScore(a.getMaxScore());
         dto.setCorrectPerQuestion(a.getCorrectPerQuestion());
         dto.setSubmittedAt(a.getSubmittedAt());
+        if (a.getTextAnswersJson() != null) {
+            try {
+                dto.setTextAnswers(objectMapper.readValue(a.getTextAnswersJson(), new TypeReference<>() {}));
+            } catch (Exception ignored) {}
+        }
+        if (a.getEvaluationsJson() != null) {
+            try {
+                dto.setEvaluations(objectMapper.readValue(a.getEvaluationsJson(), new TypeReference<>() {}));
+            } catch (Exception ignored) {}
+        }
         return dto;
     }
 

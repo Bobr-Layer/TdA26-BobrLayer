@@ -1,9 +1,11 @@
 package cz.projektant_pata.tda26.dto.course.quiz;
 
+import cz.projektant_pata.tda26.dto.course.quiz.OpenQuestionEvaluationDTO;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Data
@@ -17,5 +19,7 @@ public class StudentAttemptDTO {
     private Double score;
     private Double maxScore;
     private List<Boolean> correctPerQuestion;
+    private Map<String, String> textAnswers;
+    private Map<String, OpenQuestionEvaluationDTO> evaluations;
     private LocalDateTime submittedAt;
 }
