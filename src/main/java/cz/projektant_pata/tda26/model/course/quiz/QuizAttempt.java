@@ -1,6 +1,7 @@
 package cz.projektant_pata.tda26.model.course.quiz;
 
 import cz.projektant_pata.tda26.model.user.User;
+import cz.projektant_pata.tda26.util.BooleanListConverter;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,10 +36,8 @@ public class QuizAttempt {
     @Column(nullable = false)
     private Double maxScore;
 
-    @ElementCollection
-    @CollectionTable(name = "quiz_attempt_results", joinColumns = @JoinColumn(name = "attempt_uuid"))
-    @Column(name = "is_correct")
-    @OrderColumn(name = "result_index")
+    @Column(name = "correct_per_question", columnDefinition = "TEXT")
+    @Convert(converter = BooleanListConverter.class)
     private List<Boolean> correctPerQuestion;
 
     @Column(columnDefinition = "TEXT")

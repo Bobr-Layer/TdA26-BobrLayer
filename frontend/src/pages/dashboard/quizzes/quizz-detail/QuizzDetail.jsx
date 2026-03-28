@@ -16,12 +16,11 @@ export default function QuizzDetail({
   quizUuid,
 }) {
   const questionsCount = quiz.questions.length;
-  const gradableQuestions = quiz.questions.filter(q => q.type !== 'openQuestion');
-  const averageScore = gradableQuestions.length > 0
-    ? gradableQuestions.reduce((sum, q) => sum + (q.successRate ?? 0), 0) / gradableQuestions.length
-    : 0;
-
   const hasOpenQuestions = quiz.questions.some(q => q.type === 'openQuestion');
+  const evaledAttempts = hasOpenQuestions ? attempts.filter(a => !a.pendingReview) : attempts;
+  const averageScore = evaledAttempts.length > 0
+    ? evaledAttempts.reduce((sum, a) => sum + (a.maxScore > 0 ? (a.score / a.maxScore) * 100 : 0), 0) / evaledAttempts.length
+    : 0;
 
   return (
     <article className={styles.quizz_detail}>
@@ -45,7 +44,7 @@ export default function QuizzDetail({
             <ResultCard
               averageScore={averageScore}
               questionsCount={questionsCount}
-              attemptsCount={quiz.attemptsCount}
+              attemptsCount={evaledAttempts.length}
               questions={quiz.questions}
             />
           </div>

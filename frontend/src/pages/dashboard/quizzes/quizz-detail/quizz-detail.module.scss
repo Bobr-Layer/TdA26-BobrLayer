@@ -167,13 +167,13 @@
     white-space: nowrap;
     transition: all 0.15s;
 
-    &:hover { border-color: rgba(255, 200, 100, 0.3); color: rgba(255, 200, 100, 0.8); }
+    &:hover { border-color: rgba(255, 80, 80, 0.3); color: rgba(255, 80, 80, 0.8); }
 }
 
 .filter_active {
-    background: rgba(255, 200, 100, 0.1);
-    border-color: rgba(255, 200, 100, 0.4);
-    color: rgba(255, 200, 100, 0.9);
+    background: rgba(255, 80, 80, 0.1);
+    border-color: rgba(255, 80, 80, 0.4);
+    color: rgba(255, 100, 100, 0.9);
 }
 
 .no_attempts {
@@ -198,7 +198,7 @@
 }
 
 .attempt_pending {
-    border-color: rgba(255, 200, 100, 0.25);
+    border-color: rgba(255, 80, 80, 0.35);
 }
 
 .attempt_card_header {
@@ -273,9 +273,9 @@
 .pending_badge {
     font-size: 0.7rem;
     font-weight: 600;
-    color: rgba(255, 200, 100, 0.9);
-    background: rgba(255, 200, 100, 0.1);
-    border: 1px solid rgba(255, 200, 100, 0.25);
+    color: rgba(255, 100, 100, 0.9);
+    background: rgba(255, 80, 80, 0.1);
+    border: 1px solid rgba(255, 80, 80, 0.3);
     border-radius: 0.3rem;
     padding: 0.1rem 0.4rem;
 }
