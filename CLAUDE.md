@@ -128,7 +128,9 @@ Materiály ani kvízy **nejsou přímo na kurzu** — vždy jsou pod konkrétní
 
 ## 0c. Grandfinále — zadání
 
-> Zadání bude doplněno po zveřejnění.
+> Detailní příprava v [`grandfinale.md`](./grandfinale.md)
+
+Zadání budou doplněny po schůzce s project manažerem (28.3.2026).
 
 ---
 
