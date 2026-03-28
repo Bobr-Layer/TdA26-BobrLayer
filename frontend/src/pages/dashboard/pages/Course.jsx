@@ -1,13 +1,18 @@
 import Sidenav from '../../../shared/layout/sidenav/Sidenav';
 import DashboardNav from '../../../shared/layout/dashboard-nav/DashboardNav';
 import styles from '../dashboard.module.scss';
+import versionStyles from './course-versions.module.scss';
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useToast } from '../../../hooks/useToast';
-import { getCourseByUuid, deleteCourse, createCourse } from '../../../services/CourseService';
+import {
+    getCourseByUuid, deleteCourse, createCourse,
+    getCourseVersions, createCourseVersion, getCourseVersionContent, rollbackCourseVersion
+} from '../../../services/CourseService';
 import { createModule } from '../../../services/ModuleService';
 import { getCourseFeed } from '../../../services/FeedService';
 import CourseDetail from '../courses/course-detail/CourseDetail';
+import CourseVersionView from '../courses/course-version-view/CourseVersionView';
 import StatusSetterSelect from '../../../shared/form/course-select/StatusSetterSelect';
 import Header from '../../../shared/layout/header/Header';
 import NotFound from '../../not-found/NotFound';
@@ -23,6 +28,11 @@ export default function Course({ user, setUser }) {
     const [feedNotification, setFeedNotification] = useState(false);
     const [notFound, setNotFound] = useState(false);
 
+    const [versions, setVersions] = useState([]);
+    const [viewedVersionId, setViewedVersionId] = useState(null);
+    const [viewedVersionContent, setViewedVersionContent] = useState(null);
+    const [savingVersion, setSavingVersion] = useState(false);
+
     const loadCourse = useCallback(async () => {
         try {
             const foundCourse = await getCourseByUuid(uuid);
@@ -33,9 +43,19 @@ export default function Course({ user, setUser }) {
         }
     }, [uuid]);
 
+    const loadVersions = useCallback(async () => {
+        try {
+            const v = await getCourseVersions(uuid);
+            setVersions(v);
+        } catch {
+            // silently ignore
+        }
+    }, [uuid]);
+
     useEffect(() => {
         loadCourse();
-    }, [loadCourse]);
+        loadVersions();
+    }, [loadCourse, loadVersions]);
 
     useEffect(() => {
         if (!uuid) return;
@@ -71,22 +91,22 @@ export default function Course({ user, setUser }) {
     };
 
     const handleDuplicate = async () => {
-        if (!course || duplicating) return;
+        const sourceName = viewedVersionContent ? viewedVersionContent.name : course?.name;
+        const sourceModules = viewedVersionContent ? viewedVersionContent.modules : course?.modules;
 
-        if (!window.confirm(`Opravdu chcete duplikovat kurz "${course.name}"?`)) return;
+        if (!sourceName || duplicating) return;
+        if (!window.confirm(`Opravdu chcete duplikovat kurz "${sourceName}"?`)) return;
 
         try {
             setDuplicating(true);
-            const { uuid: _, ...courseData } = course;
             const newCourse = await createCourse({
-                ...courseData,
-                name: `${course.name} (kopie)`,
+                name: `${sourceName} (kopie)`,
+                description: viewedVersionContent ? viewedVersionContent.description : course?.description,
                 status: 'Draft',
             });
 
-            // Copy all modules from original course
-            if (course.modules && course.modules.length > 0) {
-                for (const m of course.modules) {
+            if (sourceModules && sourceModules.length > 0) {
+                for (const m of sourceModules) {
                     await createModule(newCourse.uuid, {
                         name: m.name,
                         description: m.description,
@@ -101,6 +121,53 @@ export default function Course({ user, setUser }) {
             alert(err.message);
         } finally {
             setDuplicating(false);
+        }
+    };
+
+    const handleCreateVersion = async () => {
+        if (savingVersion) return;
+        try {
+            setSavingVersion(true);
+            await createCourseVersion(uuid);
+            await loadVersions();
+            showToast('Verze kurzu byla uložena.');
+        } catch (err) {
+            console.error(err);
+            alert(err.message);
+        } finally {
+            setSavingVersion(false);
+        }
+    };
+
+    const handleSelectVersion = async (shortId) => {
+        if (!shortId) {
+            setViewedVersionId(null);
+            setViewedVersionContent(null);
+            return;
+        }
+        try {
+            const content = await getCourseVersionContent(uuid, shortId);
+            setViewedVersionId(shortId);
+            setViewedVersionContent(content);
+        } catch (err) {
+            console.error(err);
+            alert(err.message);
+        }
+    };
+
+    const handleRollback = async () => {
+        if (!viewedVersionId) return;
+        if (!window.confirm('Obnovit kurz do této verze? Aktuální obsah bude přepsán.')) return;
+        try {
+            const updated = await rollbackCourseVersion(uuid, viewedVersionId);
+            setCourse(updated);
+            setViewedVersionId(null);
+            setViewedVersionContent(null);
+            await loadVersions();
+            showToast('Kurz byl obnoven do vybrané verze.');
+        } catch (err) {
+            console.error(err);
+            alert(err.message);
         }
     };
 
@@ -122,7 +189,7 @@ export default function Course({ user, setUser }) {
                                 <path d="M24.862 8.02494L19.9752 3.13697C19.8127 2.97443 19.6197 2.84549 19.4074 2.75752C19.195 2.66955 18.9674 2.62427 18.7376 2.62427C18.5077 2.62427 18.2801 2.66955 18.0678 2.75752C17.8555 2.84549 17.6625 2.97443 17.5 3.13697L4.01298 16.6251C3.84977 16.787 3.72037 16.9798 3.63231 17.1921C3.54425 17.4045 3.49927 17.6322 3.50001 17.8621V22.7501C3.50001 23.2142 3.68438 23.6593 4.01257 23.9875C4.34076 24.3157 4.78588 24.5001 5.25001 24.5001H10.138C10.3679 24.5008 10.5956 24.4559 10.808 24.3678C11.0204 24.2797 11.2131 24.1503 11.375 23.9871L24.862 10.5001C25.0246 10.3376 25.1535 10.1447 25.2415 9.93231C25.3295 9.71996 25.3747 9.49237 25.3747 9.26252C25.3747 9.03267 25.3295 8.80508 25.2415 8.59273C25.1535 8.38038 25.0246 8.18745 24.862 8.02494ZM10.138 22.7501H5.25001V17.8621L14.875 8.23713L19.763 13.1251L10.138 22.7501ZM21 11.887L16.112 7.0001L18.737 4.3751L23.625 9.26197L21 11.887Z" fill="#1A1A1A" />
                             </svg>
                         }
-                        showButton={course.status === 'Draft'}
+                        showButton={course.status === 'Draft' && !viewedVersionId}
                         otherComponent={
                             <>
                                 <StatusSetterSelect
@@ -130,6 +197,50 @@ export default function Course({ user, setUser }) {
                                     setCourse={setCourse}
                                     onRefresh={loadCourse}
                                 />
+
+                                {course.status === 'Draft' && (
+                                <button
+                                    className={styles.course_button}
+                                    onClick={handleCreateVersion}
+                                    disabled={savingVersion}
+                                    title="Uložit aktuální stav jako verzi"
+                                >
+                                    <svg width="1rem" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M17.5 2.5H5C4.33696 2.5 3.70107 2.76339 3.23223 3.23223C2.76339 3.70107 2.5 4.33696 2.5 5V17.5L6.25 15.625L10 17.5L13.75 15.625L17.5 17.5V5C17.5 4.33696 17.2366 3.70107 16.7678 3.23223C16.2989 2.76339 15.6630 2.5 15 2.5H17.5Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                        <path d="M7.5 7.5H12.5M7.5 10.5H10.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                                    </svg>
+                                    {savingVersion ? 'Ukládám...' : 'Uložit verzi'}
+                                </button>
+                                )}
+
+                                {versions.length > 0 && (course.status === 'Draft' || course.status === 'Archived') && (
+                                    <select
+                                        className={versionStyles.version_select}
+                                        value={viewedVersionId ?? ''}
+                                        onChange={(e) => handleSelectVersion(e.target.value || null)}
+                                    >
+                                        <option value="">Aktuální verze</option>
+                                        {versions.map((v) => (
+                                            <option key={v.shortId} value={v.shortId}>
+                                                {v.shortId} · {new Date(v.createdAt).toLocaleString('cs-CZ', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                                            </option>
+                                        ))}
+                                    </select>
+                                )}
+
+                                {viewedVersionId && course.status === 'Draft' && (
+                                    <button
+                                        className={`${styles.course_button} ${versionStyles.rollback_button}`}
+                                        onClick={handleRollback}
+                                    >
+                                        <svg width="1rem" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M3.33 7S5.45 4.167 10 4.167c4.142 0 7.5 3.358 7.5 7.5s-3.358 7.5-7.5 7.5S2.5 15.809 2.5 11.667" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                            <path d="M3.333 3.333v3.334h3.334" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                        </svg>
+                                        Obnovit tuto verzi
+                                    </button>
+                                )}
+
                                 <button
                                     className={styles.course_button}
                                     onClick={handleDuplicate}
@@ -140,7 +251,8 @@ export default function Course({ user, setUser }) {
                                     </svg>
                                     {duplicating ? 'Duplikuji...' : 'Duplikovat kurz'}
                                 </button>
-                                {course.status === 'Draft' && (
+
+                                {course.status === 'Draft' && !viewedVersionId && (
                                     <button
                                         className={`${styles.course_button} ${styles.course_button_delete}`}
                                         onClick={handleDelete}
@@ -153,7 +265,11 @@ export default function Course({ user, setUser }) {
                                 )}
                             </>
                         } />
-                    <CourseDetail course={course} />
+
+                    {viewedVersionId
+                        ? <CourseVersionView versionContent={viewedVersionContent} />
+                        : <CourseDetail course={course} onRefresh={loadCourse} />
+                    }
                 </section>
             )}
             {toast && (

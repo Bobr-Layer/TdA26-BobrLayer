@@ -157,3 +157,37 @@ export async function isEnrolled(uuid) {
   const data = await res.json();
   return data.enrolled;
 }
+
+export async function getCourseVersions(courseUuid) {
+  const res = await fetch(`${Api}/courses/${courseUuid}/versions`, {
+    ...defaultOptions,
+  });
+  if (!res.ok) throw new Error('Nepodařilo se načíst verze kurzu');
+  return res.json();
+}
+
+export async function createCourseVersion(courseUuid) {
+  const res = await fetch(`${Api}/courses/${courseUuid}/versions`, {
+    ...defaultOptions,
+    method: 'POST',
+  });
+  if (!res.ok) throw new Error('Nepodařilo se vytvořit verzi kurzu');
+  return res.json();
+}
+
+export async function getCourseVersionContent(courseUuid, shortId) {
+  const res = await fetch(`${Api}/courses/${courseUuid}/versions/${shortId}`, {
+    ...defaultOptions,
+  });
+  if (!res.ok) throw new Error('Nepodařilo se načíst verzi kurzu');
+  return res.json();
+}
+
+export async function rollbackCourseVersion(courseUuid, shortId) {
+  const res = await fetch(`${Api}/courses/${courseUuid}/versions/${shortId}/rollback`, {
+    ...defaultOptions,
+    method: 'POST',
+  });
+  if (!res.ok) throw new Error('Nepodařilo se obnovit verzi kurzu');
+  return res.json();
+}

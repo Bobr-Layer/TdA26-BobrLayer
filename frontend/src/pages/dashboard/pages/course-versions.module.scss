@@ -1,0 +1,52 @@
+@use "../../../index.scss" as *;
+
+.version_select {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #fff;
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+    font-family: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    outline: none;
+    min-width: 14rem;
+    max-width: 22rem;
+
+    option {
+        background: #1a1a1a;
+        color: #fff;
+        font-family: monospace;
+    }
+
+    &:hover {
+        border-color: rgba(255, 255, 255, 0.35);
+    }
+
+    &:focus {
+        border-color: rgba(255, 255, 255, 0.5);
+    }
+
+    @media (max-width: 900px) {
+        width: 100%;
+        max-width: unset;
+    }
+}
+
+.rollback_button {
+    border-color: rgba(145, 245, 173, 0.3);
+    color: rgba(145, 245, 173, 0.8);
+
+    svg path, svg circle {
+        stroke: rgba(145, 245, 173, 0.7);
+    }
+
+    &:hover {
+        border-color: #91F5AD;
+        color: #91F5AD;
+
+        svg path, svg circle {
+            stroke: #91F5AD;
+        }
+    }
+}

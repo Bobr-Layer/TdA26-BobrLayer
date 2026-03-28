@@ -96,8 +96,6 @@ public class MaterialServiceImpl implements IMaterialService {
         if (!existingMaterial.getModule().getCourse().getStatus().equals(StatusEnum.Draft))
             throw new IllegalArgumentException("Kurz není v režimu úprav");
 
-        String oldName = existingMaterial.getName();
-
         if (name != null)
             existingMaterial.setName(name);
         if (description != null)
@@ -118,15 +116,12 @@ public class MaterialServiceImpl implements IMaterialService {
         if (!(existingMaterial instanceof FileMaterial fileMaterial))
             throw new IllegalArgumentException("Invalid material type");
 
-        String oldName = existingMaterial.getName();
-
         if (name != null && !name.isBlank())
             fileMaterial.setName(name);
         if (description != null)
             fileMaterial.setDescription(description);
 
         if (file != null && !file.isEmpty()) {
-            deletePhysicalFile(fileMaterial.getFileUrl());
             String newStoredFileName = storeFile(file);
             fileMaterial.setFileUrl("/uploads/" + newStoredFileName);
             fileMaterial.setMimeType(getCleanContentType(file.getContentType()));
@@ -162,14 +157,8 @@ public class MaterialServiceImpl implements IMaterialService {
         if (!material.getModule().getCourse().getStatus().equals(StatusEnum.Draft))
             throw new IllegalArgumentException("Kurz je není v režimu úprav.");
 
-        String materialName = material.getName();
-        String type = material.getTypeLabel();
-
-        if (material instanceof FileMaterial fileMaterial) {
-            deletePhysicalFile(fileMaterial.getFileUrl());
-        }
-
-        materialRepository.delete(material);
+        material.setDeleted(true);
+        materialRepository.save(material);
         return material;
     }
 

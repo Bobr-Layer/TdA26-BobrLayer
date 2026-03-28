@@ -1,0 +1,157 @@
+@use "../../../../index.scss" as *;
+
+.version_view {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.version_banner {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1.25rem;
+    background: rgba(255, 180, 0, 0.08);
+    border: 1px solid rgba(255, 180, 0, 0.25);
+    border-radius: 0.25rem;
+    flex-wrap: wrap;
+}
+
+.version_id {
+    font-family: monospace;
+    font-size: 0.85rem;
+    color: #ffb400;
+    background: rgba(255, 180, 0, 0.12);
+    padding: 0.15rem 0.5rem;
+    border-radius: 0.2rem;
+}
+
+.version_label {
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+.version_date {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.version_readonly {
+    margin-left: auto;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255, 180, 0, 0.6);
+}
+
+.version_course_info {
+    h2 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 0.35rem;
+    }
+
+    p {
+        font-size: 0.95rem;
+        color: rgba(255, 255, 255, 0.6);
+    }
+}
+
+.version_modules {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.version_empty {
+    color: rgba(255, 255, 255, 0.35);
+    font-size: 0.9rem;
+}
+
+.version_module {
+    padding: 1.25rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 0.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.version_module_header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+
+    h3 {
+        font-size: 1rem;
+        font-weight: 700;
+    }
+}
+
+.version_module_index {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.35);
+    font-family: monospace;
+}
+
+.version_module_active {
+    margin-left: auto;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #91F5AD;
+}
+
+.version_module_desc {
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.version_section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+
+    ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+}
+
+.version_section_label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.version_item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.version_item_type {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.3);
+    min-width: 3.5rem;
+}
+
+.version_item_sub {
+    color: rgba(255, 255, 255, 0.35);
+    font-size: 0.8rem;
+    margin-left: auto;
+}

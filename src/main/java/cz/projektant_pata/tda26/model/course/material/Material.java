@@ -7,13 +7,17 @@ import cz.projektant_pata.tda26.model.course.module.Module;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp; // Důležité pro automatický čas
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.Instant;
 import java.util.UUID;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
+@SQLDelete(sql = "UPDATE material SET deleted = true WHERE uuid = ?")
+@SQLRestriction("deleted = false")
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.PROPERTY,
@@ -40,6 +44,9 @@ public abstract class Material {
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private Instant createdAt;
+
+    @Column(nullable = false)
+    private boolean deleted = false;
 
     @ManyToOne
     @JoinColumn(name = "module_id")

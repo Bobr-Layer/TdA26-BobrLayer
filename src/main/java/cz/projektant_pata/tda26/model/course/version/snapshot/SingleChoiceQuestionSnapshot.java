@@ -1,0 +1,12 @@
+package cz.projektant_pata.tda26.model.course.version.snapshot;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
+public class SingleChoiceQuestionSnapshot extends QuestionSnapshot {
+    private Integer correctIndex;
+}
