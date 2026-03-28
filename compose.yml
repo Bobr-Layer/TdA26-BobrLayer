@@ -54,7 +54,7 @@ services:
       dockerfile: Dockerfile
     container_name: tda26-caddy
     ports:
-      - "8080:80"
+      - "80:80"
     depends_on:
       - spring
       - react

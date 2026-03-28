@@ -29,11 +29,13 @@ export default function QuizResults({ name, result, onShowReview }) {
             </div>
 
             <div className={styles.quiz_results_score_block}>
-                <span className={styles.score_number}>{correct}/{total}</span>
+                <div className={styles.score_numbers_row}>
+                    <span className={styles.score_number}>{correct}/{total}</span>
+                    {openCount > 0 && (
+                        <span className={styles.score_open_number}>?/{openCount}</span>
+                    )}
+                </div>
                 <span className={styles.score_label}>{percentage} % správně</span>
-                {openCount > 0 && (
-                    <span className={styles.score_open}>{openCount} otevřená {openCount === 1 ? 'otázka' : 'otázky'}</span>
-                )}
             </div>
 
             <hr className={styles.quiz_results_divider} />

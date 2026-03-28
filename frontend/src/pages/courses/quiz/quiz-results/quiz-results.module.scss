@@ -32,11 +32,24 @@
         align-items: center;
         gap: 0.5rem;
 
+        .score_numbers_row {
+            display: flex;
+            align-items: baseline;
+            gap: 1.5rem;
+        }
+
         .score_number {
             font-size: 6rem;
             font-weight: 700;
             line-height: 1;
             color: #91F5AD;
+        }
+
+        .score_open_number {
+            font-size: 6rem;
+            font-weight: 700;
+            line-height: 1;
+            color: #FFD166;
         }
 
         .score_label {
