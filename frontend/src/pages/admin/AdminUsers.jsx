@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import Sidenav from '../../shared/layout/sidenav/Sidenav';
 import Header from '../../shared/layout/header/Header';
+import dashStyles from '../dashboard/dashboard.module.scss';
 import styles from './adminusers.module.scss';
 import { getUsers, updateUserRole, deleteUser } from '../../services/UserService';
 import { usePageTitle } from '../../hooks/usePageTitle';
@@ -67,9 +68,9 @@ function AdminUsers({ user, setUser }) {
     <div>
       <Header user={user} setUser={setUser} onlyMobile={true} />
       <Sidenav user={user} setUser={setUser} current={'users'} />
-      <section className={styles.admin}>
-        <article className={styles.admin_header}>
-          <div>
+      <section className={dashStyles.dashboard}>
+        <article className={dashStyles.dashboard_header}>
+          <div className={dashStyles.dashboard_header_text}>
             <h1>Správa uživatelů</h1>
             <p>{filteredUsers.length} / {users.length} uživatelů</p>
           </div>
@@ -125,11 +126,12 @@ function AdminUsers({ user, setUser }) {
                     />
                   )}
                   {u.uuid !== user.uuid && (
-                    <button className={styles.btn_delete} onClick={() => handleDelete(u)}>
-                      <svg width="1rem" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M20.25 6H16.5V4.5C16.5 3.90326 16.2629 3.33097 15.841 2.90901C15.419 2.48705 14.8467 2.25 14.25 2.25H9.75C9.15326 2.25 8.58097 2.48705 8.15901 2.90901C7.73705 3.33097 7.5 3.90326 7.5 4.5V6H3.75C3.55109 6 3.36032 6.07902 3.21967 6.21967C3.07902 6.36032 3 6.55109 3 6.75C3 6.94891 3.07902 7.13968 3.21967 7.28033C3.36032 7.42098 3.55109 7.5 3.75 7.5H4.5V19.5C4.5 19.8978 4.65804 20.2794 4.93934 20.5607C5.22064 20.842 5.60218 21 6 21H18C18.3978 21 18.7794 20.842 19.0607 20.5607C19.342 20.2794 19.5 19.8978 19.5 19.5V7.5H20.25C20.4489 7.5 20.6397 7.42098 20.7803 7.28033C20.921 7.13968 21 6.94891 21 6.75C21 6.55109 20.921 6.36032 20.7803 6.21967C20.6397 6.07902 20.4489 6 20.25 6ZM9.75 4.5H14.25V6H9.75V4.5ZM18 19.5H6V7.5H18V19.5Z" fill="currentColor" />
-                      </svg>
-                      Smazat
+                    <button
+                      className={`${dashStyles.course_button} ${dashStyles.course_button_icon} ${dashStyles.course_button_delete}`}
+                      onClick={() => handleDelete(u)}
+                      title="Smazat uživatele"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                     </button>
                   )}
                 </div>

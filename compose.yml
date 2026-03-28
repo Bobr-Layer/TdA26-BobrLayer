@@ -26,7 +26,7 @@ services:
       dockerfile: Dockerfile
     container_name: tda26-spring
     ports:
-      - "8080:8080"
+      - "8081:8080"
     environment:
       # Tyto proměnné přepíší ${...} hodnoty v applicationn.propertiess
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/tda_app
@@ -54,7 +54,7 @@ services:
       dockerfile: Dockerfile
     container_name: tda26-caddy
     ports:
-      - "80:80"
+      - "8082:80"
     depends_on:
       - spring
       - react

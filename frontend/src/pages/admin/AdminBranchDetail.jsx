@@ -3,13 +3,13 @@ import { useParams } from 'react-router-dom';
 import Sidenav from '../../shared/layout/sidenav/Sidenav';
 import Header from '../../shared/layout/header/Header';
 import styles from './adminbranchdetail.module.scss';
+import dashStyles from '../dashboard/dashboard.module.scss';
 import { getBranch, updateBranch, getBranchUsers, createBranchUser } from '../../services/BranchService';
 import { updateUserRole, deleteUser } from '../../services/UserService';
 import { usePageTitle } from '../../hooks/usePageTitle';
 import { User } from 'lucide-react';
 import DashboardButton from '../../shared/button/dashboard/DashboardButton';
-import NewButton from '../../shared/button/new/NewButton';
-import BackToButton from '../../shared/button/back-to/BackToButton';
+import DashboardNav from '../../shared/layout/dashboard-nav/DashboardNav';
 
 const STATUS_LABEL = { ACTIVE: 'Aktivní', ONBOARDING: 'Onboarding', WAITING: 'Čekající' };
 const TYPE_LABEL = { HQ: 'HQ', BRANCH: 'Pobočka' };
@@ -108,7 +108,7 @@ function AdminBranchDetail({ user, setUser }) {
     <div>
       <Header user={user} setUser={setUser} onlyMobile={true} />
       <Sidenav user={user} setUser={setUser} current={'branches'} />
-      <section className={styles.admin}><p className={styles.state_msg}>Načítání...</p></section>
+      <section className={dashStyles.dashboard}><p className={styles.state_msg}>Načítání...</p></section>
     </div>
   );
 
@@ -116,7 +116,7 @@ function AdminBranchDetail({ user, setUser }) {
     <div>
       <Header user={user} setUser={setUser} onlyMobile={true} />
       <Sidenav user={user} setUser={setUser} current={'branches'} />
-      <section className={styles.admin}><p className={styles.state_msg_err}>{error || 'Pobočka nenalezena'}</p></section>
+      <section className={dashStyles.dashboard}><p className={styles.state_msg_err}>{error || 'Pobočka nenalezena'}</p></section>
     </div>
   );
 
@@ -124,28 +124,30 @@ function AdminBranchDetail({ user, setUser }) {
     <div>
       <Header user={user} setUser={setUser} onlyMobile={true} />
       <Sidenav user={user} setUser={setUser} current={'branches'} />
-      <section className={styles.admin}>
+      <section className={dashStyles.dashboard}>
 
-        {/* Back + Header */}
-        <article className={styles.admin_header}>
-          <div className={styles.header_left}>
-            <BackToButton text="← Pobočky" link="/dashboard/branches" />
-            <div className={styles.title_row}>
-              <div className={styles.badges}>
-                <span className={`${styles.badge} ${branch.type === 'HQ' ? styles.badge_hq : styles.badge_branch}`}>
-                  {TYPE_LABEL[branch.type] ?? branch.type}
-                </span>
-                <span className={`${styles.badge} ${styles['badge_status_' + branch.status?.toLowerCase()]}`}>
-                  {STATUS_LABEL[branch.status] ?? branch.status}
-                </span>
-              </div>
-              <h1>{branch.name}</h1>
-              <p className={styles.location}>{branch.city}, {branch.country}</p>
+        <DashboardNav
+          link="/dashboard/branches"
+          textLink="Pobočky"
+          showButton={!editing}
+          buttonText="Upravit pobočku"
+          onClick={() => setEditing(true)}
+        />
+
+        {/* Header */}
+        <article className={dashStyles.dashboard_header}>
+          <div className={dashStyles.dashboard_header_text}>
+            <div className={styles.badges}>
+              <span className={`${styles.badge} ${branch.type === 'HQ' ? styles.badge_hq : styles.badge_branch}`}>
+                {TYPE_LABEL[branch.type] ?? branch.type}
+              </span>
+              <span className={`${styles.badge} ${styles['badge_status_' + branch.status?.toLowerCase()]}`}>
+                {STATUS_LABEL[branch.status] ?? branch.status}
+              </span>
             </div>
+            <h1>{branch.name}</h1>
+            <p>{branch.city}, {branch.country}</p>
           </div>
-          {!editing && (
-            <DashboardButton text="Upravit pobočku" onClick={() => setEditing(true)} />
-          )}
         </article>
 
         {/* Edit form */}
@@ -214,7 +216,11 @@ function AdminBranchDetail({ user, setUser }) {
               <h2>Uživatelé pobočky</h2>
               <span className={styles.users_count}>{users.length}</span>
             </div>
-            <NewButton onClick={() => setShowCreateUser(v => !v)} />
+            <DashboardButton
+              text={showCreateUser ? 'Zrušit' : 'Nový uživatel'}
+              onClick={() => setShowCreateUser(v => !v)}
+              icon={!showCreateUser && <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>}
+            />
           </div>
 
           {/* Create user form */}
@@ -270,11 +276,12 @@ function AdminBranchDetail({ user, setUser }) {
                       <DashboardButton text="Nastavit Lektora" onClick={() => handleRoleChange(u, 'LEKTOR')} />
                     )}
                     {u.uuid !== user.uuid && (u.role === 'LEKTOR' || isSuperAdmin) && (
-                      <button className={styles.btn_delete} onClick={() => handleDelete(u)}>
-                        <svg width="1rem" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M20.25 6H16.5V4.5C16.5 3.90326 16.2629 3.33097 15.841 2.90901C15.419 2.48705 14.8467 2.25 14.25 2.25H9.75C9.15326 2.25 8.58097 2.48705 8.15901 2.90901C7.73705 3.33097 7.5 3.90326 7.5 4.5V6H3.75C3.55109 6 3.36032 6.07902 3.21967 6.21967C3.07902 6.36032 3 6.55109 3 6.75C3 6.94891 3.07902 7.13968 3.21967 7.28033C3.36032 7.42098 3.55109 7.5 3.75 7.5H4.5V19.5C4.5 19.8978 4.65804 20.2794 4.93934 20.5607C5.22064 20.842 5.60218 21 6 21H18C18.3978 21 18.7794 20.842 19.0607 20.5607C19.342 20.2794 19.5 19.8978 19.5 19.5V7.5H20.25C20.4489 7.5 20.6397 7.42098 20.7803 7.28033C20.921 7.13968 21 6.94891 21 6.75C21 6.55109 20.921 6.36032 20.7803 6.21967C20.6397 6.07902 20.4489 6 20.25 6ZM9.75 4.5H14.25V6H9.75V4.5ZM18 19.5H6V7.5H18V19.5Z" fill="currentColor"/>
-                        </svg>
-                        Smazat
+                      <button
+                        className={`${dashStyles.course_button} ${dashStyles.course_button_icon} ${dashStyles.course_button_delete}`}
+                        onClick={() => handleDelete(u)}
+                        title="Smazat uživatele"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                       </button>
                     )}
                   </div>

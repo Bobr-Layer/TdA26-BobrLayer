@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom';
 import Sidenav from '../../shared/layout/sidenav/Sidenav';
 import Header from '../../shared/layout/header/Header';
 import styles from './adminbranches.module.scss';
+import dashStyles from '../dashboard/dashboard.module.scss';
 import { getBranches, createBranch } from '../../services/BranchService';
 import { usePageTitle } from '../../hooks/usePageTitle';
-import NewButton from '../../shared/button/new/NewButton';
 import DashboardButton from '../../shared/button/dashboard/DashboardButton';
 
 const STATUS_LABEL = {
@@ -79,20 +79,26 @@ function AdminBranches({ user, setUser }) {
     <div>
       <Header user={user} setUser={setUser} onlyMobile={true} />
       <Sidenav user={user} setUser={setUser} current={'branches'} />
-      <section className={styles.admin}>
-        <article className={styles.admin_header}>
-          <div>
+      <section className={dashStyles.dashboard}>
+        <article className={dashStyles.dashboard_header}>
+          <div className={dashStyles.dashboard_header_text}>
             <h1>Pobočky</h1>
             <p>{filtered.length} / {branches.length} poboček</p>
           </div>
           {isSuperAdmin && (
-            <NewButton onClick={() => setShowCreate(v => !v)} />
+            <div className={dashStyles.dashboard_header_actions}>
+              <DashboardButton
+                text={showCreate ? 'Zrušit' : 'Nová pobočka'}
+                onClick={() => setShowCreate(v => !v)}
+                icon={!showCreate && <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>}
+              />
+            </div>
           )}
         </article>
 
         {isSuperAdmin && showCreate && (
           <article className={styles.create_section}>
-            <h2>Nová pobočka</h2>
+            <h2 className={styles.section_title}>Nová pobočka</h2>
             <div className={styles.form_grid}>
               <label className={styles.field}>
                 <span>Název *</span>

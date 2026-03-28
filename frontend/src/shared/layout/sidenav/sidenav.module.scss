@@ -203,19 +203,19 @@
     color: rgba(255, 255, 255, 0.4);
     transition: color 0.2s;
 
-    svg path {
-        fill: rgba(255, 255, 255, 0.3);
-        transition: fill 0.2s;
+    svg path, svg circle, svg rect, svg line, svg polyline, svg polygon {
+        stroke: rgba(255, 255, 255, 0.3);
+        transition: stroke 0.2s;
     }
 
     &:hover {
         color: #fff;
-        svg path { fill: #fff; }
+        svg path, svg circle, svg rect, svg line, svg polyline, svg polygon { stroke: #fff; }
     }
 
     &.active {
         color: #fff;
-        svg path { fill: #49B3B4; }
+        svg path, svg circle, svg rect, svg line, svg polyline, svg polygon { stroke: #49B3B4; }
     }
 }
 
@@ -281,7 +281,7 @@
             p { font-size: 1.1rem; font-weight: 700; }
         }
 
-        svg { transition: transform 0.2s; }
-        &.more svg { transform: rotate(180deg); }
+        .chevron { display: flex; transition: transform 0.2s; }
+        &.more .chevron { transform: rotate(180deg); }
     }
 }
