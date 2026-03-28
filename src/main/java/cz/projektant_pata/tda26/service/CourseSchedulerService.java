@@ -18,7 +18,7 @@ public class CourseSchedulerService {
     private final CourseRepository courseRepository;
     private final ICourseService courseService;
 
-    @Scheduled(fixedRate = 60000)
+    @Scheduled(fixedRate = 10000)
     @Transactional
     public void activateScheduledCourses() {
         List<Course> due = courseRepository.findByStatusAndScheduledAtBefore(

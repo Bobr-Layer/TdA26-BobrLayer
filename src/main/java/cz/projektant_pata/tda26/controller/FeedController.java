@@ -55,7 +55,7 @@ public class FeedController {
             @PathVariable UUID itemId,
             @RequestBody FeedRequestDTO request
     ) {
-        FeedItem updatedItem = feedService.update(itemId, request.message());
+        FeedItem updatedItem = feedService.update(courseId, itemId, request.message());
         FeedResponseDTO dto = feedMapper.toDto(updatedItem);
 
         sseService.sendToAll(courseId, new SseEventDTO<>("FEED_UPDATED", dto));
@@ -68,7 +68,7 @@ public class FeedController {
             @PathVariable UUID courseId,
             @PathVariable UUID itemId
     ) {
-        feedService.delete(itemId);
+        feedService.delete(courseId, itemId);
 
         sseService.sendToAll(courseId, new SseEventDTO<>("FEED_DELETED", Map.of("deletedId", itemId)));
 

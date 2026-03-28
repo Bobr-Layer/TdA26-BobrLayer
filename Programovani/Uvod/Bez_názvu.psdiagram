@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<flowchartSaveContainer>
+    <flowchart>
+        <mainSegment xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="layoutSegment" xmlID="0">
+            <element xsi:type="layoutElement" xmlID="1" parentSegment="0">
+                <startEnd>
+                    <borderColor>0,0,0,255</borderColor>
+                    <shapeUpColor>255,255,255,255</shapeUpColor>
+                    <shapeDownColor>230,230,230,255</shapeDownColor>
+                    <hasShadow>true</hasShadow>
+                    <commandsValid>true</commandsValid>
+                    <value>Začátek</value>
+                </startEnd>
+            </element>
+            <element xsi:type="layoutElement" xmlID="8" parentSegment="0">
+                <process>
+                    <borderColor>0,0,0,255</borderColor>
+                    <shapeUpColor>255,255,255,255</shapeUpColor>
+                    <shapeDownColor>230,230,230,255</shapeDownColor>
+                    <hasShadow>true</hasShadow>
+                    <customValue>výraz</customValue>
+                    <commandsValid>true</commandsValid>
+                    <value>výraz</value>
+                </process>
+            </element>
+            <element xsi:type="layoutElement" xmlID="3" parentSegment="0">
+                <decision>
+                    <borderColor>0,0,0,255</borderColor>
+                    <shapeUpColor>255,255,255,255</shapeUpColor>
+                    <shapeDownColor>230,230,230,255</shapeDownColor>
+                    <hasShadow>true</hasShadow>
+                    <customValue>konstanta1</customValue>
+                    <commands>
+                        <entry key="condition"></entry>
+                    </commands>
+                    <commandsValid>true</commandsValid>
+                    <value>konstanta1</value>
+                </decision>
+                <segment xsi:type="layoutSegment" xmlID="4" parentElement="3">
+                    <element xsi:type="layoutElement" xmlID="7" parentSegment="4">
+                        <decision>
+                            <borderColor>0,0,0,255</borderColor>
+                            <shapeUpColor>255,255,255,255</shapeUpColor>
+                            <shapeDownColor>230,230,230,255</shapeDownColor>
+                            <hasShadow>true</hasShadow>
+                            <customValue>konstanta2</customValue>
+                            <commandsValid>true</commandsValid>
+                            <value>konstanta2</value>
+                        </decision>
+                        <segment xsi:type="layoutSegment" xmlID="9" parentElement="7">
+                            <element xsi:type="layoutElement" xmlID="12" parentSegment="9">
+<process>
+    <borderColor>0,0,0,255</borderColor>
+    <shapeUpColor>255,255,255,255</shapeUpColor>
+    <shapeDownColor>230,230,230,255</shapeDownColor>
+    <hasShadow>true</hasShadow>
+    <customValue>default</customValue>
+    <commandsValid>true</commandsValid>
+    <value>default</value>
+</process>
+                            </element>
+                            <description>Ne</description>
+                        </segment>
+                        <segment xsi:type="layoutSegment" xmlID="10" parentElement="7">
+                            <element xsi:type="layoutElement" xmlID="11" parentSegment="10">
+<process>
+    <borderColor>0,0,0,255</borderColor>
+    <shapeUpColor>255,255,255,255</shapeUpColor>
+    <shapeDownColor>230,230,230,255</shapeDownColor>
+    <hasShadow>true</hasShadow>
+    <customValue>blok2</customValue>
+    <commandsValid>true</commandsValid>
+    <value>blok2</value>
+</process>
+                            </element>
+                            <element xsi:type="layoutElement" xmlID="16" parentSegment="10">
+<goto>
+    <borderColor>0,0,0,255</borderColor>
+    <shapeUpColor>255,255,255,255</shapeUpColor>
+    <shapeDownColor>230,230,230,255</shapeDownColor>
+    <hasShadow>true</hasShadow>
+    <defaultValue>__
+BR
+__</defaultValue>
+    <commands>
+        <entry key="mode">break</entry>
+    </commands>
+    <commandsValid>true</commandsValid>
+    <value>__
+BR
+__</value>
+</goto>
+                            </element>
+                            <description>Ano</description>
+                        </segment>
+                    </element>
+                    <description>Ne</description>
+                </segment>
+                <segment xsi:type="layoutSegment" xmlID="5" parentElement="3">
+                    <element xsi:type="layoutElement" xmlID="6" parentSegment="5">
+                        <process>
+                            <borderColor>0,0,0,255</borderColor>
+                            <shapeUpColor>255,255,255,255</shapeUpColor>
+                            <shapeDownColor>230,230,230,255</shapeDownColor>
+                            <hasShadow>true</hasShadow>
+                            <customValue>blok1</customValue>
+                            <defaultValue>blok ← true</defaultValue>
+                            <commands>
+<entry key="var">blok</entry>
+<entry key="value">true</entry>
+                            </commands>
+                            <commandsValid>true</commandsValid>
+                            <value>blok1</value>
+                        </process>
+                    </element>
+                    <element xsi:type="layoutElement" xmlID="15" parentSegment="5">
+                        <goto>
+                            <borderColor>0,0,0,255</borderColor>
+                            <shapeUpColor>255,255,255,255</shapeUpColor>
+                            <shapeDownColor>230,230,230,255</shapeDownColor>
+                            <hasShadow>true</hasShadow>
+                            <defaultValue>__
+BR
+__</defaultValue>
+                            <commands>
+<entry key="mode">break</entry>
+                            </commands>
+                            <commandsValid>true</commandsValid>
+                            <value>__
+BR
+__</value>
+                        </goto>
+                    </element>
+                    <description>Ano</description>
+                </segment>
+            </element>
+            <element xsi:type="layoutElement" xmlID="2" parentSegment="0">
+                <startEnd>
+                    <borderColor>0,0,0,255</borderColor>
+                    <shapeUpColor>255,255,255,255</shapeUpColor>
+                    <shapeDownColor>230,230,230,255</shapeDownColor>
+                    <hasShadow>true</hasShadow>
+                    <commandsValid>true</commandsValid>
+                    <value>Konec</value>
+                </startEnd>
+            </element>
+        </mainSegment>
+    </flowchart>
+</flowchartSaveContainer>
