@@ -71,25 +71,6 @@
     }
 }
 
-.filter_input {
-    background-color: map-get($colors, darkerTxt);
-    border: 1px solid map-get($colors, darkerTxt);
-    outline: 0;
-    padding: 0.875rem 1.25rem;
-    font-size: 1rem;
-    color: map-get($colors, bck);
-    width: 100%;
-    max-width: 28rem;
-    box-sizing: border-box;
-
-    &::placeholder {
-        color: map-get($colors, shadow);
-    }
-
-    &:focus {
-        border-color: map-get($colors, action2);
-    }
-}
 
 .state_msg {
     font-size: 1.125rem;

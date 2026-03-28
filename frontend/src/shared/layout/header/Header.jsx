@@ -41,7 +41,7 @@ function Header({ green, transparent, user, setUser, onlyMobile }) {
     }, []);
 
     const isStudent = user && user.role === 'STUDENT';
-    const isLektor = user && (user.role === 'LEKTOR' || user.role === 'ADMIN');
+    const isLektor = user && (user.role === 'LEKTOR' || user.role === 'ADMIN' || user.role === 'SUPER_ADMIN');
 
     return (
         <>
