@@ -1,5 +1,9 @@
 package cz.projektant_pata.tda26.config;
 
+import cz.projektant_pata.tda26.model.branch.Branch;
+import cz.projektant_pata.tda26.model.branch.BranchStatusEnum;
+import cz.projektant_pata.tda26.model.branch.BranchTypeEnum;
+import cz.projektant_pata.tda26.model.branch.RegionEnum;
 import cz.projektant_pata.tda26.model.course.Course;
 import cz.projektant_pata.tda26.model.course.StatusEnum;
 import cz.projektant_pata.tda26.model.course.module.Module;
@@ -11,7 +15,10 @@ import cz.projektant_pata.tda26.model.course.quiz.Quiz;
 import cz.projektant_pata.tda26.model.course.quiz.SingleChoiceQuestion;
 import cz.projektant_pata.tda26.model.user.RoleEnum;
 import cz.projektant_pata.tda26.model.user.User;
+import cz.projektant_pata.tda26.model.course.version.CourseVersion;
+import cz.projektant_pata.tda26.repository.BranchRepository;
 import cz.projektant_pata.tda26.repository.CourseRepository;
+import cz.projektant_pata.tda26.repository.CourseVersionRepository;
 import cz.projektant_pata.tda26.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
@@ -20,6 +27,7 @@ import org.springframework.stereotype.Component;
 
 import jakarta.transaction.Transactional;
 import java.util.List;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -27,17 +35,76 @@ public class DataInitializer implements CommandLineRunner {
 
     private final UserRepository userRepository;
     private final CourseRepository courseRepository;
+    private final CourseVersionRepository courseVersionRepository;
+    private final BranchRepository branchRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
     public void run(String... args) {
-        // Vytvoření uživatelů
+        // --- Pobočky ---
+        Branch hqPraha = branchRepository.findByName("HQ Praha").orElseGet(() -> {
+            Branch b = new Branch();
+            b.setName("HQ Praha");
+            b.setCountry("Czech Republic");
+            b.setCity("Praha");
+            b.setAddress("Václavské náměstí 1");
+            b.setPostalCode("110 00");
+            b.setRegion(RegionEnum.CENTRAL_EUROPE);
+            b.setType(BranchTypeEnum.HQ);
+            b.setStatus(BranchStatusEnum.ACTIVE);
+            System.out.println("✅ Pobočka 'HQ Praha' byla vytvořena.");
+            return branchRepository.save(b);
+        });
+
+        Branch brnoBranch = branchRepository.findByName("Brno Branch").orElseGet(() -> {
+            Branch b = new Branch();
+            b.setName("Brno Branch");
+            b.setCountry("Czech Republic");
+            b.setCity("Brno");
+            b.setAddress("Náměstí Svobody 8");
+            b.setPostalCode("602 00");
+            b.setRegion(RegionEnum.CENTRAL_EUROPE);
+            b.setType(BranchTypeEnum.BRANCH);
+            b.setStatus(BranchStatusEnum.ACTIVE);
+            System.out.println("✅ Pobočka 'Brno Branch' byla vytvořena.");
+            return branchRepository.save(b);
+        });
+
+        Branch pardubiceBranch = branchRepository.findByName("Pardubice Branch").orElseGet(() -> {
+            Branch b = new Branch();
+            b.setName("Pardubice Branch");
+            b.setCountry("Czech Republic");
+            b.setCity("Pardubice");
+            b.setAddress("Pernštýnské náměstí 1");
+            b.setPostalCode("530 02");
+            b.setRegion(RegionEnum.CENTRAL_EUROPE);
+            b.setType(BranchTypeEnum.BRANCH);
+            b.setStatus(BranchStatusEnum.ONBOARDING);
+            System.out.println("✅ Pobočka 'Pardubice Branch' byla vytvořena.");
+            return branchRepository.save(b);
+        });
+
+        // --- Uživatelé ---
+        User superAdmin = userRepository.findByUsername("super_admin").orElseGet(() -> {
+            User u = new User();
+            u.setUsername("super_admin");
+            u.setPassword(passwordEncoder.encode("TdA26!"));
+            u.setRole(RoleEnum.SUPER_ADMIN);
+            u.getManagedBranches().add(hqPraha);
+            u.getManagedBranches().add(brnoBranch);
+            u.getManagedBranches().add(pardubiceBranch);
+            System.out.println("✅ Uživatel 'super_admin' byl vytvořen.");
+            return userRepository.save(u);
+        });
+
         User admin = userRepository.findByUsername("admin").orElseGet(() -> {
             User u = new User();
             u.setUsername("admin");
             u.setPassword(passwordEncoder.encode("TdA26!"));
             u.setRole(RoleEnum.ADMIN);
+            u.getManagedBranches().add(hqPraha);
+            u.getManagedBranches().add(brnoBranch);
             System.out.println("✅ Uživatel 'admin' byl vytvořen.");
             return userRepository.save(u);
         });
@@ -47,6 +114,7 @@ public class DataInitializer implements CommandLineRunner {
             u.setUsername("lecturer");
             u.setPassword(passwordEncoder.encode("TdA26!"));
             u.setRole(RoleEnum.LEKTOR);
+            u.setBranch(hqPraha);
             System.out.println("✅ Uživatel 'lecturer' byl vytvořen.");
             return userRepository.save(u);
         });
@@ -148,9 +216,50 @@ public class DataInitializer implements CommandLineRunner {
             c1.addStudent(student);
             // c2 a c3 si student nezapsal
 
+            // --- Moduly Kurz 3 (Draft — pro demo verzování) ---
+            Module c3m1 = new Module();
+            c3m1.setName("1. Základy síťové bezpečnosti");
+            c3m1.setDescription("Protokoly, firewally, základní principy.");
+            c3m1.setIndex(1);
+            c3m1.setActivated(false);
+            c3m1.setCourse(c3);
+            UrlMaterial c3mat1 = new UrlMaterial();
+            c3mat1.setName("OWASP Top 10");
+            c3mat1.setDescription("Přehled nejčastějších bezpečnostních zranitelností.");
+            c3mat1.setUrl("https://owasp.org/www-project-top-ten/");
+            c3mat1.setModule(c3m1);
+            c3m1.getMaterials().add(c3mat1);
+            Quiz c3q1 = new Quiz();
+            c3q1.setTitle("Test: Síťová bezpečnost");
+            c3q1.setModule(c3m1);
+            SingleChoiceQuestion c3sq1 = new SingleChoiceQuestion();
+            c3sq1.setQuestion("Co znamená zkratka TLS?");
+            c3sq1.setOptions(List.of("Transport Layer Security", "Trusted Login System", "Token Level Security", "Transfer Link Standard"));
+            c3sq1.setCorrectIndex(0);
+            c3q1.addQuestion(c3sq1);
+            c3m1.getQuizzes().add(c3q1);
+            c3.getModules().add(c3m1);
+
+            Module c3m2 = new Module();
+            c3m2.setName("2. Kryptografie a šifrování");
+            c3m2.setDescription("Symetrické a asymetrické šifrování, certifikáty.");
+            c3m2.setIndex(2);
+            c3m2.setActivated(false);
+            c3m2.setCourse(c3);
+            UrlMaterial c3mat2 = new UrlMaterial();
+            c3mat2.setName("Kryptografie — Khan Academy");
+            c3mat2.setDescription("Interaktivní kurz kryptografie.");
+            c3mat2.setUrl("https://www.khanacademy.org/computing/computer-science/cryptography");
+            c3mat2.setModule(c3m2);
+            c3m2.getMaterials().add(c3mat2);
+            c3.getModules().add(c3m2);
+
             courseRepository.save(c1);
             courseRepository.save(c2);
             courseRepository.save(c3);
+
+            // --- Verze kurzu c3 (3 snapshoty simulující vývoj) ---
+            seedCourseVersions(c3);
 
             // --- Kurz 4: Programování v Javě — testové otázky ---
             Course c4 = new Course();
@@ -1269,5 +1378,45 @@ public class DataInitializer implements CommandLineRunner {
 
             System.out.println("✅ Testovací kurzy, moduly a kvízy byly úspěšně vygenerovány.");
         }
+    }
+
+    private void seedCourseVersions(Course course) {
+        // Verze 1 — kurz jen se jménem, bez modulů
+        saveVersion(course,
+            shortId(),
+            """
+            {"name":"Kybernetická bezpečnost 101","description":"Pracovní koncept kurzu zabezpečení informačních systémů.","modules":[]}
+            """.strip()
+        );
+
+        // Verze 2 — kurz s jedním modulem (bez materiálů a kvízů)
+        saveVersion(course,
+            shortId(),
+            """
+            {"name":"Kybernetická bezpečnost 101","description":"Pracovní koncept kurzu zabezpečení informačních systémů. Kurz zatím není určen pro veřejnost.","modules":[{"uuid":null,"index":1,"isActivated":false,"name":"1. Základy síťové bezpečnosti","description":"Protokoly, firewally, základní principy.","materials":[],"quizzes":[]}]}
+            """.strip()
+        );
+
+        // Verze 3 — aktuální stav (dva moduly, materiály, kvíz)
+        saveVersion(course,
+            shortId(),
+            String.format(
+                """
+                {"name":"Kybernetická bezpečnost 101","description":"Pracovní koncept kurzu zabezpečení informačních systémů. Kurz zatím není určen pro veřejnost.","modules":[{"uuid":null,"index":1,"isActivated":false,"name":"1. Základy síťové bezpečnosti","description":"Protokoly, firewally, základní principy.","materials":[{"type":"url","uuid":null,"name":"OWASP Top 10","description":"Přehled nejčastějších bezpečnostních zranitelností.","count":0,"createdAt":null,"url":"https://owasp.org/www-project-top-ten/","faviconUrl":null}],"quizzes":[{"uuid":null,"title":"Test: Síťová bezpečnost","questions":[{"type":"singleChoice","uuid":null,"question":"Co znamená zkratka TLS?","options":["Transport Layer Security","Trusted Login System","Token Level Security","Transfer Link Standard"],"correctIndex":0}]}]},{"uuid":null,"index":2,"isActivated":false,"name":"2. Kryptografie a šifrování","description":"Symetrické a asymetrické šifrování, certifikáty.","materials":[{"type":"url","uuid":null,"name":"Kryptografie — Khan Academy","description":"Interaktivní kurz kryptografie.","count":0,"createdAt":null,"url":"https://www.khanacademy.org/computing/computer-science/cryptography","faviconUrl":null}],"quizzes":[]}]}
+                """.strip()
+            )
+        );
+    }
+
+    private void saveVersion(Course course, String shortId, String snapshotJson) {
+        CourseVersion v = new CourseVersion();
+        v.setCourse(course);
+        v.setShortId(shortId);
+        v.setSnapshotJson(snapshotJson);
+        courseVersionRepository.save(v);
+    }
+
+    private String shortId() {
+        return UUID.randomUUID().toString().replace("-", "").substring(0, 7);
     }
 }

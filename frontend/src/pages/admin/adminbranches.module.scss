@@ -1,0 +1,260 @@
+@use "../../index.scss" as *;
+
+.admin {
+    display: flex;
+    flex-direction: column;
+    padding: 3.75rem;
+    padding-left: calc(18.75rem + 3.75rem);
+    width: 100%;
+    min-height: 100dvh;
+    box-sizing: border-box;
+    gap: 3.75rem;
+
+    @media (max-width: 1200px) {
+        padding-right: 3rem;
+        padding-left: calc(18.75rem + 3rem);
+    }
+
+    @media (max-width: 900px) {
+        padding-left: 3rem;
+        padding-top: 12rem;
+    }
+}
+
+.admin_header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+
+    div {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+
+        h1 {
+            font-size: 2rem;
+        }
+
+        p {
+            font-size: 1rem;
+            font-weight: 600;
+            color: map-get($colors, shadow);
+        }
+    }
+}
+
+.create_section {
+    background-color: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+
+    h2 {
+        font-size: 1.25rem;
+        font-weight: 700;
+    }
+}
+
+.form_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+    gap: 1.25rem;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+
+    span {
+        color: map-get($colors, shadow);
+        font-weight: 600;
+    }
+
+    input, select {
+        background-color: rgba(255, 255, 255, 0.07);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        outline: 0;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        font-family: inherit;
+        color: map-get($colors, bck);
+
+        &:focus {
+            border-color: rgba(255, 255, 255, 0.5);
+            background-color: rgba(255, 255, 255, 0.03);
+        }
+
+        option { background-color: #1a1a1a; }
+    }
+}
+
+.form_actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.btn_ghost {
+    @include btn-ghost;
+    display: inline-flex;
+    align-items: center;
+    padding: 0.65rem 1.4rem;
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 0.9rem;
+    white-space: nowrap;
+
+    &:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+    }
+}
+
+.filter_input {
+    background-color: map-get($colors, darkerTxt);
+    border: 1px solid map-get($colors, darkerTxt);
+    outline: 0;
+    padding: 0.875rem 1.25rem;
+    font-size: 1rem;
+    color: map-get($colors, bck);
+    width: 100%;
+    max-width: 28rem;
+    box-sizing: border-box;
+
+    &::placeholder {
+        color: map-get($colors, shadow);
+    }
+
+    &:focus {
+        border-color: map-get($colors, action2);
+    }
+}
+
+.state_msg {
+    font-size: 1.125rem;
+    color: map-get($colors, shadow);
+}
+
+.state_msg_err {
+    font-size: 1.125rem;
+    color: map-get($colors, warning);
+}
+
+.branch_list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(22rem, 1fr));
+    gap: 1.5rem;
+    list-style: none;
+
+    @media (max-width: 600px) {
+        grid-template-columns: 1fr;
+    }
+}
+
+.branch_card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 1.5rem;
+    box-sizing: border-box;
+    gap: 1.25rem;
+    transition: border-color 0.15s ease;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+
+    &:hover {
+        border-color: rgba(145, 245, 173, 0.4);
+    }
+}
+
+.branch_card_top {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.branch_badges {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.25rem;
+}
+
+.badge {
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.2rem 0.625rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.badge_hq {
+    background-color: rgba(2, 87, 165, 0.3);
+    color: rgba(37, 146, 184, 1);
+}
+
+.badge_branch {
+    background-color: rgba(145, 245, 173, 0.12);
+    color: rgba(109, 212, 177, 1);
+}
+
+.badge_status_active {
+    background-color: rgba(145, 245, 173, 0.15);
+    color: rgba(145, 245, 173, 1);
+}
+
+.badge_status_onboarding {
+    background-color: rgba(255, 193, 7, 0.15);
+    color: rgba(255, 193, 7, 1);
+}
+
+.badge_status_waiting {
+    background-color: rgba(255, 255, 255, 0.07);
+    color: map-get($colors, shadow);
+}
+
+.branch_name {
+    font-size: 1.375rem;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.branch_location {
+    font-size: 1rem;
+    color: map-get($colors, bck);
+    font-weight: 500;
+}
+
+.branch_region {
+    color: map-get($colors, shadow);
+}
+
+.branch_address {
+    font-size: 0.875rem;
+    color: map-get($colors, shadow);
+}
+
+.branch_card_footer {
+    display: flex;
+    gap: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.stat {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.875rem;
+    color: map-get($colors, shadow);
+}

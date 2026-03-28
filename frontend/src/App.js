@@ -26,6 +26,8 @@ import DashboardModule from "./pages/dashboard/pages/DashboardModule";
 import NewModule from "./pages/dashboard/pages/NewModule";
 import EditModule from "./pages/dashboard/pages/EditModule";
 import AdminUsers from "./pages/admin/AdminUsers";
+import AdminBranches from "./pages/admin/AdminBranches";
+import AdminBranchDetail from "./pages/admin/AdminBranchDetail";
 import NotFound from "./pages/not-found/NotFound";
 
 function App() {
@@ -40,9 +42,9 @@ function App() {
 
   if (loading) return <div>Loading...</div>;
 
-  const isLektor = user && (user.role === 'LEKTOR' || user.role === 'ADMIN');
+  const isLektor = user && (user.role === 'LEKTOR' || user.role === 'ADMIN' || user.role === 'SUPER_ADMIN');
   const isStudent = user && user.role === 'STUDENT';
-  const isAdmin = user && user.role === 'ADMIN';
+  const isAdmin = user && (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN');
 
   return (
     <Routes>
@@ -81,7 +83,11 @@ function App() {
               <Route path="/dashboard" element={<Dashboard user={user} setUser={setUser} />} />
 
               {isAdmin && (
-                <Route path="/dashboard/users" element={<AdminUsers user={user} setUser={setUser} />} />
+                <>
+                  <Route path="/dashboard/users" element={<AdminUsers user={user} setUser={setUser} />} />
+                  <Route path="/dashboard/branches" element={<AdminBranches user={user} setUser={setUser} />} />
+                  <Route path="/dashboard/branches/:uuid" element={<AdminBranchDetail user={user} setUser={setUser} />} />
+                </>
               )}
 
               <Route path="/dashboard/new" element={<NewCourse user={user} setUser={setUser} />} />

@@ -146,7 +146,7 @@ function Dashboard({ user, setUser }) {
     e.target.value = '';
   }
 
-  if (user?.role === 'ADMIN') return <Navigate to="/dashboard/users" replace />;
+  if (user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN') return <Navigate to="/dashboard/branches" replace />;
 
   return (
     <div

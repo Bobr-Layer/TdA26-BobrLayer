@@ -1,6 +1,7 @@
 package cz.projektant_pata.tda26.model.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import cz.projektant_pata.tda26.model.branch.Branch;
 import cz.projektant_pata.tda26.model.course.Course;
 import jakarta.persistence.*;
 import lombok.*;
@@ -38,6 +39,22 @@ public class User implements UserDetails {
 
     @Column(nullable = false)
     private Boolean enabled = true;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "branch_id")
+    @JsonIgnore
+    private Branch branch;
+
+    @ManyToMany
+    @JoinTable(
+        name = "branch_managers",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "branch_id")
+    )
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @JsonIgnore
+    private List<Branch> managedBranches = new ArrayList<>();
 
     @OneToMany(mappedBy = "lector", cascade = CascadeType.ALL)
     @JsonIgnore
