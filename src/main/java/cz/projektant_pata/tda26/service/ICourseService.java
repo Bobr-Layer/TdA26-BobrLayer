@@ -1,5 +1,6 @@
 package cz.projektant_pata.tda26.service;
 
+import cz.projektant_pata.tda26.dto.course.CourseImportDTO;
 import cz.projektant_pata.tda26.model.course.Course;
 import cz.projektant_pata.tda26.model.user.User;
 import cz.projektant_pata.tda26.model.course.module.Module;
@@ -24,6 +25,8 @@ public interface ICourseService {
     Module activateNextModule(UUID courseUuid);
     Module deactivatePreviousModule(UUID courseUuid);
 
+
+    List<Course> importCourses(List<CourseImportDTO> courses, User lector);
 
     List<User> findStudents(UUID uuid);
     Course addStudent(UUID courseUuid, UUID studentUuid);

@@ -1,5 +1,11 @@
 package cz.projektant_pata.tda26.service;
 
+import cz.projektant_pata.tda26.dto.course.CourseImportDTO;
+import cz.projektant_pata.tda26.dto.course.module.ModuleImportDTO;
+import cz.projektant_pata.tda26.dto.course.quiz.QuizRequestDTO;
+import cz.projektant_pata.tda26.dto.course.quiz.question.MultipleChoiceQuestionRequestDTO;
+import cz.projektant_pata.tda26.dto.course.quiz.question.QuestionRequestDTO;
+import cz.projektant_pata.tda26.dto.course.quiz.question.SingleChoiceQuestionRequestDTO;
 import cz.projektant_pata.tda26.event.course.module.ModuleActivatedEvent;
 import cz.projektant_pata.tda26.event.course.module.ModuleDeactivatedEvent;
 import cz.projektant_pata.tda26.exception.InvalidResourceStateException;
@@ -7,8 +13,12 @@ import cz.projektant_pata.tda26.exception.ResourceAlreadyExistsException;
 import cz.projektant_pata.tda26.exception.ResourceNotFoundException;
 import cz.projektant_pata.tda26.model.course.Course;
 import cz.projektant_pata.tda26.model.course.StatusEnum;
-import cz.projektant_pata.tda26.model.user.User;
+import cz.projektant_pata.tda26.model.course.material.UrlMaterial;
 import cz.projektant_pata.tda26.model.course.module.Module;
+import cz.projektant_pata.tda26.model.course.quiz.MultipleChoiceQuestion;
+import cz.projektant_pata.tda26.model.course.quiz.Quiz;
+import cz.projektant_pata.tda26.model.course.quiz.SingleChoiceQuestion;
+import cz.projektant_pata.tda26.model.user.User;
 import cz.projektant_pata.tda26.repository.CourseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -246,6 +257,77 @@ public class CourseServiceImpl implements ICourseService {
 
         course.removeStudent(student);
         return repository.save(course);
+    }
+
+    @Override
+    @Transactional
+    public List<Course> importCourses(List<CourseImportDTO> dtos, User lector) {
+        List<Course> created = new ArrayList<>();
+
+        for (CourseImportDTO dto : dtos) {
+            Course course = new Course();
+            course.setName(dto.getName());
+            course.setDescription(dto.getDescription());
+            course.setStatus(StatusEnum.Draft);
+            course.setLector(lector);
+
+            if (dto.getModules() != null) {
+                for (ModuleImportDTO moduleDto : dto.getModules()) {
+                    Module module = new Module();
+                    module.setName(moduleDto.getName());
+                    module.setDescription(moduleDto.getDescription());
+                    module.setIndex(moduleDto.getIndex());
+                    module.setActivated(false);
+                    module.setCourse(course);
+
+                    if (moduleDto.getMaterials() != null) {
+                        for (var matDto : moduleDto.getMaterials()) {
+                            UrlMaterial material = new UrlMaterial();
+                            material.setName(matDto.getName());
+                            material.setDescription(matDto.getDescription());
+                            material.setUrl(matDto.getUrl());
+                            material.setFaviconUrl(matDto.getFaviconUrl());
+                            material.setModule(module);
+                            module.getMaterials().add(material);
+                        }
+                    }
+
+                    if (moduleDto.getQuizzes() != null) {
+                        for (QuizRequestDTO quizDto : moduleDto.getQuizzes()) {
+                            Quiz quiz = new Quiz();
+                            quiz.setTitle(quizDto.getTitle());
+                            quiz.setModule(module);
+
+                            if (quizDto.getQuestions() != null) {
+                                for (QuestionRequestDTO qDto : quizDto.getQuestions()) {
+                                    if (qDto instanceof SingleChoiceQuestionRequestDTO sDto) {
+                                        SingleChoiceQuestion q = new SingleChoiceQuestion();
+                                        q.setQuestion(sDto.getQuestion());
+                                        q.setOptions(sDto.getOptions());
+                                        q.setCorrectIndex(sDto.getCorrectIndex());
+                                        quiz.addQuestion(q);
+                                    } else if (qDto instanceof MultipleChoiceQuestionRequestDTO mDto) {
+                                        MultipleChoiceQuestion q = new MultipleChoiceQuestion();
+                                        q.setQuestion(mDto.getQuestion());
+                                        q.setOptions(mDto.getOptions());
+                                        q.setCorrectIndices(mDto.getCorrectIndices());
+                                        quiz.addQuestion(q);
+                                    }
+                                }
+                            }
+
+                            module.getQuizzes().add(quiz);
+                        }
+                    }
+
+                    course.getModules().add(module);
+                }
+            }
+
+            created.add(repository.save(course));
+        }
+
+        return created;
     }
 
     private Course getCourseOrThrow(UUID uuid) {

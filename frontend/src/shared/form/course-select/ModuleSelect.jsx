@@ -7,15 +7,19 @@ export default function ModuleSelect({ moduleData, setModuleData }) {
     const handleFilterChange = (e) => {
         const value = e.target.value;
         setFilter(value);
-        setModuleData(
-            moduleData.filter(module =>
-                value === 'active' ? module.activated : !module.activated
-            )
-        );
+        if (value === '') {
+            setModuleData(moduleData);
+        } else {
+            setModuleData(
+                moduleData.filter(module =>
+                    value === 'active' ? module.activated : !module.activated
+                )
+            );
+        }
     };
 
     return (
-        <div className={styles.wrapper}>
+        <div className={`${styles.wrapper} ${filter ? styles.active : ''}`}>
             <select
                 className={styles.course_select}
                 value={filter}

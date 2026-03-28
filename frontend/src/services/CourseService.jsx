@@ -191,3 +191,14 @@ export async function rollbackCourseVersion(courseUuid, shortId) {
   if (!res.ok) throw new Error('Nepodařilo se obnovit verzi kurzu');
   return res.json();
 }
+
+export async function importCourses(courses) {
+  const res = await fetch(`${Api}/courses/import`, {
+    ...defaultOptions,
+    method: 'POST',
+    body: JSON.stringify(courses),
+  });
+
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}

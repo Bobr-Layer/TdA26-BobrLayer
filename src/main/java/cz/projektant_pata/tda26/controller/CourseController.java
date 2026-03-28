@@ -1,5 +1,6 @@
 package cz.projektant_pata.tda26.controller;
 
+import cz.projektant_pata.tda26.dto.course.CourseImportDTO;
 import cz.projektant_pata.tda26.dto.course.CourseRequestDTO;
 import cz.projektant_pata.tda26.dto.course.CourseResponseDTO;
 import cz.projektant_pata.tda26.dto.course.module.ModuleResponseDTO;
@@ -99,6 +100,17 @@ public class CourseController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(mapper.toResponse(savedCourse));
+    }
+
+    @PostMapping("/import")
+    public ResponseEntity<List<CourseResponseDTO>> importCourses(
+            @RequestBody List<CourseImportDTO> courses,
+            @AuthenticationPrincipal User user) {
+        List<Course> imported = service.importCourses(courses, user);
+        List<CourseResponseDTO> response = imported.stream()
+                .map(mapper::toResponse)
+                .collect(Collectors.toList());
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @DeleteMapping("/{uuid}")

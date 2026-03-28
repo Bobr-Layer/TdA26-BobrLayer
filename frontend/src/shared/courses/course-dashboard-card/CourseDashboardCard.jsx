@@ -1,9 +1,29 @@
 import styles from './course-dashboard-card.module.scss';
 import { Link } from 'react-router-dom';
 
-function CourseDashboardCard({ course }) {
+function CourseDashboardCard({ course, selected, onSelect }) {
+    function handleCheckbox(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        onSelect(course.uuid);
+    }
+
     return (
-        <Link className={styles.course_dashboard_card} to={'/dashboard/' + course.uuid}>
+        <Link className={`${styles.course_dashboard_card} ${selected ? styles.selected : ''}`} to={'/dashboard/' + course.uuid}>
+            {onSelect && (
+                <button
+                    className={`${styles.course_checkbox} ${selected ? styles.course_checkbox_checked : ''}`}
+                    onClick={handleCheckbox}
+                    aria-label="Vybrat kurz"
+                    type="button"
+                >
+                    {selected && (
+                        <svg width="0.75rem" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M1.5 6L4.5 9L10.5 3" stroke="#1A1A1A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                    )}
+                </button>
+            )}
             <div className={styles.course_dashboard_card_content}>
                 <h3>{course.name}</h3>
                 <p>{course.description}</p>

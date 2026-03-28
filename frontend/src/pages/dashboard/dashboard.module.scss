@@ -110,6 +110,24 @@
     }
 }
 
+.drag_overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background-color: rgba(73, 179, 180, 0.08);
+    border: 2px dashed rgba(73, 179, 180, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+
+    p {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #49B3B4;
+    }
+}
+
 .dashboard_header {
     display: flex;
     align-items: center;
@@ -119,6 +137,19 @@
     @media (max-width: 900px) {
         flex-direction: column;
         align-items: flex-start;
+    }
+}
+
+.dashboard_header_actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+
+    @media (max-width: 900px) {
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
     }
 }
 

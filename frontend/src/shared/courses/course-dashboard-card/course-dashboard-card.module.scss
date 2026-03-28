@@ -11,6 +11,35 @@
     cursor: pointer;
     gap: 2rem;
 
+    &.selected {
+        border-color: rgba(73, 179, 180, 0.5);
+        background-color: rgba(73, 179, 180, 0.05);
+    }
+
+    .course_checkbox {
+        flex-shrink: 0;
+        width: 1.1rem;
+        height: 1.1rem;
+        border: 1.5px solid rgba(255, 255, 255, 0.2);
+        background: transparent;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        align-self: center;
+        transition: border-color 0.2s, background-color 0.2s;
+
+        &:hover {
+            border-color: rgba(73, 179, 180, 0.6);
+        }
+    }
+
+    .course_checkbox_checked {
+        border-color: #49B3B4;
+        background-color: #49B3B4;
+    }
+
     .course_dashboard_card_content {
         display: flex;
         flex-direction: column;
