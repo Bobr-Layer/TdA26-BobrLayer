@@ -5,7 +5,8 @@
     z-index: 99;
     top: 0;
     left: 0;
-    background-color: map-get($colors, darkerTxt);
+    background-color: rgba(14, 14, 14, 0.97);
+    border-right: 1px solid rgba(255, 255, 255, 0.06);
     width: 18.75rem;
     height: 100dvh;
     padding: 1.875rem;
@@ -14,7 +15,6 @@
     flex-direction: column;
     justify-content: space-between;
     align-items: flex-start;
-    box-shadow: 10px 0px 15px 5px map-get($colors, txt);
 
     @media (max-width: 900px) {
         display: none;
@@ -48,9 +48,9 @@
 
         .sidenav_top_line {
             width: 100%;
-            height: 0;
-            border: 1px solid map-get($colors, bck);
-            box-sizing: border-box;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.08);
+            border: none;
             flex-shrink: 0;
         }
 
@@ -198,24 +198,24 @@
     display: flex;
     align-items: center;
     gap: 1.25rem;
-    font-size: 1.25rem;
+    font-size: 1.1rem;
     font-weight: 700;
-    color: map-get($colors, shadow);
+    color: rgba(255, 255, 255, 0.4);
+    transition: color 0.2s;
+
+    svg path {
+        fill: rgba(255, 255, 255, 0.3);
+        transition: fill 0.2s;
+    }
 
     &:hover {
-        color: map-get($colors, action2);
-
-        svg path {
-            fill: map-get($colors, action2);
-        }
+        color: #fff;
+        svg path { fill: #fff; }
     }
 
     &.active {
-        color: map-get($colors, bck);
-
-        svg path {
-            fill: map-get($colors, bck);
-        }
+        color: #fff;
+        svg path { fill: #49B3B4; }
     }
 }
 
@@ -223,7 +223,7 @@
     display: flex;
     flex-direction: column;
     width: 100%;
-    border: 1px solid map-get($colors, darkerTxt);
+    border: 1px solid rgba(255, 255, 255, 0.08);
 
     button {
         outline: 0;
@@ -240,19 +240,23 @@
         align-items: center;
         gap: 1.25rem;
         font-size: 1rem;
-        color: map-get($colors, bck);
+        color: rgba(255, 255, 255, 0.7);
         margin-inline: 0.75rem;
         padding-block: 0.75rem;
         box-sizing: border-box;
-        border-bottom: 1px solid map-get($colors, darkerTxt);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+
+        svg path { fill: rgba(255, 255, 255, 0.5); }
+
+        &:hover { color: #fff; svg path { fill: #fff; } }
     }
 
     .user_menu_logout {
-        color: #e53e3e;
+        color: rgba(220, 51, 51, 0.7);
+        border-bottom: none;
 
-        svg path {
-            fill: #e53e3e;
-        }
+        svg path { fill: rgba(220, 51, 51, 0.6); }
+        &:hover { color: #DC3333; svg path { fill: #DC3333; } }
     }
 
     .user_menu_content {
@@ -260,26 +264,24 @@
         align-items: center;
         justify-content: space-between;
         padding: 0.75rem;
+        cursor: pointer;
 
         div {
             display: flex;
             align-items: center;
-            gap: 1.25rem;
+            gap: 1rem;
 
             img {
-                width: 2.625rem;
-                border-radius: calc(2.625rem / 2);
+                width: 2.25rem;
+                border-radius: 0;
                 aspect-ratio: 1/1;
-                background-color: map-get($colors, bck);
+                background-color: rgba(255, 255, 255, 0.08);
             }
 
-            p {
-                font-size: 1.25rem;
-            }
+            p { font-size: 1.1rem; font-weight: 700; }
         }
 
-        .more {
-            transform: rotate(180deg);
-        }
+        svg { transition: transform 0.2s; }
+        &.more svg { transform: rotate(180deg); }
     }
 }

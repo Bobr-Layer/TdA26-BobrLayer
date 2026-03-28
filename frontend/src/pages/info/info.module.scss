@@ -278,51 +278,175 @@
 
 .info_wrapper {
     position: relative;
-    min-height: 100dvh;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+}
 
-    .info_ball {
-        position: absolute;
-        top: 0;
-        right: 0;
-        background: radial-gradient(circle at top right, rgba(2, 87, 165, 0.5), map-get($colors, txt) 70%);
-        height: 100dvh;
-        width: 50dvh;
-        z-index: -1;
-        filter: blur(100px);
-    }
+// Hero
+.info_hero {
+    position: relative;
+    min-height: 60dvh;
+    display: flex;
+    align-items: flex-end;
+    padding: 7.5rem;
+    padding-bottom: 5rem;
+    box-sizing: border-box;
+    overflow: hidden;
 
-    .info {
+    @media (max-width: 1200px) { padding-inline: 3rem; }
+    @media (max-width: 900px)  { padding-top: 12rem; padding-bottom: 4rem; min-height: 50dvh; }
+
+    .info_hero_content {
         display: flex;
         flex-direction: column;
-        gap: 2.5rem;
-        padding-top: 11.25rem;
-        padding-inline: 7.5rem;
-        box-sizing: border-box;
-        padding-bottom: 3.125rem;
+        gap: 1.5rem;
+        max-width: 52rem;
         position: relative;
-        z-index: 2;
-
-        @media (max-width: 1200px) {
-            padding-inline: 3rem;
-        }
-
-        @media (max-width: 900px) {
-            gap: 2.5rem;
-            padding-top: 12rem;
-        }
+        z-index: 1;
 
         h1 {
-            font-size: 2rem;
+            font-size: 5.5rem;
+            line-height: 1.05;
+            font-weight: 700;
+
+            @media (max-width: 900px) { font-size: 3.5rem; }
         }
 
-        p,
-        a {
+        p {
             font-size: 1.25rem;
-            color: map-get($colors, darkerBck);
-            max-width: 37.5rem;
+            color: rgba(255, 255, 255, 0.5);
+            line-height: 1.6;
+            max-width: 40rem;
+        }
+    }
+
+    .info_hero_ball {
+        position: absolute;
+        top: -10%;
+        right: -5%;
+        background: radial-gradient(circle at center, rgba(2, 87, 165, 0.5), transparent 70%);
+        height: 80dvh;
+        width: 80dvh;
+        z-index: 0;
+        filter: blur(80px);
+        pointer-events: none;
+    }
+}
+
+.info_rule {
+    @include rule;
+    margin: 0;
+}
+
+.info_label {
+    @include section-label;
+}
+
+// Generic content section
+.info_section {
+    padding-inline: 7.5rem;
+    padding-block: 6rem;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+
+    @media (max-width: 1200px) { padding-inline: 3rem; }
+    @media (max-width: 900px)  { padding-block: 4rem; gap: 2rem; }
+
+    h2 {
+        font-size: 2.75rem;
+        font-weight: 700;
+        line-height: 1.15;
+
+        @media (max-width: 900px) { font-size: 2rem; }
+    }
+}
+
+// Section with alternating tint
+.info_section_tinted {
+    background: rgba(255, 255, 255, 0.015);
+}
+
+// Rich text blocks (paragraphs, lists, links)
+.info_body {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    max-width: 52rem;
+
+    p {
+        font-size: 1.125rem;
+        color: rgba(255, 255, 255, 0.55);
+        line-height: 1.75;
+    }
+
+    h3 {
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin-top: 0.5rem;
+    }
+
+    ul, ol {
+        padding-left: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+
+        li {
+            font-size: 1.125rem;
+            color: rgba(255, 255, 255, 0.55);
+            line-height: 1.7;
+        }
+    }
+}
+
+// Contact cards grid
+.info_contact_grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+
+    @media (max-width: 700px) { grid-template-columns: 1fr; }
+}
+
+.info_contact_card {
+    @include box;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1.75rem;
+    transition: border-color 0.2s, background-color 0.2s;
+
+    &:hover { @include box-hover; }
+
+    .info_contact_icon {
+        width: 2.75rem;
+        height: 2.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+    }
+
+    .info_contact_label {
+        font-size: 0.8rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.3);
+        font-weight: 600;
+    }
+
+    .info_contact_value {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #fff;
+
+        a {
+            color: #fff;
+            transition: color 0.2s;
+
+            &:hover { color: #49B3B4; }
         }
     }
 }

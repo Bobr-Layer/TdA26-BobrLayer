@@ -1,125 +1,182 @@
 @use "../../index.scss" as *;
 
-.profile {
+// ── Scroll reveal ──────────────────────────────────────────────────────────────
+
+.reveal {
+    opacity: 0;
+    transform: translateY(2rem);
+    transition: opacity 0.75s ease, transform 0.75s ease;
+    transition-delay: var(--delay, 0s);
+
+    &.revealed {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+// ── Wrapper ────────────────────────────────────────────────────────────────────
+
+.wrapper {
+    position: relative;
     display: flex;
     flex-direction: column;
-    padding-top: 11.25rem;
-    padding-inline: 7.5rem;
-    box-sizing: border-box;
-    padding-bottom: 3.125rem;
-    gap: 1.875rem;
+}
+
+// ── Hero ───────────────────────────────────────────────────────────────────────
+
+.hero {
     position: relative;
-    z-index: 2;
+    min-height: 55dvh;
+    display: flex;
+    align-items: flex-end;
+    padding: 7.5rem;
+    padding-bottom: 5rem;
+    box-sizing: border-box;
+    overflow: hidden;
 
-    h1 {
-        font-size: 2rem;
+    @media (max-width: 1200px) { padding-inline: 3rem; }
+    @media (max-width: 900px)  { padding-top: 12rem; padding-bottom: 4rem; min-height: 45dvh; }
 
-        @media (max-width: 900px) {
-            font-size: 3.5rem;
-        }
+    .hero_content {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        gap: 2.5rem;
+
+        @media (max-width: 600px) { flex-direction: column; align-items: flex-start; gap: 1.5rem; }
     }
 
-    .profile_card {
-        background: rgba(255, 255, 255, 0.05);
+    .hero_avatar {
+        width: 7rem;
+        height: 7rem;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.06);
         border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 1rem;
-        padding: 2.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+
+        @media (max-width: 900px) { width: 6rem; height: 6rem; }
+    }
+
+    .hero_meta {
         display: flex;
         flex-direction: column;
-        gap: 2rem;
-        max-width: 40rem;
+        gap: 0.5rem;
 
-        .profile_card_avatar {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
+        h1 {
+            font-size: 4rem;
+            font-weight: 700;
+            line-height: 1.05;
 
-            img {
-                width: 5rem;
-                height: 5rem;
-                border-radius: 50%;
-                background: rgba(255, 255, 255, 0.1);
-                padding: 0.5rem;
-            }
-
-            h2 {
-                font-size: 1.5rem;
-            }
-
-            p {
-                font-size: 1rem;
-                font-weight: 400;
-                color: map-get($colors, darkerBck);
-            }
-        }
-
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-
-            .profile_card_fields {
-                display: flex;
-                flex-direction: column;
-                gap: 1.25rem;
-
-                label {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 0.5rem;
-
-                    span {
-                        font-size: 0.875rem;
-                        font-weight: 400;
-                        color: map-get($colors, darkerBck);
-                    }
-                }
-            }
-
-            .err {
-                font-size: 1rem;
-                text-align: center;
-                color: map-get($colors, warning);
-            }
-
-            .success {
-                font-size: 1rem;
-                text-align: center;
-                color: map-get($colors, success);
-            }
+            @media (max-width: 900px) { font-size: 3rem; }
         }
     }
 
-    @media (max-width: 1200px) {
-        padding-inline: 3rem;
+    .hero_role {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.8rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.35);
+        font-weight: 600;
     }
 
-    @media (max-width: 900px) {
-        padding-top: 12rem;
-        padding-bottom: 6rem;
-        gap: 4rem;
+    .hero_ball {
+        position: absolute;
+        top: -10%;
+        right: -5%;
+        background: radial-gradient(circle at center, rgba(73, 179, 180, 0.4), transparent 70%);
+        height: 80dvh;
+        width: 80dvh;
+        z-index: 0;
+        filter: blur(80px);
+        pointer-events: none;
+    }
+}
 
-        .profile_card {
-            max-width: 100%;
+// ── Rule ───────────────────────────────────────────────────────────────────────
+
+.rule {
+    @include rule;
+    margin: 0;
+}
+
+// ── Label ──────────────────────────────────────────────────────────────────────
+
+.label {
+    @include section-label;
+}
+
+// ── Content section ────────────────────────────────────────────────────────────
+
+.section {
+    padding-inline: 7.5rem;
+    padding-block: 6rem;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+
+    @media (max-width: 1200px) { padding-inline: 3rem; }
+    @media (max-width: 900px)  { padding-block: 4rem; gap: 2.5rem; }
+
+    h2 {
+        font-size: 2.75rem;
+        font-weight: 700;
+
+        @media (max-width: 900px) { font-size: 2rem; }
+    }
+}
+
+// ── Form card ─────────────────────────────────────────────────────────────────
+
+.form_card {
+    @include box;
+    padding: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    max-width: 44rem;
+
+    @media (max-width: 900px) { max-width: 100%; padding: 2rem; }
+}
+
+.form_fields {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+
+    label {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+
+        span {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.45);
+            letter-spacing: 0.05em;
         }
     }
 }
 
-.wrapper {
-    position: relative;
-    min-height: 100dvh;
+.form_footer {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    gap: 1rem;
+}
 
-    .profile_ball {
-        position: absolute;
-        top: 0;
-        right: 0;
-        background: radial-gradient(circle at top right, rgba(73, 179, 180, 0.5), map-get($colors, txt) 70%);
-        height: 100dvh;
-        width: 50dvh;
-        z-index: -1;
-        filter: blur(100px);
-    }
+.err {
+    font-size: 1rem;
+    color: map-get($colors, warning);
+}
+
+.success {
+    font-size: 1rem;
+    color: map-get($colors, success);
 }

@@ -40,8 +40,7 @@
         letter-spacing: 0.06em;
         text-decoration: none;
 
-        svg { flex-shrink: 0; transition: transform 0.2s; }
-        &:hover svg { transform: translateX(-3px); }
+        svg { flex-shrink: 0; }
     }
 
     .quiz_title {

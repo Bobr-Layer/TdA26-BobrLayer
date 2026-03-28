@@ -92,16 +92,14 @@
         }
 
         button {
-            background-color: map-get($colors, primary);
-            color: white;
-            border: 0;
+            @include btn-solid;
             padding: 0.35rem 0.75rem;
             font-size: 0.875rem;
-            font-weight: 600;
-            cursor: pointer;
+            font-weight: 700;
+            font-family: inherit;
 
             &:disabled {
-                opacity: 0.5;
+                opacity: 0.4;
                 cursor: not-allowed;
             }
         }

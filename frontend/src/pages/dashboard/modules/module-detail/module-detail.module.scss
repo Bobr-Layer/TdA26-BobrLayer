@@ -2,36 +2,40 @@
 
 .module_detail {
     display: flex;
-    gap: 2.5rem;
+    gap: 3rem;
 
-    @media (max-width: 900px) {
-        flex-direction: column;
-    }
+    @media (max-width: 900px) { flex-direction: column; }
 
     .module_detail_main {
         display: flex;
         flex-direction: column;
-        gap: 2.5rem;
+        gap: 3rem;
         flex: 1;
 
         .module_detail_main_header {
             display: flex;
             flex-direction: column;
+            gap: 0.5rem;
 
             p {
-                font-size: 1rem;
-                color: map-get($colors, darkerBck);
+                @include section-label;
+                font-size: 0.8rem;
             }
 
             h1 {
-                font-size: 2rem;
+                font-size: 2.75rem;
+                font-weight: 700;
+                line-height: 1.2;
+
+                @media (max-width: 900px) { font-size: 2.25rem; }
             }
         }
 
         .module_detail_main_about {
-            font-weight: 600;
-            font-size: 1.25rem;
-            color: map-get($colors, darkerBck);
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.55);
+            line-height: 1.6;
         }
 
         .module_detail_main_content {
@@ -39,18 +43,14 @@
             flex-direction: column;
             gap: 1.25rem;
 
-            h3 {
-                font-size: 1.5rem;
-            }
+            h3 { @include section-label; }
 
             .module_detail_main_content_list {
                 display: grid;
-                gap: 1.25rem;
-                grid-template-columns: 1fr 1fr 1fr;
+                gap: 1rem;
+                grid-template-columns: 1fr;
 
-                @media (max-width: 900px) {
-                    grid-template-columns: 1fr;
-                }
+                @media (max-width: 900px) { grid-template-columns: 1fr; }
             }
         }
     }
@@ -58,16 +58,12 @@
     .module_detail_side {
         display: flex;
         flex-direction: column;
-        gap: 2.5rem;
-        width: 25rem;
+        gap: 2rem;
+        width: 22rem;
 
-        @media (max-width: 900px) {
-            width: 100%;
-        }
+        @media (max-width: 900px) { width: 100%; }
 
-        h3 {
-            font-size: 1.5rem;
-        }
+        h3 { @include section-label; }
 
         .module_detail_side_list {
             display: flex;

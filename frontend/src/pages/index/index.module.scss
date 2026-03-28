@@ -271,7 +271,7 @@
             z-index: 0;
             transition: opacity 0.4s ease;
 
-            @media (max-width: 900px) { font-size: 10rem; }
+            @media (max-width: 900px) { font-size: 10rem; top: 0; }
         }
 
         .pillar_body {
