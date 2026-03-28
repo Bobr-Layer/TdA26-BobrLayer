@@ -207,8 +207,6 @@ public class CourseController {
     }
 
     @PostMapping("/{uuid}/users")
-    @PreAuthorize("hasRole('ADMIN') " +
-            "or #userUuid.toString() == authentication.principal.uuid.toString()")
     public ResponseEntity<Course> addUser(
             @PathVariable UUID uuid,
             @RequestBody UUID userUuid) {
@@ -217,9 +215,6 @@ public class CourseController {
     }
 
     @DeleteMapping("/{uuid}/users/{userUuid}")
-    @PreAuthorize("hasRole('ADMIN') " +
-            "or @courseSecurity.isLector(#uuid, authentication.name) " +
-            "or #userUuid.toString() == authentication.principal.uuid.toString()")
     public ResponseEntity<Course> removeUser(
             @PathVariable UUID uuid,
             @PathVariable UUID userUuid) {
