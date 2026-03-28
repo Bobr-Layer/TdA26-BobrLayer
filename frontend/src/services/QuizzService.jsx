@@ -1,7 +1,7 @@
 import Api from './Api';
 
 export async function getQuizzes(courseUuid) {
-  const res = await fetch(`${Api}/courses/${courseUuid}/quizzes`);
+  const res = await fetch(`${Api}/courses/${courseUuid}/quizzes`, { credentials: 'include' });
 
   if (!res.ok) {
     throw new Error('Nepodařilo se načíst kvízy');
@@ -13,9 +13,8 @@ export async function getQuizzes(courseUuid) {
 export async function createQuiz(courseUuid, moduleUuid, data) {
   const res = await fetch(`${Api}/courses/${courseUuid}/modules/${moduleUuid}/quizzes`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
     body: JSON.stringify(data),
   });
 
@@ -28,7 +27,8 @@ export async function createQuiz(courseUuid, moduleUuid, data) {
 
 export async function getQuizByUuid(courseUuid, moduleUuid, quizUuid) {
   const res = await fetch(
-    `${Api}/courses/${courseUuid}/modules/${moduleUuid}/quizzes/${quizUuid}`
+    `${Api}/courses/${courseUuid}/modules/${moduleUuid}/quizzes/${quizUuid}`,
+    { credentials: 'include' }
   );
 
   if (!res.ok) {
@@ -43,9 +43,8 @@ export async function updateQuiz(courseUuid, moduleUuid, quizUuid, data) {
     `${Api}/courses/${courseUuid}/modules/${moduleUuid}/quizzes/${quizUuid}`,
     {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify(data),
     }
   );
@@ -60,7 +59,7 @@ export async function updateQuiz(courseUuid, moduleUuid, quizUuid, data) {
 export async function deleteQuiz(courseUuid, moduleUuid, quizUuid) {
   const res = await fetch(
     `${Api}/courses/${courseUuid}/modules/${moduleUuid}/quizzes/${quizUuid}`,
-    { method: 'DELETE' }
+    { method: 'DELETE', credentials: 'include' }
   );
 
   if (res.status === 404) {
@@ -79,15 +78,27 @@ export async function submitQuiz(courseUuid, moduleUuid, quizUuid, data) {
     `${Api}/courses/${courseUuid}/modules/${moduleUuid}/quizzes/${quizUuid}/submit`,
     {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify(data),
     }
   );
 
   if (!res.ok) {
     throw new Error('Nepodařilo se odeslat kvíz');
+  }
+
+  return await res.json();
+}
+
+export async function getQuizAttempts(courseUuid, moduleUuid, quizUuid) {
+  const res = await fetch(
+    `${Api}/courses/${courseUuid}/modules/${moduleUuid}/quizzes/${quizUuid}/attempts`,
+    { credentials: 'include' }
+  );
+
+  if (!res.ok) {
+    throw new Error('Nepodařilo se načíst pokusy');
   }
 
   return await res.json();

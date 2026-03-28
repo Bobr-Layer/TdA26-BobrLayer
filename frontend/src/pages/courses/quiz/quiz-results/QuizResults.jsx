@@ -15,9 +15,11 @@ export default function QuizResults({ name, result, onShowReview }) {
         );
     }
 
-    const correct = result.correctPerQuestion.filter(Boolean).length;
-    const total = result.correctPerQuestion.length;
-    const percentage = Math.round((correct / total) * 100);
+    const gradable = result.correctPerQuestion.filter(x => x !== null && x !== undefined);
+    const correct = gradable.filter(Boolean).length;
+    const total = gradable.length;
+    const openCount = result.correctPerQuestion.filter(x => x === null || x === undefined).length;
+    const percentage = total > 0 ? Math.round((correct / total) * 100) : 0;
 
     return (
         <section className={styles.quiz_results}>
@@ -29,6 +31,9 @@ export default function QuizResults({ name, result, onShowReview }) {
             <div className={styles.quiz_results_score_block}>
                 <span className={styles.score_number}>{correct}/{total}</span>
                 <span className={styles.score_label}>{percentage} % správně</span>
+                {openCount > 0 && (
+                    <span className={styles.score_open}>{openCount} otevřená {openCount === 1 ? 'otázka' : 'otázky'}</span>
+                )}
             </div>
 
             <hr className={styles.quiz_results_divider} />

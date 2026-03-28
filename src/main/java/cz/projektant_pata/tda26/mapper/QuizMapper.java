@@ -2,13 +2,8 @@ package cz.projektant_pata.tda26.mapper;
 
 import cz.projektant_pata.tda26.dto.course.quiz.QuizRequestDTO;
 import cz.projektant_pata.tda26.dto.course.quiz.QuizResponseDTO;
-import cz.projektant_pata.tda26.dto.course.quiz.question.MultipleChoiceQuestionResponseDTO;
-import cz.projektant_pata.tda26.dto.course.quiz.question.QuestionResponseDTO;
-import cz.projektant_pata.tda26.dto.course.quiz.question.SingleChoiceQuestionResponseDTO;
-import cz.projektant_pata.tda26.model.course.quiz.MultipleChoiceQuestion;
-import cz.projektant_pata.tda26.model.course.quiz.Question;
-import cz.projektant_pata.tda26.model.course.quiz.Quiz;
-import cz.projektant_pata.tda26.model.course.quiz.SingleChoiceQuestion;
+import cz.projektant_pata.tda26.dto.course.quiz.question.*;
+import cz.projektant_pata.tda26.model.course.quiz.*;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
@@ -47,13 +42,19 @@ public class QuizMapper {
             SingleChoiceQuestionResponseDTO dto = new SingleChoiceQuestionResponseDTO();
             fillCommonFields(dto, sq);
             dto.setCorrectIndex(sq.getCorrectIndex());
-            dto.setType("singleChoice"); // Pokud to Jackson neudělá sám
+            dto.setType("singleChoice");
             return dto;
         } else if (q instanceof MultipleChoiceQuestion mq) {
             MultipleChoiceQuestionResponseDTO dto = new MultipleChoiceQuestionResponseDTO();
             fillCommonFields(dto, mq);
             dto.setCorrectIndices(mq.getCorrectIndices());
             dto.setType("multipleChoice");
+            return dto;
+        } else if (q instanceof OpenQuestion oq) {
+            OpenQuestionResponseDTO dto = new OpenQuestionResponseDTO();
+            fillCommonFields(dto, oq);
+            dto.setCorrectAnswer(oq.getCorrectAnswer());
+            dto.setType("openQuestion");
             return dto;
         }
         throw new IllegalArgumentException("Unknown question type: " + q.getClass());
@@ -62,7 +63,7 @@ public class QuizMapper {
     private void fillCommonFields(QuestionResponseDTO dto, Question q) {
         dto.setUuid(q.getUuid());
         dto.setQuestion(q.getQuestion());
-        dto.setOptions(q.getOptions());
+        dto.setOptions(q.getOptions() != null ? q.getOptions() : Collections.emptyList());
         dto.setSuccessRate(q.getSuccessRate());
     }
 }

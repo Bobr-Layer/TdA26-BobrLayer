@@ -5,8 +5,10 @@ import cz.projektant_pata.tda26.dto.course.CourseRequestDTO;
 import cz.projektant_pata.tda26.dto.course.CourseResponseDTO;
 import cz.projektant_pata.tda26.dto.course.module.ModuleResponseDTO;
 import cz.projektant_pata.tda26.dto.course.status.CourseScheduleDTO;
+import cz.projektant_pata.tda26.dto.user.UserResponseDTO;
 import cz.projektant_pata.tda26.mapper.CourseMapper;
 import cz.projektant_pata.tda26.mapper.ModuleMapper;
+import cz.projektant_pata.tda26.mapper.UserMapper;
 import cz.projektant_pata.tda26.model.course.Course;
 import cz.projektant_pata.tda26.model.course.module.Module;
 import cz.projektant_pata.tda26.model.user.RoleEnum;
@@ -17,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -37,6 +38,7 @@ public class CourseController {
     private final CourseMapper mapper;
     private final ModuleMapper moduleMapper;
     private final SseService sseService;
+    private final UserMapper userMapper;
 
     @GetMapping
     public ResponseEntity<List<CourseResponseDTO>> find(@AuthenticationPrincipal User user) {
@@ -190,12 +192,18 @@ public class CourseController {
         return service.findForStudent();
     }
 
-    // ADMIN only — anonymita studentů
+    // Lektor/Admin — přehled zapsaných studentů
     @GetMapping("/{uuid}/users")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<User>> findUsers(@PathVariable UUID uuid) {
-        Course course = service.find(uuid);
-        return ResponseEntity.ok(course.getStudents());
+    public ResponseEntity<List<UserResponseDTO>> findUsers(
+            @PathVariable UUID uuid,
+            @AuthenticationPrincipal User user) {
+        if (user == null || (user.getRole() != RoleEnum.LEKTOR && user.getRole() != RoleEnum.ADMIN)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        List<UserResponseDTO> students = service.findStudents(uuid).stream()
+                .map(userMapper::toResponse)
+                .toList();
+        return ResponseEntity.ok(students);
     }
 
     @PostMapping("/{uuid}/users")

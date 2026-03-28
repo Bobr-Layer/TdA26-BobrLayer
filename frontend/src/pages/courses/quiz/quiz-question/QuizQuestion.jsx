@@ -2,6 +2,27 @@ import ResultCard from '../quiz-results/result-card/ResultCard';
 import OptionList from './option-list/OptionList';
 import styles from './quiz-question.module.scss';
 
+function OpenAnswerInput({ questionId, currentAnswer, onAnswerChange, disabled, correctAnswer }) {
+    return (
+        <div className={styles.open_answer}>
+            <textarea
+                className={styles.open_answer_input}
+                value={currentAnswer || ''}
+                onChange={e => !disabled && onAnswerChange(questionId, e.target.value)}
+                disabled={disabled}
+                placeholder="Napište svou odpověď..."
+                rows={4}
+            />
+            {disabled && correctAnswer && (
+                <div className={styles.open_answer_correct}>
+                    <span>Vzorová odpověď:</span>
+                    <p>{correctAnswer}</p>
+                </div>
+            )}
+        </div>
+    );
+}
+
 export default function QuizQuestion({
     quiz,
     currentStep,
@@ -15,7 +36,8 @@ export default function QuizQuestion({
     quizResult,
     submitting
 }) {
-    const isMulti = currentQuestion.type !== 'singleChoice';
+    const isOpen = currentQuestion.type === 'openQuestion';
+    const isMulti = currentQuestion.type === 'multipleChoice';
     const isLastStep = currentStep >= length - 1;
 
     return (
@@ -37,20 +59,30 @@ export default function QuizQuestion({
             <div className={styles.quiz_question_content}>
                 <div className={styles.quiz_question_content_top}>
                     <span className={styles.question_type_label}>
-                        {isMulti ? 'Více správných odpovědí' : 'Jedna správná odpověď'}
+                        {isOpen ? 'Otevřená otázka' : isMulti ? 'Více správných odpovědí' : 'Jedna správná odpověď'}
                     </span>
                     <h1>{currentQuestion.question}</h1>
                 </div>
 
-                <OptionList
-                    multi={isMulti}
-                    options={currentQuestion.options.map((opt, index) => ({ id: index, option: opt }))}
-                    questionId={currentStep}
-                    currentAnswer={currentAnswer}
-                    onAnswerChange={onAnswerChange}
-                    disabled={!info}
-                    correctAnswer={isMulti ? currentQuestion.correctIndices : currentQuestion.correctIndex}
-                />
+                {isOpen ? (
+                    <OpenAnswerInput
+                        questionId={currentStep}
+                        currentAnswer={currentAnswer}
+                        onAnswerChange={onAnswerChange}
+                        disabled={!info}
+                        correctAnswer={currentQuestion.correctAnswer}
+                    />
+                ) : (
+                    <OptionList
+                        multi={isMulti}
+                        options={(currentQuestion.options || []).map((opt, index) => ({ id: index, option: opt }))}
+                        questionId={currentStep}
+                        currentAnswer={currentAnswer}
+                        onAnswerChange={onAnswerChange}
+                        disabled={!info}
+                        correctAnswer={isMulti ? currentQuestion.correctIndices : currentQuestion.correctIndex}
+                    />
+                )}
 
                 <div className={styles.quiz_question_content_nav}>
                     {currentStep !== 0 ? (

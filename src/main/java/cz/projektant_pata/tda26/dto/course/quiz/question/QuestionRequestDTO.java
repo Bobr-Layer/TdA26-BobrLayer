@@ -2,11 +2,7 @@ package cz.projektant_pata.tda26.dto.course.quiz.question;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import cz.projektant_pata.tda26.dto.course.quiz.question.MultipleChoiceQuestionRequestDTO;
-import cz.projektant_pata.tda26.dto.course.quiz.question.SingleChoiceQuestionRequestDTO;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,7 +18,8 @@ import java.util.UUID;
 )
 @JsonSubTypes({
         @JsonSubTypes.Type(value = SingleChoiceQuestionRequestDTO.class, name = "singleChoice"),
-        @JsonSubTypes.Type(value = MultipleChoiceQuestionRequestDTO.class, name = "multipleChoice")
+        @JsonSubTypes.Type(value = MultipleChoiceQuestionRequestDTO.class, name = "multipleChoice"),
+        @JsonSubTypes.Type(value = OpenQuestionRequestDTO.class, name = "openQuestion")
 })
 @Getter
 @Setter
@@ -36,6 +33,5 @@ public abstract class QuestionRequestDTO {
 
     private String type;
 
-    @NotEmpty(message = "Otázka musí mít alespoň jednu možnost")
     private List<String> options;
 }

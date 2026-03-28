@@ -6,5 +6,6 @@ import java.util.UUID;
 public record SubmitAnswerDTO(
         UUID uuid,
         Integer selectedIndex,
-        List<Integer> selectedIndices
+        List<Integer> selectedIndices,
+        String textAnswer
 ) {}

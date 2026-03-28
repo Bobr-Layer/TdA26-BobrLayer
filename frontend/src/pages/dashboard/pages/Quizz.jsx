@@ -3,7 +3,7 @@ import DashboardNav from '../../../shared/layout/dashboard-nav/DashboardNav';
 import QuizzDetail from '../quizzes/quizz-detail/QuizzDetail';
 import { useNavigate, useParams } from 'react-router-dom';
 import styles from '../dashboard.module.scss';
-import { deleteQuiz, getQuizByUuid } from '../../../services/QuizzService';
+import { deleteQuiz, getQuizByUuid, getQuizAttempts } from '../../../services/QuizzService';
 import { useState, useEffect } from 'react';
 import { getModules } from '../../../services/ModuleService';
 import { getCourseByUuid } from '../../../services/CourseService';
@@ -18,12 +18,17 @@ export default function Quizz({ user, setUser }) {
     const [loading, setLoading] = useState(false);
     const [modules, setModules] = useState();
     const [course, setCourse] = useState();
+    const [attempts, setAttempts] = useState([]);
 
     useEffect(() => {
         const loadQuiz = async () => {
             try {
                 const data = await getQuizByUuid(uuid, moduleUuid, quizzUuid);
                 setQuiz(data);
+
+                getQuizAttempts(uuid, moduleUuid, quizzUuid)
+                    .then(setAttempts)
+                    .catch(() => setAttempts([]));
 
                 const modulesData = await getModules(uuid);
                 setModules(modulesData);
@@ -71,7 +76,7 @@ export default function Quizz({ user, setUser }) {
                     showButton={course?.status === 'Draft'}
                 />
                 {quiz && (
-                    <QuizzDetail quiz={quiz} />
+                    <QuizzDetail quiz={quiz} attempts={attempts} />
                 )}
             </section>
         </div>

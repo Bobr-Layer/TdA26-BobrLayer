@@ -2,9 +2,12 @@ import { useState } from 'react';
 import styles from './quizz-detail.module.scss';
 import ResultCard from './result-card/ResultCard';
 
-export default function QuizzDetail({ quiz }) {
-  const averageScore = quiz.questions.reduce((sum, q) => sum + q.successRate, 0) / quiz.questions.length;
+export default function QuizzDetail({ quiz, attempts = [] }) {
   const questionsCount = quiz.questions.length;
+  const gradableQuestions = quiz.questions.filter(q => q.type !== 'openQuestion');
+  const averageScore = gradableQuestions.length > 0
+    ? gradableQuestions.reduce((sum, q) => sum + (q.successRate ?? 0), 0) / gradableQuestions.length
+    : 0;
 
   return (
     <article className={styles.quizz_detail}>
@@ -33,13 +36,59 @@ export default function QuizzDetail({ quiz }) {
             />
           </div>
         </div>
+        <div className={styles.quizz_detail_attempts_section}>
+          <h3>Pokusy studentů ({attempts.length})</h3>
+          {attempts.length === 0 ? (
+            <p className={styles.no_attempts}>Zatím žádné pokusy</p>
+          ) : (
+            <div className={styles.attempts_list}>
+              {attempts.map(attempt => (
+                <AttemptCard key={attempt.uuid} attempt={attempt} quiz={quiz} />
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </article>
-  )
+  );
+}
+
+function AttemptCard({ attempt, quiz }) {
+  const [open, setOpen] = useState(false);
+  const gradable = (attempt.correctPerQuestion || []).filter(x => x !== null && x !== undefined);
+  const correct = gradable.filter(Boolean).length;
+
+  return (
+    <div className={styles.attempt_card} onClick={() => setOpen(!open)}>
+      <div className={styles.attempt_card_header}>
+        <span className={styles.attempt_student}>{attempt.studentUsername}</span>
+        <span className={styles.attempt_score}>{correct}/{gradable.length}</span>
+        <span className={styles.attempt_date}>{new Date(attempt.submittedAt).toLocaleString('cs-CZ')}</span>
+      </div>
+      {open && (
+        <div className={styles.attempt_detail}>
+          {(attempt.correctPerQuestion || []).map((isCorrect, i) => {
+            const question = quiz.questions[i];
+            const isOpenQ = isCorrect === null || isCorrect === undefined;
+            return (
+              <div key={i} className={`${styles.attempt_question} ${isOpenQ ? styles.open : isCorrect ? styles.correct : styles.wrong}`}>
+                <span className={styles.attempt_q_num}>{i + 1}.</span>
+                <span className={styles.attempt_q_text}>{question?.question}</span>
+                {isOpenQ && attempt.textAnswers?.[question?.uuid] && (
+                  <span className={styles.attempt_text_answer}>„{attempt.textAnswers[question.uuid]}"</span>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
 }
 
 function QuestionCard({ question }) {
   const [showMore, setShowMore] = useState(false);
+  const isOpen = question.type === 'openQuestion';
 
   return (
     <div className={styles.question_card} onClick={() => setShowMore(!showMore)}>
@@ -51,11 +100,17 @@ function QuestionCard({ question }) {
       </div>
       {showMore && (
         <div className={styles.question_card_content}>
-          {question.options.map((o) => (
-            <p>{o}</p>
-          ))}
+          {isOpen ? (
+            question.correctAnswer
+              ? <p className={styles.correct_answer_hint}>Vzorová odpověď: {question.correctAnswer}</p>
+              : <p className={styles.open_hint}>Otevřená otázka bez vzorové odpovědi</p>
+          ) : (
+            (question.options || []).map((o, i) => (
+              <p key={i}>{o}</p>
+            ))
+          )}
         </div>
       )}
     </div>
-  )
+  );
 }

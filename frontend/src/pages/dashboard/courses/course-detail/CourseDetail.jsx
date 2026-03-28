@@ -4,13 +4,26 @@ import styles from './course-detail.module.scss';
 import DashboardButton from '../../../../shared/button/dashboard/DashboardButton';
 import ModuleDashboardCard from '../../../../shared/courses/module-dashboard-card/ModuleDashboardCard';
 import ModuleSelect from '../../../../shared/form/course-select/ModuleSelect';
-import { activateNextModule, deactivatePreviousModule } from '../../../../services/CourseService';
+import { activateNextModule, deactivatePreviousModule, getCourseStudents } from '../../../../services/CourseService';
 import { getModules, reorderModules } from '../../../../services/ModuleService';
 
 export default function CourseDetail({ course, onRefresh }) {
     const modules = course.modules;
     const [moduleData, setModuleData] = useState(modules);
     const [actionToast, setActionToast] = useState(null);
+    const [students, setStudents] = useState([]);
+    const [studentsLoading, setStudentsLoading] = useState(false);
+
+    const showsStudents = course.status === 'Live' || course.status === 'Paused' || course.status === 'Archived';
+
+    useEffect(() => {
+        if (!showsStudents) return;
+        setStudentsLoading(true);
+        getCourseStudents(course.uuid)
+            .then(setStudents)
+            .catch(() => {})
+            .finally(() => setStudentsLoading(false));
+    }, [course.uuid, showsStudents]);
 
     const canActivate = moduleData?.some(m => !m.activated);
     const canDeactivate = moduleData?.some(m => m.activated);
@@ -135,6 +148,28 @@ export default function CourseDetail({ course, onRefresh }) {
                     ))}
                 </div>
             </div>
+            {showsStudents && (
+                <div className={styles.course_detail_students}>
+                    <div className={styles.course_detail_students_header}>
+                        <h3>Studenti</h3>
+                        <span className={styles.students_count}>{students.length}</span>
+                    </div>
+                    {studentsLoading ? (
+                        <p className={styles.students_empty}>Načítání...</p>
+                    ) : students.length === 0 ? (
+                        <p className={styles.students_empty}>Zatím žádní zapsaní studenti</p>
+                    ) : (
+                        <div className={styles.students_list}>
+                            {students.map(s => (
+                                <div key={s.uuid} className={styles.student_row}>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                    <span>{s.username}</span>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            )}
         </article>
     )
 }

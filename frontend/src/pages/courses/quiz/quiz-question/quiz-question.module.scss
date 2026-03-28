@@ -66,3 +66,54 @@
         }
     }
 }
+
+.open_answer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.open_answer_input {
+    width: 100%;
+    min-height: 120px;
+    padding: 0.875rem 1rem;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1.5px solid rgba(255, 255, 255, 0.15);
+    border-radius: 0.75rem;
+    color: #fff;
+    font-family: 'Dosis', sans-serif;
+    font-size: 1rem;
+    resize: vertical;
+    transition: border-color 0.2s;
+    box-sizing: border-box;
+
+    &:focus {
+        outline: none;
+        border-color: #91F5AD;
+    }
+
+    &:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
+}
+
+.open_answer_correct {
+    padding: 0.75rem 1rem;
+    background: rgba(145, 245, 173, 0.1);
+    border: 1px solid rgba(145, 245, 173, 0.3);
+    border-radius: 0.75rem;
+
+    span {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #91F5AD;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    p {
+        margin-top: 0.25rem;
+        color: rgba(255, 255, 255, 0.85);
+    }
+}

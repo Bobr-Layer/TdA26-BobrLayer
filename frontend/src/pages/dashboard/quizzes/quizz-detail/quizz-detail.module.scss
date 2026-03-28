@@ -116,3 +116,123 @@
         }
     }
 }
+
+.quizz_detail_attempts_section {
+    margin-top: 1.5rem;
+
+    h3 {
+        font-size: 1rem;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.7);
+        margin-bottom: 0.75rem;
+    }
+}
+
+.no_attempts {
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.attempts_list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.attempt_card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 0.6rem;
+    overflow: hidden;
+    cursor: pointer;
+    transition: background 0.15s;
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.05);
+    }
+}
+
+.attempt_card_header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 0.875rem;
+}
+
+.attempt_student {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.8);
+    flex: 1;
+}
+
+.attempt_score {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #91F5AD;
+    background: rgba(145, 245, 173, 0.1);
+    padding: 0.15rem 0.5rem;
+    border-radius: 0.35rem;
+}
+
+.attempt_date {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.attempt_detail {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding: 0.5rem 0.875rem 0.75rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.attempt_question {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    padding: 0.3rem 0.5rem;
+    border-radius: 0.4rem;
+    font-size: 0.8rem;
+
+    &.correct {
+        background: rgba(145, 245, 173, 0.07);
+    }
+
+    &.wrong {
+        background: rgba(255, 100, 100, 0.07);
+    }
+
+    &.open {
+        background: rgba(255, 255, 255, 0.03);
+    }
+}
+
+.attempt_q_num {
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.3);
+    flex-shrink: 0;
+}
+
+.attempt_q_text {
+    color: rgba(255, 255, 255, 0.65);
+    flex: 1;
+}
+
+.attempt_text_answer {
+    font-style: italic;
+    color: rgba(255, 255, 255, 0.45);
+    font-size: 0.75rem;
+}
+
+.correct_answer_hint {
+    color: #91F5AD !important;
+    font-size: 0.875rem !important;
+}
+
+.open_hint {
+    color: rgba(255, 255, 255, 0.3) !important;
+    font-style: italic;
+    font-size: 0.85rem !important;
+}

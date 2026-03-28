@@ -10,7 +10,8 @@ import java.util.UUID;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
         @JsonSubTypes.Type(value = SingleChoiceQuestionResponseDTO.class, name = "singleChoice"),
-        @JsonSubTypes.Type(value = MultipleChoiceQuestionResponseDTO.class, name = "multipleChoice")
+        @JsonSubTypes.Type(value = MultipleChoiceQuestionResponseDTO.class, name = "multipleChoice"),
+        @JsonSubTypes.Type(value = OpenQuestionResponseDTO.class, name = "openQuestion")
 })
 @Data
 public abstract class QuestionResponseDTO {

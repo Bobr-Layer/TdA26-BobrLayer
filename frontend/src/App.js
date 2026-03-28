@@ -55,8 +55,6 @@ function App() {
       <Route path="/terms" element={<Terms user={user} setUser={setUser} />} />
       <Route path="/courses" element={<Courses user={user} setUser={setUser} />} />
       <Route path="/courses/:uuid" element={<Detail user={user} setUser={setUser} />} />
-      <Route path="/courses/:uuid/modules/:moduleUuid" element={<Module user={user} setUser={setUser} />} />
-      <Route path="/courses/:uuid/modules/:moduleUuid/quizzes/:quizzUuid" element={<Quiz user={user} setUser={setUser} />} />
 
       {/* Veřejné stránky */}
       <Route path="/register" element={
@@ -67,6 +65,8 @@ function App() {
       {user ? (
         <>
           {/* Sdílené stránky (student + lecturer) */}
+          <Route path="/courses/:uuid/modules/:moduleUuid" element={<Module user={user} setUser={setUser} />} />
+          <Route path="/courses/:uuid/modules/:moduleUuid/quizzes/:quizzUuid" element={<Quiz user={user} setUser={setUser} />} />
           <Route path="/profile" element={<Profile user={user} setUser={setUser} />} />
           <Route path="/login" element={
             isStudent ? <MyCourses user={user} setUser={setUser} /> : <Dashboard user={user} setUser={setUser} />
@@ -113,6 +113,8 @@ function App() {
           <Route path="/my-courses" element={<Navigate to="/login" replace />} />
           <Route path="/dashboard" element={<Navigate to="/login" replace />} />
           <Route path="/dashboard/*" element={<Navigate to="/login" replace />} />
+          <Route path="/courses/:uuid/modules/:moduleUuid" element={<Navigate to="/login" replace />} />
+          <Route path="/courses/:uuid/modules/:moduleUuid/quizzes/:quizzUuid" element={<Navigate to="/login" replace />} />
         </>
       )}
       <Route path="*" element={<NotFound />} />

@@ -55,6 +55,8 @@ export default function Quiz({ user, setUser }) {
                         answerObj.selectedIndex = answer !== null && answer !== undefined ? answer : null;
                     } else if (question.type === 'multipleChoice') {
                         answerObj.selectedIndices = Array.isArray(answer) && answer.length > 0 ? answer : [];
+                    } else if (question.type === 'openQuestion') {
+                        answerObj.textAnswer = answer || '';
                     }
                     return answerObj;
                 })

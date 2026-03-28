@@ -3,9 +3,6 @@ package cz.projektant_pata.tda26.model.course.quiz;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import cz.projektant_pata.tda26.model.course.quiz.MultipleChoiceQuestion;
-import cz.projektant_pata.tda26.model.course.quiz.Quiz;
-import cz.projektant_pata.tda26.model.course.quiz.SingleChoiceQuestion;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,7 +21,8 @@ import java.util.UUID;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
         @JsonSubTypes.Type(value = SingleChoiceQuestion.class, name = "singleChoice"),
-        @JsonSubTypes.Type(value = MultipleChoiceQuestion.class, name = "multipleChoice")
+        @JsonSubTypes.Type(value = MultipleChoiceQuestion.class, name = "multipleChoice"),
+        @JsonSubTypes.Type(value = OpenQuestion.class, name = "openQuestion")
 })
 public abstract class Question {
 

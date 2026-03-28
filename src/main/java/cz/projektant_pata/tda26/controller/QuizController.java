@@ -1,11 +1,15 @@
 package cz.projektant_pata.tda26.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import cz.projektant_pata.tda26.dto.course.quiz.QuizAttemptResponseDTO;
 import cz.projektant_pata.tda26.dto.course.quiz.QuizRequestDTO;
 import cz.projektant_pata.tda26.dto.course.quiz.QuizResponseDTO;
 import cz.projektant_pata.tda26.dto.course.quiz.question.SubmitQuizDTO;
 import cz.projektant_pata.tda26.dto.course.quiz.question.SubmitQuizResultDTO;
 import cz.projektant_pata.tda26.mapper.QuizMapper;
 import cz.projektant_pata.tda26.model.course.quiz.Quiz;
+import cz.projektant_pata.tda26.model.course.quiz.QuizAttempt;
 import cz.projektant_pata.tda26.service.IQuizService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,15 +18,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/courses/{courseUuid}/modules/{moduleUuid}/quizzes") // ✅ opravena URL
+@RequestMapping("/api/courses/{courseUuid}/modules/{moduleUuid}/quizzes")
 @RequiredArgsConstructor
 public class QuizController {
 
     private final IQuizService quizService;
-    private final QuizMapper quizMapper; // ✅ mapper injektován místo privátních metod
+    private final QuizMapper quizMapper;
+    private final ObjectMapper objectMapper;
 
     @GetMapping
     public ResponseEntity<List<QuizResponseDTO>> find(
@@ -81,11 +87,45 @@ public class QuizController {
     @PostMapping("/{quizUuid}/submit")
     public ResponseEntity<SubmitQuizResultDTO> submit(
             @PathVariable UUID courseUuid,
-            @PathVariable UUID moduleUuid,  // ✅ přidáno
+            @PathVariable UUID moduleUuid,
             @PathVariable UUID quizUuid,
             @RequestBody @Valid SubmitQuizDTO submission
     ) {
-        SubmitQuizResultDTO result = quizService.submitQuiz(moduleUuid, quizUuid, submission); // ✅ bylo: courseUuid
+        SubmitQuizResultDTO result = quizService.submitQuiz(moduleUuid, quizUuid, submission);
         return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/{quizUuid}/attempts")
+    public ResponseEntity<List<QuizAttemptResponseDTO>> getAttempts(
+            @PathVariable UUID courseUuid,
+            @PathVariable UUID moduleUuid,
+            @PathVariable UUID quizUuid
+    ) {
+        List<QuizAttemptResponseDTO> attempts = quizService.getAttempts(moduleUuid, quizUuid).stream()
+                .map(this::mapAttemptToDTO)
+                .toList();
+        return ResponseEntity.ok(attempts);
+    }
+
+    private QuizAttemptResponseDTO mapAttemptToDTO(QuizAttempt attempt) {
+        QuizAttemptResponseDTO dto = new QuizAttemptResponseDTO();
+        dto.setUuid(attempt.getUuid());
+        dto.setStudentUsername(attempt.getStudent() != null ? attempt.getStudent().getUsername() : null);
+        dto.setScore(attempt.getScore());
+        dto.setMaxScore(attempt.getMaxScore());
+        dto.setCorrectPerQuestion(attempt.getCorrectPerQuestion());
+        dto.setSubmittedAt(attempt.getSubmittedAt());
+        if (attempt.getTextAnswersJson() != null) {
+            try {
+                Map<String, String> textAnswers = objectMapper.readValue(
+                        attempt.getTextAnswersJson(),
+                        new TypeReference<>() {}
+                );
+                dto.setTextAnswers(textAnswers);
+            } catch (Exception e) {
+                dto.setTextAnswers(Map.of());
+            }
+        }
+        return dto;
     }
 }

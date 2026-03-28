@@ -91,11 +91,17 @@ export default function EditQuiz({ user, setUser }) {
         });
     };
 
-    const setCorrectAnswer = (questionIndex, answerIndex) => {
+    const setCorrectAnswer = (questionIndex, answerIndexOrText) => {
         setEditQuizzData(prev => {
             const questions = [...prev.questions];
             const question = questions[questionIndex];
 
+            if (question.type === 'openQuestion') {
+                questions[questionIndex] = { ...question, correctAnswer: answerIndexOrText };
+                return { ...prev, questions };
+            }
+
+            const answerIndex = answerIndexOrText;
             let correctIndices = Array.isArray(question.correctIndices)
                 ? [...question.correctIndices]
                 : question.correctIndex !== undefined
@@ -143,6 +149,21 @@ export default function EditQuiz({ user, setUser }) {
         }));
     };
 
+    const addOpenQuestion = () => {
+        setEditQuizzData(prev => ({
+            ...prev,
+            questions: [
+                ...prev.questions,
+                {
+                    type: 'openQuestion',
+                    question: '',
+                    options: [],
+                    correctAnswer: '',
+                }
+            ]
+        }));
+    };
+
     const onSubmit = async (e) => {
         e.preventDefault();
 
@@ -158,6 +179,8 @@ export default function EditQuiz({ user, setUser }) {
                 alert(`Vyplňte text otázky ${i + 1}`);
                 return;
             }
+
+            if (q.type === 'openQuestion') continue;
 
             if (q.options.length < 2) {
                 alert(`Otázka ${i + 1} musí mít alespoň 2 odpovědi`);
@@ -184,7 +207,18 @@ export default function EditQuiz({ user, setUser }) {
 
         try {
             const cleanedQuestions = editQuizzData.questions.map(q => {
+                if (q.type === 'openQuestion') {
+                    return {
+                        uuid: q.uuid,
+                        question: q.question,
+                        options: [],
+                        type: 'openQuestion',
+                        correctAnswer: q.correctAnswer || '',
+                    };
+                }
+
                 const cleaned = {
+                    uuid: q.uuid,
                     question: q.question,
                     options: q.options,
                     type: q.type,
@@ -270,6 +304,7 @@ export default function EditQuiz({ user, setUser }) {
                     setCorrectAnswer={setCorrectAnswer}
                     deleteQuestion={deleteQuestion}
                     addQuestion={addQuestion}
+                    addOpenQuestion={addOpenQuestion}
                 />
             </form>
         </div>

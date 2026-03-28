@@ -192,6 +192,14 @@ export async function rollbackCourseVersion(courseUuid, shortId) {
   return res.json();
 }
 
+export async function getCourseStudents(uuid) {
+  const res = await fetch(`${Api}/courses/${uuid}/users`, {
+    ...defaultOptions,
+  });
+  if (!res.ok) throw new Error('Nepodařilo se načíst studenty');
+  return res.json();
+}
+
 export async function importCourses(courses) {
   const res = await fetch(`${Api}/courses/import`, {
     ...defaultOptions,
