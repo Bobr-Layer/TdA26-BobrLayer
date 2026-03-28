@@ -14,6 +14,26 @@ const ROLE_LABELS = {
     ADMIN: 'Admin',
 };
 
+const XP_LEVELS = [
+    { level: 1, name: 'Začátečník', min: 0 },
+    { level: 2, name: 'Pokročilý',  min: 25 },
+    { level: 3, name: 'Zkušený',    min: 75 },
+    { level: 4, name: 'Expert',     min: 175 },
+    { level: 5, name: 'Mistr',      min: 350 },
+];
+
+function getLevelInfo(xp) {
+    let current = XP_LEVELS[0];
+    for (const l of XP_LEVELS) {
+        if (xp >= l.min) current = l;
+    }
+    const next = XP_LEVELS.find(l => l.level === current.level + 1) || null;
+    const progress = next
+        ? Math.min(100, Math.round(((xp - current.min) / (next.min - current.min)) * 100))
+        : 100;
+    return { current, next, progress };
+}
+
 function Profile({ user, setUser }) {
     usePageTitle(`Profil – ${user?.username}`);
     const [username, setUsername] = useState(user?.username || '');
@@ -24,6 +44,9 @@ function Profile({ user, setUser }) {
     const [loading, setLoading] = useState(false);
     const [quizAttempts, setQuizAttempts] = useState([]);
     const revealRefs = useRef([]);
+
+    const xp = quizAttempts.reduce((sum, a) => sum + (a.score || 0), 0);
+    const { current: lvl, next: nextLvl, progress } = getLevelInfo(xp);
 
     useEffect(() => {
         if (user?.role === 'STUDENT') {
@@ -100,7 +123,41 @@ function Profile({ user, setUser }) {
 
             <hr className={styles.rule} />
 
-            {/* ── Edit section ── */}
+            {/* ── XP section (students only, before settings) ── */}
+            {user?.role === 'STUDENT' && (
+                <>
+                    <section className={styles.section}>
+                        <div {...r(0)}>
+                            <span className={styles.label}>Postup</span>
+                        </div>
+                        <h2 {...r(0.05)}>Herní profil</h2>
+                        <div {...r(0.1)} className={styles.xp_display}>
+                            <div className={styles.xp_top}>
+                                <div className={styles.xp_level_block}>
+                                    <span className={styles.xp_label_text}>Úroveň</span>
+                                    <span className={styles.xp_level_num}>{lvl.level}</span>
+                                </div>
+                                <div className={styles.xp_right}>
+                                    <span className={styles.xp_level_name}>{lvl.name}</span>
+                                    <span className={styles.xp_count}>{Math.round(xp)} XP</span>
+                                </div>
+                            </div>
+                            <div className={styles.xp_bar_track}>
+                                <div className={styles.xp_bar_fill} style={{ width: `${progress}%` }} />
+                            </div>
+                            {nextLvl ? (
+                                <span className={styles.xp_next_label}>{Math.round(xp)} / {nextLvl.min} XP do úrovně {nextLvl.level} — {nextLvl.name}</span>
+                            ) : (
+                                <span className={styles.xp_next_label}>Maximální úroveň dosažena</span>
+                            )}
+                        </div>
+                    </section>
+
+                    <hr className={styles.rule} />
+                </>
+            )}
+
+            {/* ── Settings section ── */}
             <section className={styles.section}>
                 <div {...r(0)}>
                     <span className={styles.label}>Upravit profil</span>
@@ -149,6 +206,7 @@ function Profile({ user, setUser }) {
                 </div>
             </section>
 
+            {/* ── Quiz history (students only) ── */}
             {user?.role === 'STUDENT' && (
                 <>
                     <hr className={styles.rule} />

@@ -2,7 +2,7 @@ import ResultCard from '../quiz-results/result-card/ResultCard';
 import OptionList from './option-list/OptionList';
 import styles from './quiz-question.module.scss';
 
-function OpenAnswerInput({ questionId, currentAnswer, onAnswerChange, disabled, correctAnswer }) {
+function OpenAnswerInput({ questionId, currentAnswer, onAnswerChange, disabled }) {
     return (
         <div className={styles.open_answer}>
             <textarea
@@ -13,12 +13,6 @@ function OpenAnswerInput({ questionId, currentAnswer, onAnswerChange, disabled, 
                 placeholder="Napište svou odpověď..."
                 rows={4}
             />
-            {disabled && correctAnswer && (
-                <div className={styles.open_answer_correct}>
-                    <span>Vzorová odpověď:</span>
-                    <p>{correctAnswer}</p>
-                </div>
-            )}
         </div>
     );
 }
@@ -71,7 +65,6 @@ export default function QuizQuestion({
                         currentAnswer={currentAnswer}
                         onAnswerChange={onAnswerChange}
                         disabled={!info}
-                        correctAnswer={currentQuestion.correctAnswer}
                     />
                 ) : (
                     <OptionList
