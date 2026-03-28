@@ -139,7 +139,7 @@
     }
 }
 
-// ── Right column — screenshot ─────────────────────────────────────────────────
+// ── Right column — screenshots ────────────────────────────────────────────────
 
 .ticket_screenshot {
     display: flex;
@@ -157,89 +157,100 @@
     color: rgba(255, 255, 255, 0.4);
 }
 
-.dropzone {
+.screenshot_hint {
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.2);
+    margin-top: -0.25rem;
+}
+
+.slots_grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+// Empty slot — clickable dropzone
+.slot_empty {
     @include box;
     border-style: dashed;
     cursor: pointer;
-    transition: border-color 0.2s, background-color 0.2s;
-    aspect-ratio: 4 / 3;
-    overflow: hidden;
+    aspect-ratio: 16 / 9;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 0.5rem;
+    transition: border-color 0.2s, background-color 0.2s;
+
+    svg { color: rgba(255, 255, 255, 0.2); transition: color 0.2s; }
+    span { font-size: 0.8rem; color: rgba(255, 255, 255, 0.2); font-weight: 700; transition: color 0.2s; }
 
     &:hover {
         border-color: rgba(73, 179, 180, 0.5);
         background-color: rgba(73, 179, 180, 0.04);
-    }
-
-    &.has_file {
-        border-style: solid;
-        border-color: rgba(73, 179, 180, 0.3);
-        padding: 0;
+        svg { color: rgba(73, 179, 180, 0.6); }
+        span { color: rgba(73, 179, 180, 0.6); }
     }
 }
 
-.file_hidden {
-    display: none;
+// Filled slot — preview
+.slot_filled {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border: 1px solid rgba(73, 179, 180, 0.3);
+
+    &:hover .slot_overlay { opacity: 1; }
 }
 
-.dropzone_inner {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 2rem 1.5rem;
-    text-align: center;
-
-    svg { color: rgba(255, 255, 255, 0.25); }
-
-    span {
-        font-size: 0.95rem;
-        color: rgba(255, 255, 255, 0.4);
-    }
-}
-
-.dropzone_formats {
-    font-size: 0.78rem !important;
-    color: rgba(255, 255, 255, 0.22) !important;
-}
-
-.preview_img {
+.slot_img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
 }
 
-.file_info {
+.slot_overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between;
-    gap: 0.5rem;
+    padding: 0.5rem 0.6rem;
+    opacity: 0;
+    transition: opacity 0.2s;
 }
 
-.file_name {
-    font-size: 0.85rem;
-    color: rgba(255, 255, 255, 0.45);
+.slot_remove {
+    background: rgba(220, 60, 60, 0.85);
+    border: none;
+    cursor: pointer;
+    width: 1.6rem;
+    height: 1.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    svg { color: #fff; }
+
+    &:hover { background: rgba(220, 60, 60, 1); }
+}
+
+.slot_name {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.6);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    max-width: calc(100% - 2.2rem);
+    align-self: flex-end;
+    text-align: right;
 }
 
-.remove_file {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 0.82rem;
-    color: rgba(220, 80, 80, 0.6);
-    padding: 0;
-    font-family: "Dosis", sans-serif;
-    font-weight: 600;
-    flex-shrink: 0;
-    white-space: nowrap;
-
-    &:hover { color: rgba(220, 80, 80, 0.9); }
+.file_hidden {
+    display: none;
 }
 
 // ── Feedback messages ─────────────────────────────────────────────────────────

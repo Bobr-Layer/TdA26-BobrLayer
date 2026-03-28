@@ -41,24 +41,23 @@ public class TicketController {
             @RequestParam("branch") String branch,
             @RequestParam("url") String url,
             @RequestParam("description") String description,
-            @RequestParam(value = "screenshot", required = false) MultipartFile screenshot
+            @RequestParam(value = "screenshot", required = false) MultipartFile screenshot,
+            @RequestParam(value = "screenshot2", required = false) MultipartFile screenshot2,
+            @RequestParam(value = "screenshot3", required = false) MultipartFile screenshot3
     ) {
         if (title == null || title.isBlank()) return ResponseEntity.badRequest().build();
         if (branch == null || branch.isBlank()) return ResponseEntity.badRequest().build();
         if (url == null || url.isBlank()) return ResponseEntity.badRequest().build();
         if (description == null || description.isBlank()) return ResponseEntity.badRequest().build();
 
-        String screenshotPath = null;
-        if (screenshot != null && !screenshot.isEmpty()) {
-            screenshotPath = storeScreenshot(screenshot);
-        }
-
         Ticket ticket = new Ticket();
         ticket.setTitle(title);
         ticket.setBranch(branch);
         ticket.setUrl(url);
         ticket.setDescription(description);
-        ticket.setScreenshotPath(screenshotPath);
+        if (screenshot != null && !screenshot.isEmpty())   ticket.setScreenshotPath(storeScreenshot(screenshot));
+        if (screenshot2 != null && !screenshot2.isEmpty()) ticket.setScreenshotPath2(storeScreenshot(screenshot2));
+        if (screenshot3 != null && !screenshot3.isEmpty()) ticket.setScreenshotPath3(storeScreenshot(screenshot3));
 
         Ticket saved = ticketRepository.save(ticket);
         return ResponseEntity.status(201).body(toDTO(saved));
@@ -100,6 +99,8 @@ public class TicketController {
         dto.setUrl(t.getUrl());
         dto.setDescription(t.getDescription());
         dto.setScreenshotPath(t.getScreenshotPath());
+        dto.setScreenshotPath2(t.getScreenshotPath2());
+        dto.setScreenshotPath3(t.getScreenshotPath3());
         dto.setCreatedAt(t.getCreatedAt());
         return dto;
     }

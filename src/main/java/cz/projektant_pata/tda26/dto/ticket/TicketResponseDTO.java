@@ -13,5 +13,7 @@ public class TicketResponseDTO {
     private String url;
     private String description;
     private String screenshotPath;
+    private String screenshotPath2;
+    private String screenshotPath3;
     private Instant createdAt;
 }

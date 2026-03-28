@@ -10,6 +10,7 @@ import cz.projektant_pata.tda26.model.course.module.Module;
 import cz.projektant_pata.tda26.model.course.material.Material;
 import cz.projektant_pata.tda26.model.course.material.UrlMaterial;
 import cz.projektant_pata.tda26.model.course.quiz.MultipleChoiceQuestion;
+import cz.projektant_pata.tda26.model.course.quiz.OpenQuestion;
 import cz.projektant_pata.tda26.model.course.quiz.Question;
 import cz.projektant_pata.tda26.model.course.quiz.Quiz;
 import cz.projektant_pata.tda26.model.course.quiz.SingleChoiceQuestion;
@@ -193,6 +194,11 @@ public class DataInitializer implements CommandLineRunner {
             mq1.setOptions(List.of("Zapouzdření", "Polymorfismus", "Kompilace", "Dědičnost"));
             mq1.setCorrectIndices(List.of(0, 1, 3));
             q1.addQuestion(mq1);
+
+            OpenQuestion oq1 = new OpenQuestion();
+            oq1.setQuestion("Vysvětlete vlastními slovy, co je to polymorfismus a uveďte příklad jeho využití v Javě.");
+            oq1.setCorrectAnswer("Polymorfismus umožňuje pracovat s objekty různých tříd skrze společné rozhraní nebo nadtřídu. Příklad: metoda draw() volaná na referenci tvaru Shape se chová jinak pro Circle i Rectangle díky přepsání (override).");
+            q1.addQuestion(oq1);
 
             m2.getQuizzes().add(q1);
 

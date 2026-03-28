@@ -34,6 +34,12 @@ public class Ticket {
     @Column(name = "screenshot_path")
     private String screenshotPath;
 
+    @Column(name = "screenshot_path_2")
+    private String screenshotPath2;
+
+    @Column(name = "screenshot_path_3")
+    private String screenshotPath3;
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private Instant createdAt;

@@ -3,29 +3,75 @@ import styles from './support-ticket-form.module.scss';
 import SectionHeading from '../ui/section-heading/SectionHeading';
 
 const API_BASE = '/api';
+const MAX_SCREENSHOTS = 3;
+
+function ScreenshotSlot({ index, file, previewUrl, onAdd, onRemove }) {
+    const fileRef = useRef(null);
+
+    const handleFile = e => {
+        const f = e.target.files[0];
+        if (f) onAdd(index, f);
+    };
+
+    if (previewUrl) {
+        return (
+            <div className={styles.slot_filled}>
+                <img src={previewUrl} alt={`Screenshot ${index + 1}`} className={styles.slot_img} />
+                <div className={styles.slot_overlay}>
+                    <button type="button" className={styles.slot_remove} onClick={() => onRemove(index)}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                            <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
+                        </svg>
+                    </button>
+                    <span className={styles.slot_name}>{file?.name}</span>
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className={styles.slot_empty} onClick={() => fileRef.current?.click()}>
+            <input
+                ref={fileRef}
+                type="file"
+                accept="image/png,image/jpeg,image/gif,image/webp"
+                className={styles.file_hidden}
+                onChange={handleFile}
+            />
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="1.5"/>
+                <path d="M12 8v8M8 12h8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+            </svg>
+            <span>{index + 1}.</span>
+        </div>
+    );
+}
 
 export default function SupportTicketForm() {
     const [form, setForm] = useState({ title: '', branch: '', url: '', description: '' });
-    const [screenshot, setScreenshot] = useState(null);
-    const [previewUrl, setPreviewUrl] = useState(null);
+    const [screenshots, setScreenshots] = useState([null, null, null]); // [{file, previewUrl}]
     const [status, setStatus] = useState(null);
     const [loading, setLoading] = useState(false);
-    const fileRef = useRef(null);
 
     const handleChange = e => setForm(f => ({ ...f, [e.target.name]: e.target.value }));
 
-    const handleFile = e => {
-        const file = e.target.files[0];
-        if (!file) return;
-        setScreenshot(file);
-        setPreviewUrl(URL.createObjectURL(file));
+    const handleAdd = (index, file) => {
+        const previewUrl = URL.createObjectURL(file);
+        setScreenshots(prev => {
+            const next = [...prev];
+            if (next[index]?.previewUrl) URL.revokeObjectURL(next[index].previewUrl);
+            next[index] = { file, previewUrl };
+            return next;
+        });
     };
 
-    const handleRemoveFile = () => {
-        if (previewUrl) URL.revokeObjectURL(previewUrl);
-        setScreenshot(null);
-        setPreviewUrl(null);
-        if (fileRef.current) fileRef.current.value = '';
+    const handleRemove = index => {
+        setScreenshots(prev => {
+            const next = [...prev];
+            if (next[index]?.previewUrl) URL.revokeObjectURL(next[index].previewUrl);
+            next[index] = null;
+            return next;
+        });
     };
 
     const handleSubmit = async e => {
@@ -38,14 +84,18 @@ export default function SupportTicketForm() {
         data.append('branch', form.branch);
         data.append('url', form.url);
         data.append('description', form.description);
-        if (screenshot) data.append('screenshot', screenshot);
+        const keys = ['screenshot', 'screenshot2', 'screenshot3'];
+        screenshots.forEach((s, i) => { if (s?.file) data.append(keys[i], s.file); });
 
         try {
             const res = await fetch(`${API_BASE}/tickets`, { method: 'POST', body: data });
             if (res.ok) {
                 setStatus('success');
                 setForm({ title: '', branch: '', url: '', description: '' });
-                handleRemoveFile();
+                setScreenshots(prev => {
+                    prev.forEach(s => { if (s?.previewUrl) URL.revokeObjectURL(s.previewUrl); });
+                    return [null, null, null];
+                });
             } else {
                 setStatus('error');
             }
@@ -111,7 +161,7 @@ export default function SupportTicketForm() {
                             />
                         </div>
 
-                        <div className={`${styles.field} ${styles.grow}`}>
+                        <div className={styles.field}>
                             <label htmlFor="tk-desc">Popis problému</label>
                             <textarea
                                 id="tk-desc"
@@ -136,44 +186,22 @@ export default function SupportTicketForm() {
                         </button>
                     </div>
 
-                    {/* ── Right: screenshot ── */}
+                    {/* ── Right: screenshots ── */}
                     <div className={styles.ticket_screenshot}>
-                        <label className={styles.screenshot_label}>Screenshot (volitelné)</label>
-
-                        <div
-                            className={`${styles.dropzone} ${previewUrl ? styles.has_file : ''}`}
-                            onClick={() => fileRef.current?.click()}
-                        >
-                            <input
-                                ref={fileRef}
-                                type="file"
-                                accept="image/png,image/jpeg,image/gif,image/webp"
-                                className={styles.file_hidden}
-                                onChange={handleFile}
-                            />
-                            {previewUrl ? (
-                                <img src={previewUrl} alt="Screenshot preview" className={styles.preview_img} />
-                            ) : (
-                                <div className={styles.dropzone_inner}>
-                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-                                        <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="1.5"/>
-                                        <circle cx="8.5" cy="8.5" r="1.5" stroke="currentColor" strokeWidth="1.5"/>
-                                        <path d="M21 15l-5-5L5 21" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                                    </svg>
-                                    <span>Klikněte pro nahrání</span>
-                                    <span className={styles.dropzone_formats}>PNG, JPG, GIF, WEBP · max 10 MB</span>
-                                </div>
-                            )}
+                        <span className={styles.screenshot_label}>Screenshoty (volitelné, max 3)</span>
+                        <div className={styles.slots_grid}>
+                            {screenshots.map((s, i) => (
+                                <ScreenshotSlot
+                                    key={i}
+                                    index={i}
+                                    file={s?.file ?? null}
+                                    previewUrl={s?.previewUrl ?? null}
+                                    onAdd={handleAdd}
+                                    onRemove={handleRemove}
+                                />
+                            ))}
                         </div>
-
-                        {previewUrl && (
-                            <div className={styles.file_info}>
-                                <span className={styles.file_name}>{screenshot?.name}</span>
-                                <button type="button" className={styles.remove_file} onClick={handleRemoveFile}>
-                                    Odstranit
-                                </button>
-                            </div>
-                        )}
+                        <p className={styles.screenshot_hint}>PNG, JPG, GIF, WEBP · max 10 MB každý</p>
                     </div>
                 </div>
             </form>
