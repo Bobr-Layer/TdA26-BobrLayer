@@ -5,11 +5,14 @@ import cz.projektant_pata.tda26.dto.auth.ProfileUpdateDTO;
 import cz.projektant_pata.tda26.dto.auth.RegisterRequestDTO;
 import cz.projektant_pata.tda26.dto.auth.ResetPasswordDTO;
 import cz.projektant_pata.tda26.dto.course.CourseResponseDTO;
+import cz.projektant_pata.tda26.dto.course.quiz.StudentAttemptDTO;
 import cz.projektant_pata.tda26.dto.user.UserResponseDTO;
 import cz.projektant_pata.tda26.mapper.CourseMapper;
 import cz.projektant_pata.tda26.mapper.UserMapper;
+import cz.projektant_pata.tda26.model.course.quiz.QuizAttempt;
 import cz.projektant_pata.tda26.model.user.RoleEnum;
 import cz.projektant_pata.tda26.model.user.User;
+import cz.projektant_pata.tda26.repository.QuizAttemptRepository;
 import cz.projektant_pata.tda26.service.IUserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -38,6 +41,7 @@ public class AuthController {
     private final AuthenticationManager authManager;
     private final UserMapper mapper;
     private final CourseMapper courseMapper;
+    private final QuizAttemptRepository quizAttemptRepository;
 
     // Registrace — vždy STUDENT, učitel/admin se registrovat nemůže
     @PostMapping("/register")
@@ -129,6 +133,37 @@ public class AuthController {
 
         User updated = service.update(currentUser.getUuid(), updates);
         return ResponseEntity.ok(mapper.toResponse(updated));
+    }
+
+    // Výsledky kvízů přihlášeného studenta (pouze vyhodnocené)
+    @GetMapping("/me/quiz-attempts")
+    public ResponseEntity<?> getMyQuizAttempts() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !(authentication.getPrincipal() instanceof User)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        User currentUser = (User) authentication.getPrincipal();
+        List<StudentAttemptDTO> attempts = quizAttemptRepository
+                .findByStudentUuidAndPendingReviewFalseOrderBySubmittedAtDesc(currentUser.getUuid())
+                .stream()
+                .map(this::mapToStudentAttempt)
+                .toList();
+        return ResponseEntity.ok(attempts);
+    }
+
+    private StudentAttemptDTO mapToStudentAttempt(QuizAttempt a) {
+        StudentAttemptDTO dto = new StudentAttemptDTO();
+        dto.setAttemptUuid(a.getUuid());
+        dto.setQuizUuid(a.getQuiz().getUuid());
+        dto.setQuizTitle(a.getQuiz().getTitle());
+        dto.setModuleUuid(a.getQuiz().getModule().getUuid());
+        dto.setCourseUuid(a.getQuiz().getModule().getCourse().getUuid());
+        dto.setCourseName(a.getQuiz().getModule().getCourse().getName());
+        dto.setScore(a.getScore());
+        dto.setMaxScore(a.getMaxScore());
+        dto.setCorrectPerQuestion(a.getCorrectPerQuestion());
+        dto.setSubmittedAt(a.getSubmittedAt());
+        return dto;
     }
 
     // Kurzy přihlášeného studenta

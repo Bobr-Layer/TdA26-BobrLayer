@@ -91,9 +91,14 @@ export async function submitQuiz(courseUuid, moduleUuid, quizUuid, data) {
   return await res.json();
 }
 
-export async function getQuizAttempts(courseUuid, moduleUuid, quizUuid) {
+export async function getQuizAttempts(courseUuid, moduleUuid, quizUuid, { search, pendingReview } = {}) {
+  const params = new URLSearchParams();
+  if (search) params.append('search', search);
+  if (pendingReview !== undefined && pendingReview !== null) params.append('pendingReview', pendingReview);
+  const query = params.toString() ? `?${params}` : '';
+
   const res = await fetch(
-    `${Api}/courses/${courseUuid}/modules/${moduleUuid}/quizzes/${quizUuid}/attempts`,
+    `${Api}/courses/${courseUuid}/modules/${moduleUuid}/quizzes/${quizUuid}/attempts${query}`,
     { credentials: 'include' }
   );
 
@@ -102,4 +107,20 @@ export async function getQuizAttempts(courseUuid, moduleUuid, quizUuid) {
   }
 
   return await res.json();
+}
+
+export async function evaluateAttempt(courseUuid, moduleUuid, quizUuid, attemptUuid, evaluations) {
+  const res = await fetch(
+    `${Api}/courses/${courseUuid}/modules/${moduleUuid}/quizzes/${quizUuid}/attempts/${attemptUuid}/evaluate`,
+    {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ evaluations }),
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error('Nepodařilo se uložit hodnocení');
+  }
 }

@@ -5,7 +5,7 @@ import Header from '../../shared/layout/header/Header';
 import Footer from '../../shared/layout/footer/Footer';
 import Input from '../../shared/form/input/Input';
 import SubmitButton from '../../shared/button/submit/SubmitButton';
-import { updateProfile, getCurrentUser } from '../../services/AuthService';
+import { updateProfile, getCurrentUser, getMyQuizAttempts } from '../../services/AuthService';
 import { usePageTitle } from '../../hooks/usePageTitle';
 
 const ROLE_LABELS = {
@@ -22,7 +22,14 @@ function Profile({ user, setUser }) {
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [quizAttempts, setQuizAttempts] = useState([]);
     const revealRefs = useRef([]);
+
+    useEffect(() => {
+        if (user?.role === 'STUDENT') {
+            getMyQuizAttempts().then(setQuizAttempts).catch(() => {});
+        }
+    }, [user]);
 
     useEffect(() => {
         const observer = new IntersectionObserver(
@@ -141,6 +148,47 @@ function Profile({ user, setUser }) {
                     </form>
                 </div>
             </section>
+
+            {user?.role === 'STUDENT' && (
+                <>
+                    <hr className={styles.rule} />
+                    <section className={styles.section}>
+                        <div {...r(0)}>
+                            <span className={styles.label}>Historie</span>
+                        </div>
+                        <h2 {...r(0.05)}>Výsledky kvízů</h2>
+                        {quizAttempts.length === 0 ? (
+                            <p {...r(0.1)} className={styles.empty_attempts}>Zatím žádné vyhodnocené výsledky</p>
+                        ) : (
+                            <div {...r(0.1)} className={styles.attempts_grid}>
+                                {quizAttempts.map(a => {
+                                    const correct = (a.correctPerQuestion || []).filter(Boolean).length;
+                                    const total = (a.correctPerQuestion || []).length;
+                                    const pct = total > 0 ? Math.round((correct / total) * 100) : 0;
+                                    return (
+                                        <div key={a.attemptUuid} className={styles.attempt_card}>
+                                            <div className={styles.attempt_card_top}>
+                                                <span className={styles.attempt_course}>{a.courseName}</span>
+                                                <span className={styles.attempt_date}>{new Date(a.submittedAt).toLocaleDateString('cs-CZ')}</span>
+                                            </div>
+                                            <p className={styles.attempt_quiz}>{a.quizTitle}</p>
+                                            <div className={styles.attempt_score_row}>
+                                                <span className={styles.attempt_score}>{correct}/{total}</span>
+                                                <span className={styles.attempt_pct}>{pct} %</span>
+                                            </div>
+                                            <div className={styles.attempt_dots}>
+                                                {(a.correctPerQuestion || []).map((v, i) => (
+                                                    <span key={i} className={`${styles.dot} ${v ? styles.dot_correct : styles.dot_wrong}`} />
+                                                ))}
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        )}
+                    </section>
+                </>
+            )}
 
             <Footer user={user} setUser={setUser} />
         </div>

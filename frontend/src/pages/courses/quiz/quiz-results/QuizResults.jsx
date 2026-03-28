@@ -45,6 +45,7 @@ export default function QuizResults({ name, result, onShowReview }) {
                             key={index}
                             number={index + 1}
                             correct={isCorrect}
+                            open={isCorrect == null}
                         />
                     ))}
                 </div>

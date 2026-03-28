@@ -2,6 +2,8 @@ package cz.projektant_pata.tda26.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import cz.projektant_pata.tda26.dto.course.quiz.EvaluateAttemptDTO;
+import cz.projektant_pata.tda26.dto.course.quiz.OpenQuestionEvaluationDTO;
 import cz.projektant_pata.tda26.dto.course.quiz.QuizAttemptResponseDTO;
 import cz.projektant_pata.tda26.dto.course.quiz.QuizRequestDTO;
 import cz.projektant_pata.tda26.dto.course.quiz.QuizResponseDTO;
@@ -99,12 +101,26 @@ public class QuizController {
     public ResponseEntity<List<QuizAttemptResponseDTO>> getAttempts(
             @PathVariable UUID courseUuid,
             @PathVariable UUID moduleUuid,
-            @PathVariable UUID quizUuid
+            @PathVariable UUID quizUuid,
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) Boolean pendingReview
     ) {
-        List<QuizAttemptResponseDTO> attempts = quizService.getAttempts(moduleUuid, quizUuid).stream()
+        List<QuizAttemptResponseDTO> attempts = quizService.getAttempts(moduleUuid, quizUuid, search, pendingReview).stream()
                 .map(this::mapAttemptToDTO)
                 .toList();
         return ResponseEntity.ok(attempts);
+    }
+
+    @PutMapping("/{quizUuid}/attempts/{attemptUuid}/evaluate")
+    public ResponseEntity<Void> evaluateAttempt(
+            @PathVariable UUID courseUuid,
+            @PathVariable UUID moduleUuid,
+            @PathVariable UUID quizUuid,
+            @PathVariable UUID attemptUuid,
+            @RequestBody EvaluateAttemptDTO dto
+    ) {
+        quizService.evaluateAttempt(moduleUuid, quizUuid, attemptUuid, dto);
+        return ResponseEntity.noContent().build();
     }
 
     private QuizAttemptResponseDTO mapAttemptToDTO(QuizAttempt attempt) {
@@ -114,16 +130,20 @@ public class QuizController {
         dto.setScore(attempt.getScore());
         dto.setMaxScore(attempt.getMaxScore());
         dto.setCorrectPerQuestion(attempt.getCorrectPerQuestion());
+        dto.setPendingReview(attempt.isPendingReview());
         dto.setSubmittedAt(attempt.getSubmittedAt());
         if (attempt.getTextAnswersJson() != null) {
             try {
-                Map<String, String> textAnswers = objectMapper.readValue(
-                        attempt.getTextAnswersJson(),
-                        new TypeReference<>() {}
-                );
-                dto.setTextAnswers(textAnswers);
+                dto.setTextAnswers(objectMapper.readValue(attempt.getTextAnswersJson(), new TypeReference<>() {}));
             } catch (Exception e) {
                 dto.setTextAnswers(Map.of());
+            }
+        }
+        if (attempt.getEvaluationsJson() != null) {
+            try {
+                dto.setEvaluations(objectMapper.readValue(attempt.getEvaluationsJson(), new TypeReference<>() {}));
+            } catch (Exception e) {
+                dto.setEvaluations(Map.of());
             }
         }
         return dto;

@@ -52,6 +52,7 @@ export default function QuizQuestion({
                         onClick={() => setCurrentStep(index)}
                         active={currentStep === index}
                         correct={quizResult?.correctPerQuestion?.[index]}
+                        open={quizResult?.correctPerQuestion?.[index] == null && !info}
                     />
                 ))}
             </div>

@@ -1,6 +1,9 @@
 package cz.projektant_pata.tda26.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import cz.projektant_pata.tda26.dto.course.quiz.EvaluateAttemptDTO;
+import cz.projektant_pata.tda26.dto.course.quiz.OpenQuestionEvaluationDTO;
 import cz.projektant_pata.tda26.dto.course.quiz.QuizRequestDTO;
 import cz.projektant_pata.tda26.dto.course.quiz.question.*;
 import cz.projektant_pata.tda26.event.course.quiz.QuizSubmittedEvent;
@@ -164,14 +167,17 @@ public class QuizServiceImpl implements IQuizService {
             }
         }
 
+        boolean hasPendingOpen = correctPerQuestion.stream().anyMatch(x -> x == null);
+
         // Save attempt
         QuizAttempt attempt = new QuizAttempt();
         attempt.setQuiz(quiz);
         attempt.setStudent(student);
         attempt.setScore((double) correctCount);
-        attempt.setMaxScore((double) totalGradable);
+        attempt.setMaxScore((double) quiz.getQuestions().size());
         attempt.setCorrectPerQuestion(correctPerQuestion);
         attempt.setTextAnswersJson(textAnswersJson);
+        attempt.setPendingReview(hasPendingOpen);
         attempt.setSubmittedAt(LocalDateTime.now());
         quizAttemptRepository.save(attempt);
 
@@ -189,9 +195,64 @@ public class QuizServiceImpl implements IQuizService {
     }
 
     @Override
-    public List<QuizAttempt> getAttempts(UUID moduleUuid, UUID quizUuid) {
+    public List<QuizAttempt> getAttempts(UUID moduleUuid, UUID quizUuid, String search, Boolean pendingReview) {
         getQuizOrThrow(moduleUuid, quizUuid);
-        return quizAttemptRepository.findByQuizUuid(quizUuid);
+        return quizAttemptRepository.findByQuizUuid(quizUuid).stream()
+                .filter(a -> search == null || search.isBlank() ||
+                             (a.getStudent() != null && a.getStudent().getUsername().toLowerCase().contains(search.toLowerCase())))
+                .filter(a -> pendingReview == null || a.isPendingReview() == pendingReview)
+                .toList();
+    }
+
+    @Override
+    @Transactional
+    public void evaluateAttempt(UUID moduleUuid, UUID quizUuid, UUID attemptUuid, EvaluateAttemptDTO dto) {
+        getQuizOrThrow(moduleUuid, quizUuid);
+        QuizAttempt attempt = quizAttemptRepository.findById(attemptUuid)
+                .orElseThrow(() -> new ResourceNotFoundException("Pokus nebyl nalezen"));
+
+        Quiz quiz = attempt.getQuiz();
+        List<Question> questions = quiz.getQuestions();
+
+        // Parse & merge evaluations
+        Map<String, OpenQuestionEvaluationDTO> evaluations;
+        try {
+            evaluations = attempt.getEvaluationsJson() != null
+                    ? objectMapper.readValue(attempt.getEvaluationsJson(), new TypeReference<>() {})
+                    : new HashMap<>();
+        } catch (Exception e) {
+            evaluations = new HashMap<>();
+        }
+        if (dto.getEvaluations() != null) {
+            evaluations.putAll(dto.getEvaluations());
+        }
+
+        // Update correctPerQuestion — replace null entries for evaluated open questions
+        List<Boolean> updated = new ArrayList<>(attempt.getCorrectPerQuestion());
+        for (int i = 0; i < questions.size(); i++) {
+            Question q = questions.get(i);
+            if (q instanceof OpenQuestion) {
+                OpenQuestionEvaluationDTO eval = evaluations.get(q.getUuid().toString());
+                if (eval != null && eval.getIsCorrect() != null && i < updated.size()) {
+                    updated.set(i, eval.getIsCorrect());
+                }
+            }
+        }
+        attempt.setCorrectPerQuestion(updated);
+
+        // Recalculate score
+        long newScore = updated.stream().filter(Boolean.TRUE::equals).count();
+        attempt.setScore((double) newScore);
+
+        // Still pending if any open question has no evaluation
+        boolean stillPending = updated.stream().anyMatch(x -> x == null);
+        attempt.setPendingReview(stillPending);
+
+        try {
+            attempt.setEvaluationsJson(objectMapper.writeValueAsString(evaluations));
+        } catch (Exception ignored) {}
+
+        quizAttemptRepository.save(attempt);
     }
 
     // ── private helpers ───────────────────────────────────────────────────────

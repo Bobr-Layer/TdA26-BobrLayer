@@ -128,6 +128,54 @@
     }
 }
 
+.attempts_header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.6rem;
+}
+
+.attempts_filters {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.search_input {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.5rem;
+    padding: 0.4rem 0.75rem;
+    color: white;
+    font-family: inherit;
+    font-size: 0.85rem;
+
+    &::placeholder { color: rgba(255, 255, 255, 0.3); }
+    &:focus { outline: none; border-color: rgba(255, 255, 255, 0.25); }
+}
+
+.filter_btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.5rem;
+    padding: 0.4rem 0.75rem;
+    color: rgba(255, 255, 255, 0.55);
+    font-family: inherit;
+    font-size: 0.8rem;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s;
+
+    &:hover { border-color: rgba(255, 200, 100, 0.3); color: rgba(255, 200, 100, 0.8); }
+}
+
+.filter_active {
+    background: rgba(255, 200, 100, 0.1);
+    border-color: rgba(255, 200, 100, 0.4);
+    color: rgba(255, 200, 100, 0.9);
+}
+
 .no_attempts {
     font-size: 0.875rem;
     color: rgba(255, 255, 255, 0.3);
@@ -144,12 +192,13 @@
     border: 1px solid rgba(255, 255, 255, 0.07);
     border-radius: 0.6rem;
     overflow: hidden;
-    cursor: pointer;
     transition: background 0.15s;
 
-    &:hover {
-        background: rgba(255, 255, 255, 0.05);
-    }
+    &:hover { background: rgba(255, 255, 255, 0.05); }
+}
+
+.attempt_pending {
+    border-color: rgba(255, 200, 100, 0.25);
 }
 
 .attempt_card_header {
@@ -157,6 +206,7 @@
     align-items: center;
     gap: 0.75rem;
     padding: 0.6rem 0.875rem;
+    cursor: pointer;
 }
 
 .attempt_student {
@@ -220,10 +270,100 @@
     flex: 1;
 }
 
+.pending_badge {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: rgba(255, 200, 100, 0.9);
+    background: rgba(255, 200, 100, 0.1);
+    border: 1px solid rgba(255, 200, 100, 0.25);
+    border-radius: 0.3rem;
+    padding: 0.1rem 0.4rem;
+}
+
+.attempt_q_body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    flex: 1;
+}
+
 .attempt_text_answer {
     font-style: italic;
     color: rgba(255, 255, 255, 0.45);
     font-size: 0.75rem;
+}
+
+.eval_form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-top: 0.25rem;
+}
+
+.eval_radios {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.eval_radio {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 0.35rem;
+    font-size: 0.75rem;
+    cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.5);
+    transition: all 0.15s;
+
+    input { display: none; }
+    &:hover { border-color: rgba(255, 255, 255, 0.2); color: rgba(255, 255, 255, 0.7); }
+}
+
+.eval_correct_active {
+    background: rgba(145, 245, 173, 0.12);
+    border-color: rgba(145, 245, 173, 0.4);
+    color: #91F5AD;
+}
+
+.eval_wrong_active {
+    background: rgba(255, 100, 100, 0.12);
+    border-color: rgba(255, 100, 100, 0.4);
+    color: rgba(255, 120, 120, 1);
+}
+
+.eval_comment {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 0.4rem;
+    padding: 0.3rem 0.6rem;
+    color: white;
+    font-family: inherit;
+    font-size: 0.78rem;
+    width: 100%;
+    box-sizing: border-box;
+
+    &::placeholder { color: rgba(255, 255, 255, 0.25); }
+    &:focus { outline: none; border-color: rgba(255, 255, 255, 0.18); }
+}
+
+.save_eval_btn {
+    align-self: flex-end;
+    margin-top: 0.5rem;
+    background: rgba(145, 245, 173, 0.1);
+    border: 1px solid rgba(145, 245, 173, 0.3);
+    border-radius: 0.5rem;
+    padding: 0.4rem 1rem;
+    color: #91F5AD;
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+
+    &:hover:not(:disabled) { background: rgba(145, 245, 173, 0.18); }
+    &:disabled { opacity: 0.4; cursor: default; }
 }
 
 .correct_answer_hint {

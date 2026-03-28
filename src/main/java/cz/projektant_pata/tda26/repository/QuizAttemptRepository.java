@@ -11,4 +11,5 @@ import java.util.UUID;
 public interface QuizAttemptRepository extends JpaRepository<QuizAttempt, UUID> {
     List<QuizAttempt> findByQuizUuid(UUID quizUuid);
     List<QuizAttempt> findByQuizUuidAndStudentUuid(UUID quizUuid, UUID studentUuid);
+    List<QuizAttempt> findByStudentUuidAndPendingReviewFalseOrderBySubmittedAtDesc(UUID studentUuid);
 }

@@ -19,6 +19,20 @@ export default function Quizz({ user, setUser }) {
     const [modules, setModules] = useState();
     const [course, setCourse] = useState();
     const [attempts, setAttempts] = useState([]);
+    const [search, setSearch] = useState('');
+    const [pendingReview, setPendingReview] = useState(null);
+
+    const loadAttempts = async (s, p) => {
+        try {
+            const data = await getQuizAttempts(uuid, moduleUuid, quizzUuid, {
+                search: s || undefined,
+                pendingReview: p ?? undefined,
+            });
+            setAttempts(data);
+        } catch {
+            setAttempts([]);
+        }
+    };
 
     useEffect(() => {
         const loadQuiz = async () => {
@@ -26,9 +40,7 @@ export default function Quizz({ user, setUser }) {
                 const data = await getQuizByUuid(uuid, moduleUuid, quizzUuid);
                 setQuiz(data);
 
-                getQuizAttempts(uuid, moduleUuid, quizzUuid)
-                    .then(setAttempts)
-                    .catch(() => setAttempts([]));
+                loadAttempts('', null);
 
                 const modulesData = await getModules(uuid);
                 setModules(modulesData);
@@ -76,7 +88,18 @@ export default function Quizz({ user, setUser }) {
                     showButton={course?.status === 'Draft'}
                 />
                 {quiz && (
-                    <QuizzDetail quiz={quiz} attempts={attempts} />
+                    <QuizzDetail
+                        quiz={quiz}
+                        attempts={attempts}
+                        search={search}
+                        setSearch={(v) => { setSearch(v); loadAttempts(v, pendingReview); }}
+                        pendingReview={pendingReview}
+                        setPendingReview={(v) => { setPendingReview(v); loadAttempts(search, v); }}
+                        onAttemptUpdated={() => loadAttempts(search, pendingReview)}
+                        courseUuid={uuid}
+                        moduleUuid={moduleUuid}
+                        quizUuid={quizzUuid}
+                    />
                 )}
             </section>
         </div>

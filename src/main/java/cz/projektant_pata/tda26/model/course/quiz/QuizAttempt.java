@@ -44,6 +44,12 @@ public class QuizAttempt {
     @Column(columnDefinition = "TEXT")
     private String textAnswersJson;
 
+    @Column(columnDefinition = "TEXT")
+    private String evaluationsJson;
+
+    @Column(nullable = false)
+    private boolean pendingReview = false;
+
     @Column(nullable = false)
     private LocalDateTime submittedAt;
 }

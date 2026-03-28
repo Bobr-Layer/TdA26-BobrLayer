@@ -1,13 +1,27 @@
 import { useState } from 'react';
 import styles from './quizz-detail.module.scss';
 import ResultCard from './result-card/ResultCard';
+import { evaluateAttempt } from '../../../../services/QuizzService';
 
-export default function QuizzDetail({ quiz, attempts = [] }) {
+export default function QuizzDetail({
+  quiz,
+  attempts = [],
+  search,
+  setSearch,
+  pendingReview,
+  setPendingReview,
+  onAttemptUpdated,
+  courseUuid,
+  moduleUuid,
+  quizUuid,
+}) {
   const questionsCount = quiz.questions.length;
   const gradableQuestions = quiz.questions.filter(q => q.type !== 'openQuestion');
   const averageScore = gradableQuestions.length > 0
     ? gradableQuestions.reduce((sum, q) => sum + (q.successRate ?? 0), 0) / gradableQuestions.length
     : 0;
+
+  const hasOpenQuestions = quiz.questions.some(q => q.type === 'openQuestion');
 
   return (
     <article className={styles.quizz_detail}>
@@ -37,13 +51,41 @@ export default function QuizzDetail({ quiz, attempts = [] }) {
           </div>
         </div>
         <div className={styles.quizz_detail_attempts_section}>
-          <h3>Pokusy studentů ({attempts.length})</h3>
+          <div className={styles.attempts_header}>
+            <h3>Pokusy studentů ({attempts.length})</h3>
+          </div>
+          <div className={styles.attempts_filters}>
+            <input
+              className={styles.search_input}
+              type="text"
+              placeholder="Hledat studenta..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+            />
+            {hasOpenQuestions && (
+              <button
+                className={`${styles.filter_btn} ${pendingReview === true ? styles.filter_active : ''}`}
+                onClick={() => setPendingReview(pendingReview === true ? null : true)}
+                title="Zobrazit pouze nevyhodnocené"
+              >
+                Nevyhodnocené
+              </button>
+            )}
+          </div>
           {attempts.length === 0 ? (
-            <p className={styles.no_attempts}>Zatím žádné pokusy</p>
+            <p className={styles.no_attempts}>Žádné výsledky</p>
           ) : (
             <div className={styles.attempts_list}>
               {attempts.map(attempt => (
-                <AttemptCard key={attempt.uuid} attempt={attempt} quiz={quiz} />
+                <AttemptCard
+                  key={attempt.uuid}
+                  attempt={attempt}
+                  quiz={quiz}
+                  courseUuid={courseUuid}
+                  moduleUuid={moduleUuid}
+                  quizUuid={quizUuid}
+                  onUpdated={onAttemptUpdated}
+                />
               ))}
             </div>
           )}
@@ -53,15 +95,47 @@ export default function QuizzDetail({ quiz, attempts = [] }) {
   );
 }
 
-function AttemptCard({ attempt, quiz }) {
+function AttemptCard({ attempt, quiz, courseUuid, moduleUuid, quizUuid, onUpdated }) {
   const [open, setOpen] = useState(false);
+  const [evalState, setEvalState] = useState({});
+  const [saving, setSaving] = useState(false);
+
   const gradable = (attempt.correctPerQuestion || []).filter(x => x !== null && x !== undefined);
   const correct = gradable.filter(Boolean).length;
+  const openQuestions = quiz.questions.filter(q => q.type === 'openQuestion');
+  const hasPending = attempt.pendingReview;
+
+  const getEvalForQuestion = (questionUuid) => {
+    // Local state overrides, then server state
+    if (evalState[questionUuid] !== undefined) return evalState[questionUuid];
+    return attempt.evaluations?.[questionUuid] ?? null;
+  };
+
+  const handleEvalChange = (questionUuid, field, value) => {
+    setEvalState(prev => ({
+      ...prev,
+      [questionUuid]: { ...(getEvalForQuestion(questionUuid) || {}), [field]: value },
+    }));
+  };
+
+  const handleSave = async () => {
+    if (!Object.keys(evalState).length) return;
+    setSaving(true);
+    try {
+      await evaluateAttempt(courseUuid, moduleUuid, quizUuid, attempt.uuid, evalState);
+      onUpdated();
+    } catch (e) {
+      alert(e.message);
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
-    <div className={styles.attempt_card} onClick={() => setOpen(!open)}>
-      <div className={styles.attempt_card_header}>
-        <span className={styles.attempt_student}>{attempt.studentUsername}</span>
+    <div className={`${styles.attempt_card} ${hasPending ? styles.attempt_pending : ''}`}>
+      <div className={styles.attempt_card_header} onClick={() => setOpen(!open)}>
+        <span className={styles.attempt_student}>{attempt.studentUsername ?? 'Anonym'}</span>
+        {hasPending && <span className={styles.pending_badge}>Čeká na hodnocení</span>}
         <span className={styles.attempt_score}>{correct}/{gradable.length}</span>
         <span className={styles.attempt_date}>{new Date(attempt.submittedAt).toLocaleString('cs-CZ')}</span>
       </div>
@@ -69,17 +143,71 @@ function AttemptCard({ attempt, quiz }) {
         <div className={styles.attempt_detail}>
           {(attempt.correctPerQuestion || []).map((isCorrect, i) => {
             const question = quiz.questions[i];
-            const isOpenQ = isCorrect === null || isCorrect === undefined;
+            if (!question) return null;
+            const isOpenQ = question.type === 'openQuestion';
+            const textAnswer = attempt.textAnswers?.[question.uuid];
+            const eval_ = getEvalForQuestion(question.uuid);
+            const evaluated = isCorrect !== null && isCorrect !== undefined;
+
             return (
-              <div key={i} className={`${styles.attempt_question} ${isOpenQ ? styles.open : isCorrect ? styles.correct : styles.wrong}`}>
+              <div
+                key={i}
+                className={`${styles.attempt_question} ${
+                  isOpenQ
+                    ? (isCorrect === true ? styles.correct : isCorrect === false ? styles.wrong : styles.open)
+                    : isCorrect ? styles.correct : styles.wrong
+                }`}
+              >
                 <span className={styles.attempt_q_num}>{i + 1}.</span>
-                <span className={styles.attempt_q_text}>{question?.question}</span>
-                {isOpenQ && attempt.textAnswers?.[question?.uuid] && (
-                  <span className={styles.attempt_text_answer}>„{attempt.textAnswers[question.uuid]}"</span>
-                )}
+                <div className={styles.attempt_q_body}>
+                  <span className={styles.attempt_q_text}>{question.question}</span>
+                  {isOpenQ && textAnswer && (
+                    <span className={styles.attempt_text_answer}>„{textAnswer}"</span>
+                  )}
+                  {isOpenQ && (
+                    <div className={styles.eval_form} onClick={e => e.stopPropagation()}>
+                      <div className={styles.eval_radios}>
+                        <label className={`${styles.eval_radio} ${(eval_?.isCorrect === true) ? styles.eval_correct_active : ''}`}>
+                          <input
+                            type="radio"
+                            name={`eval_${attempt.uuid}_${question.uuid}`}
+                            checked={eval_?.isCorrect === true}
+                            onChange={() => handleEvalChange(question.uuid, 'isCorrect', true)}
+                          />
+                          Správně
+                        </label>
+                        <label className={`${styles.eval_radio} ${(eval_?.isCorrect === false) ? styles.eval_wrong_active : ''}`}>
+                          <input
+                            type="radio"
+                            name={`eval_${attempt.uuid}_${question.uuid}`}
+                            checked={eval_?.isCorrect === false}
+                            onChange={() => handleEvalChange(question.uuid, 'isCorrect', false)}
+                          />
+                          Špatně
+                        </label>
+                      </div>
+                      <input
+                        className={styles.eval_comment}
+                        type="text"
+                        placeholder="Komentář lektora (volitelné)"
+                        value={eval_?.comment ?? ''}
+                        onChange={e => handleEvalChange(question.uuid, 'comment', e.target.value)}
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
             );
           })}
+          {openQuestions.length > 0 && (
+            <button
+              className={styles.save_eval_btn}
+              onClick={handleSave}
+              disabled={saving || Object.keys(evalState).length === 0}
+            >
+              {saving ? 'Ukládám...' : 'Uložit hodnocení'}
+            </button>
+          )}
         </div>
       )}
     </div>

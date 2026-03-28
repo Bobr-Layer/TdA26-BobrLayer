@@ -21,12 +21,18 @@
         color: rgba(255, 255, 255, 0.85);
     }
 
-    // review mode (no .info): green = correct, red = wrong
+    // review mode (no .info): green = correct, red = wrong, yellow = pending
     &:not(.info) {
         color: #91F5AD;
 
         &.incorrect {
             color: #ff6464;
+        }
+
+        &.pending {
+            color: #f5c842;
+            background: rgba(245, 200, 66, 0.07);
+            border-color: rgba(245, 200, 66, 0.2);
         }
     }
 

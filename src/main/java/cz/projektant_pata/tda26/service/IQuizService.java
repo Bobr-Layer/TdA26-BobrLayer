@@ -1,5 +1,6 @@
 package cz.projektant_pata.tda26.service;
 
+import cz.projektant_pata.tda26.dto.course.quiz.EvaluateAttemptDTO;
 import cz.projektant_pata.tda26.dto.course.quiz.QuizRequestDTO;
 import cz.projektant_pata.tda26.dto.course.quiz.question.SubmitQuizDTO;
 import cz.projektant_pata.tda26.dto.course.quiz.question.SubmitQuizResultDTO;
@@ -18,5 +19,6 @@ public interface IQuizService {
 
     SubmitQuizResultDTO submitQuiz(UUID moduleUuid, UUID quizUuid, SubmitQuizDTO submission);
 
-    List<QuizAttempt> getAttempts(UUID moduleUuid, UUID quizUuid);
+    List<QuizAttempt> getAttempts(UUID moduleUuid, UUID quizUuid, String search, Boolean pendingReview);
+    void evaluateAttempt(UUID moduleUuid, UUID quizUuid, UUID attemptUuid, EvaluateAttemptDTO dto);
 }

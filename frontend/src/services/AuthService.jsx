@@ -83,3 +83,15 @@ export async function getMyEnrolledCourses() {
 
   return await res.json();
 }
+
+export async function getMyQuizAttempts() {
+  const res = await fetch(`${Api}/auth/me/quiz-attempts`, {
+    credentials: 'include',
+  });
+
+  if (!res.ok) {
+    throw new Error('Nepodařilo se načíst výsledky kvízů');
+  }
+
+  return await res.json();
+}
